@@ -1,26 +1,29 @@
 <template>
-  <loadingAnimation v-if="!onLoaded" />
   <GridLayout rows="auto, *">
-    <FlexboxLayout row="0" style="margin: 8px 100px;">
-      <StackLayout width="50%">
-        <Label text="视频" @tap="onTabPress(0)" textAlignment="center" height="100px" />
-        <StackLayout class="tab-bar" :class="{ 'hidden': tab == 1, 'visible': tab != 1 }"></StackLayout>
-      </StackLayout>
-      <StackLayout width="50%">
-        <Label text="图片" @tap="onTabPress(1)" textAlignment="center" height="100px" />
-        <StackLayout class="tab-bar" :class="{ hidden: tab == 0, 'visible': tab != 0 }"></StackLayout>
-      </StackLayout>
-    </FlexboxLayout>
-    <ContentView row="1">
-      <videoList v-if="tab == 0" :data="videoListData" @loadMoreItems="getData" />
+    <GridLayout row="0" rows="35px,3px" columns="*,*">
+      <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
+      <Label text="图片" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
+      <StackLayout row="1" col="0" class="tab-bar" :class="{ 'hidden': tab == 1, 'visible': tab != 1 }"></StackLayout>
+      <StackLayout row="1" col="1" class="tab-bar" :class="{ 'hidden': tab == 0, 'visible': tab != 0 }"></StackLayout>
+    </GridLayout>
+    <ContentView row="1" v-if="onLoading">
+      <loadingAnimation />
+    </ContentView>
+    <ContentView row="1" v-else>
+      <videoList v-if="tab == 0" :data="videoListData" @loadMoreItems="getVideoList" />
+      <imageList v-if="tab == 1" :data="imageListData" @loadMoreItems="getImageList" />
     </ContentView>
   </GridLayout>
 </template>
 <script lang="ts" setup>
 import { ref } from 'nativescript-vue';
-import videoList from '../Lists/video.vue';
+import videoList from '../Lists/videoList.vue';
+import imageList from '../Lists/imageList.vue';
 import loadingAnimation from '../components/loadingAnimation.vue';
-import { getSubscribeVideoList } from '../../script/api';
+import {
+  getSubscribeVideoList,
+  getSubscribeImageList
+} from '../../script/api';
 interface VideoItem {
   id: string,
   title: string,
@@ -34,18 +37,42 @@ interface VideoItem {
   img: string,
   loss: boolean
 }
+interface ImageItem {
+  id: string,
+  title: string,
+  up: string,
+  numImages: number,
+  numViews: number,
+  numLikes: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  img: string
+}
 const videoListData = ref<VideoItem[]>([]);
-const onLoaded = ref(false)
+const imageListData = ref<ImageItem[]>([]);
+const onLoading = ref(true)
 const tab = ref(0)
 var page = 0;
 var isLoading = false;
-getData();
-function getData() {
+getVideoList();
+function getVideoList() {
   if (!isLoading) {
     isLoading = true;
     getSubscribeVideoList(page).then(res => {
       videoListData.value = videoListData.value.concat(res);
-      onLoaded.value = true;
+      onLoading.value = false;
+      isLoading = false;
+      page++;
+    })
+  }
+}
+function getImageList() {
+  if (!isLoading) {
+    isLoading = true;
+    getSubscribeImageList(page).then(res => {
+      imageListData.value = imageListData.value.concat(res);
+      onLoading.value = false;
       isLoading = false;
       page++;
     })
@@ -53,6 +80,14 @@ function getData() {
 }
 function onTabPress(target: number) {
   tab.value = target;
+  onLoading.value = true;
+  if (target == 0) {
+    imageListData.value = [];
+    getVideoList();
+  } else {
+    videoListData.value = [];
+    getImageList();
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -65,13 +100,13 @@ function onTabPress(target: number) {
 
 .hidden {
   animation-name: animeHidden;
-  animation-duration: 80ms;
+  animation-duration: 100ms;
   animation-fill-mode: forwards;
 }
 
 .visible {
   animation-name: animeVisible;
-  animation-duration: 80ms;
+  animation-duration: 100ms;
   animation-fill-mode: forwards;
 }
 

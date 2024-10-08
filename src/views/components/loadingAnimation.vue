@@ -16,7 +16,7 @@ onMounted(() => {
     } else {
       i = 1
     }
-  }, 100);
+  }, 75);
 })
 onUnmounted(() => {
   clearInterval(animation);

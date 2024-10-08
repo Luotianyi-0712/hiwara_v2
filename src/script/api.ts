@@ -43,7 +43,6 @@ function get(apiPath: string, query: any): Promise<ApiResponse> {
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
         .join('&');
       let sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
-      console.log(sendUrl)
       fetch(sendUrl, {
         method: 'GET',
         headers: {
@@ -86,7 +85,6 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
     }
     get('https://api.iwara.tv/videos', query).then(data => {
       let videoList: VideoItem[] = []
-      let i = 0
       for (let item of data.results) {
         videoList.push({
           id: item.id,
@@ -111,4 +109,108 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
     })
   })
 }
+export function getVideoList(page: number): Promise<VideoItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 32,
+      page: page
+    }
+    get('https://api.iwara.tv/videos', query).then(data => {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          duration: item.file ? `${Math.floor(item.file.duration / 60)}:${(`0${item.file.duration % 60}`).slice(-2)}` : "00:00",
+          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            '~/assets/img/loss.png',
+          loss: item.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
 
+interface ImageItem {
+  id: string,
+  title: string,
+  up: string,
+  numImages: number,
+  numViews: number,
+  numLikes: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  img: string
+}
+export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 32,
+      subscribed: true,
+      page: page
+    }
+    get('https://api.iwara.tv/images', query).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          ecchi: item.rating == 'ecchi' ? true : false,
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+export function getSubscribeList(page: number): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 32,
+      page: page
+    }
+    get('https://api.iwara.tv/images', query).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
