@@ -4,11 +4,11 @@
     <FlexboxLayout row="0" style="margin: 8px 100px;">
       <StackLayout width="50%">
         <Label text="视频" @tap="onTabPress(0)" textAlignment="center" height="100px" />
-        <StackLayout v-show="tab == 0" class="tab-bar"></StackLayout>
+        <StackLayout class="tab-bar" :class="{ 'hidden': tab == 1, 'visible': tab != 1 }"></StackLayout>
       </StackLayout>
       <StackLayout width="50%">
         <Label text="图片" @tap="onTabPress(1)" textAlignment="center" height="100px" />
-        <StackLayout v-show="tab == 1" class="tab-bar"></StackLayout>
+        <StackLayout class="tab-bar" :class="{ hidden: tab == 0, 'visible': tab != 0 }"></StackLayout>
       </StackLayout>
     </FlexboxLayout>
     <ContentView row="1">
@@ -61,5 +61,37 @@ function onTabPress(target: number) {
   height: 8px;
   border-radius: 50%;
   width: 100px;
+}
+
+.hidden {
+  animation-name: animeHidden;
+  animation-duration: 80ms;
+  animation-fill-mode: forwards;
+}
+
+.visible {
+  animation-name: animeVisible;
+  animation-duration: 80ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animeHidden {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes animeVisible {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

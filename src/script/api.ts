@@ -80,7 +80,8 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
   return new Promise((resolve, reject) => {
     const query = {
       rating: 'all',
-      sort: 'date',
+      limit: 32,
+      subscribed: true,
       page: page
     }
     get('https://api.iwara.tv/videos', query).then(data => {
@@ -97,9 +98,10 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
           createdAt: new Date(item.createdAt).toISOString().split("T")[0],
           updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: item.file ?
-            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-            '~/assets/img/loss.png',
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
