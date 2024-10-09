@@ -1,1 +1,0 @@
-ns build android --release  --clean --key-store-path release-key.keystore --key-store-password <you store password> --key-store-alias hiwara --key-store-alias-password <you store alias password>

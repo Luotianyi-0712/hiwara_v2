@@ -96,10 +96,10 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            '~/assets/img/loss.png',
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -130,10 +130,10 @@ export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            '~/assets/img/loss.png',
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -177,8 +177,8 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -208,8 +208,8 @@ export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
