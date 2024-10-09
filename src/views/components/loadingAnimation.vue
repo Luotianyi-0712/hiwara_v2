@@ -1,16 +1,16 @@
 <template>
   <StackLayout class="loading-container">
-    <Image ref="ImageRef" src="~/assets/img/loading-huawu/1.png" width="360px" height="240px" />
+    <Image :src="src" width="360px" height="240px" />
   </StackLayout>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from "nativescript-vue";
-const ImageRef = ref();
+const src = ref<string>('~/assets/img/loading-huawu/1.png');
 var i = 1;
 var animation: any;
 onMounted(() => {
   animation = setInterval(() => {
-    ImageRef.value.nativeView.src = "~/assets/img/loading-huawu/" + i + ".png";
+    src.value = "~/assets/img/loading-huawu/" + i + ".png";
     if (i < 33) {
       i++
     } else {

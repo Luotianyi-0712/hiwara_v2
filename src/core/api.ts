@@ -68,7 +68,7 @@ interface VideoItem {
   up: string,
   numViews: number,
   numLikes: number,
-  duration: string,
+  duration: number,
   createdAt: string,
   updatedAt: string,
   ecchi: boolean,
@@ -92,9 +92,9 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
           up: item.user.name,
           numViews: item.numViews,
           numLikes: item.numLikes,
-          duration: item.file ? `${Math.floor(item.file.duration / 60)}:${(`0${item.file.duration % 60}`).slice(-2)}` : "00:00",
-          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
-          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
           // img: item.file ?
           //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
@@ -109,11 +109,12 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
     })
   })
 }
-export function getVideoList(page: number): Promise<VideoItem[]> {
+export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
   return new Promise((resolve, reject) => {
     const query = {
       rating: 'all',
       limit: 32,
+      sort: sort,
       page: page
     }
     get('https://api.iwara.tv/videos', query).then(data => {
@@ -125,13 +126,14 @@ export function getVideoList(page: number): Promise<VideoItem[]> {
           up: item.user.name,
           numViews: item.numViews,
           numLikes: item.numLikes,
-          duration: item.file ? `${Math.floor(item.file.duration / 60)}:${(`0${item.file.duration % 60}`).slice(-2)}` : "00:00",
-          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
-          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: item.file ?
-            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-            '~/assets/img/loss.png',
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -172,8 +174,8 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
           numImages: item.numImages,
           numViews: item.numViews,
           numLikes: item.numLikes,
-          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
-          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
           // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
           img: '~/assets/img/not-img.jpg'
@@ -185,11 +187,12 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
     })
   })
 }
-export function getSubscribeList(page: number): Promise<ImageItem[]> {
+export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
   return new Promise((resolve, reject) => {
     const query = {
       rating: 'all',
       limit: 32,
+      sort: sort,
       page: page
     }
     get('https://api.iwara.tv/images', query).then(data => {
@@ -202,10 +205,11 @@ export function getSubscribeList(page: number): Promise<ImageItem[]> {
           numImages: item.numImages,
           numViews: item.numViews,
           numLikes: item.numLikes,
-          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
-          updatedAt: new Date(item.updatedAt).toISOString().split("T")[0],
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)

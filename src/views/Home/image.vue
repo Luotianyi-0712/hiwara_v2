@@ -19,7 +19,7 @@
       <ErrorImg />
     </ContentView>
     <ContentView row="1" v-else>
-      <videoList :data="listData" @loadMoreItems="nextPage" />
+      <imageList :data="listData" @loadMoreItems="nextPage" />
     </ContentView>
   </GridLayout>
 </template>
@@ -27,26 +27,25 @@
 <script lang="ts" setup>
 import loadingAnimation from '../Components/loadingAnimation.vue';
 import ErrorImg from '../Components/errorImg.vue';
-import videoList from '../Lists/videoList.vue';
+import imageList from '../Lists/imageList.vue';
 import { ref } from 'nativescript-vue';
-import { getVideoList } from '~/core/api';
+import { getImageList } from '~/core/api';
 import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
-interface VideoItem {
+interface ImageItem {
   id: string,
   title: string,
   up: string,
+  numImages: number,
   numViews: number,
   numLikes: number,
-  duration: number,
   createdAt: string,
   updatedAt: string,
   ecchi: boolean,
-  img: string,
-  loss: boolean
+  img: string
 }
-const listData = ref<VideoItem[]>([])
+const listData = ref<ImageItem[]>([])
 const tab = ref(0)
 const onLoading = ref(true)
 const onError = ref(false)
@@ -86,9 +85,9 @@ function nextPage() {
     })
   }
 }
-function getList(sort: string): Promise<VideoItem[]> {
+function getList(sort: string): Promise<ImageItem[]> {
   return new Promise((resolve, reject) => {
-    getVideoList(page, sort).then(res => {
+    getImageList(page, sort).then(res => {
       page++;
       resolve(res);
     }).catch(err => {

@@ -5,9 +5,9 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@imagene.me/nativescript-toast": "^2.0.3",
     "@nativescript-community/ui-image": "^4.5.3",
     "@nativescript/core": "~8.7.0",
-    "@triniwiz/nativescript-image-cache-it": "^7.5.0",
     "nativescript-vue": "3.0.0-rc.2",
     "sass": "^1.79.4"
   },

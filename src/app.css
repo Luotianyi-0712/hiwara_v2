@@ -6,6 +6,10 @@ Page {
   background-color: #f0f0f0;
 }
 
+ActionBar {
+  background-color: #00796B;
+}
+
 .font-awesome-brands {
   font-family: "Font Awesome 6 Brands", "fa-brands-400";
   font-weight: 400;

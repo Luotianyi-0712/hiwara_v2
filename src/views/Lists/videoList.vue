@@ -25,7 +25,7 @@ interface Item {
   up: string,
   numViews: number,
   numLikes: number,
-  duration: string,
+  duration: number,
   createdAt: string,
   updatedAt: string,
   ecchi: boolean,
@@ -63,7 +63,7 @@ function onTouch(id: string) {
 <style scoped lang="scss">
 .visible {
   animation-name: animeVisible;
-  animation-duration: 500ms;
+  animation-duration: 200ms;
   animation-fill-mode: forwards;
 }
 
