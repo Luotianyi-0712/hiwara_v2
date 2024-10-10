@@ -32,6 +32,7 @@
 
 <script lang="ts" setup>
 import { defineProps } from 'nativescript-vue';
+import { navigateTo } from "../../navigate";
 const props = defineProps<{
   id: string;
   title: string;
@@ -44,7 +45,9 @@ const props = defineProps<{
   ecchi: boolean;
 }>();
 function onTouch() {
-  console.log()
+  navigateTo("/player", {
+    id: props.id
+  })
 }
 function formatNumber(num: number): string {
   if (num < 10000) {

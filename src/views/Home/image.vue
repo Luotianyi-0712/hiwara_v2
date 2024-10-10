@@ -15,10 +15,10 @@
     <ContentView row="1" v-if="onLoading">
       <loadingAnimation />
     </ContentView>
-    <ContentView row="1" v-if="onError">
+    <ContentView row="1" v-if="onError" @tap="retry">
       <ErrorImg />
     </ContentView>
-    <ContentView row="1" v-else>
+    <ContentView row="1" v-if="!onError && !onLoading">
       <imageList :data="listData" @loadMoreItems="nextPage" />
     </ContentView>
   </GridLayout>
@@ -49,8 +49,8 @@ const listData = ref<ImageItem[]>([])
 const tab = ref(0)
 const onLoading = ref(true)
 const onError = ref(false)
-var page = 0;
-var isLoading = false;
+let page = 0;
+let isLoading = false;
 getList('date').then((res) => {
   listData.value = res;
 }).catch(() => {
@@ -58,6 +58,26 @@ getList('date').then((res) => {
 }).finally(() => {
   onLoading.value = false
 })
+function retry() {
+  onError.value = false;
+  onLoading.value = true;
+  let sort: string = 'date'
+  switch (tab.value) {
+    case 0: sort = 'date'; break;
+    case 1: sort = 'trending'; break;
+    case 2: sort = 'popularity'; break;
+    case 3: sort = 'views'; break;
+    case 4: sort = 'likes'; break;
+    default: sort = 'date'; break;
+  }
+  getList(sort).then((res) => {
+    listData.value = res;
+  }).catch(() => {
+    onError.value = true
+  }).finally(() => {
+    onLoading.value = false
+  })
+}
 function nextPage() {
   if (!isLoading) {
     isLoading = true;
@@ -138,7 +158,7 @@ function onTabPress(target: number) {
 
 <style lang="scss" scoped>
 .tab {
-  background-color: #fff;
+  // background-color: #fff;
 }
 
 .tab-bar {

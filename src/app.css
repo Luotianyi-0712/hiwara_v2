@@ -3,11 +3,13 @@
 @tailwind utilities;
 
 Page {
-  background-color: #f0f0f0;
+  background-color: #f2f2f2;
 }
 
 ActionBar {
   background-color: #00796B;
+  margin: 0;
+  padding: 0;
 }
 
 .font-awesome-brands {

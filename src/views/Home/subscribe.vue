@@ -9,10 +9,10 @@
     <ContentView row="1" v-if="onLoading">
       <loadingAnimation />
     </ContentView>
-    <ContentView row="1" v-if="onError">
+    <ContentView row="1" v-if="onError" @tap="retry">
       <ErrorImg />
     </ContentView>
-    <ContentView row="1" v-else>
+    <ContentView row="1" v-if="!onLoading && !onError">
       <videoList v-if="tab == 0" :data="videoListData" @loadMoreItems="nextPage" />
       <imageList v-if="tab == 1" :data="imageListData" @loadMoreItems="nextPage" />
     </ContentView>
@@ -61,8 +61,8 @@ const imageListData = ref<ImageItem[]>([]);
 const onLoading = ref(true)
 const onError = ref(false)
 const tab = ref(0)
-var page = 0;
-var isLoading = false;
+let page = 0;
+let isLoading = false;
 getVideoList().then((res) => {
   videoListData.value = res;
 }).catch(() => {
@@ -70,6 +70,27 @@ getVideoList().then((res) => {
 }).finally(() => {
   onLoading.value = false;
 })
+function retry() {
+  onError.value = false;
+  onLoading.value = true;
+  if (tab.value == 0) {
+    getVideoList().then((res) => {
+      videoListData.value = res;
+    }).catch(() => {
+      onError.value = true;
+    }).finally(() => {
+      onLoading.value = false
+    })
+  } else {
+    getImageList().then((res) => {
+      imageListData.value = res;
+    }).catch(() => {
+      onError.value = true;
+    }).finally(() => {
+      onLoading.value = false
+    })
+  }
+}
 function nextPage() {
   if (!isLoading) {
     isLoading = true;
@@ -91,7 +112,7 @@ function getVideoList(): Promise<VideoItem[]> {
     getSubscribeVideoList(page).then(res => {
       page++;
       resolve(res);
-    }).catch(err => {
+    }).catch(() => {
       reject()
       const toast = new Toasty({
         text: '数据获取失败',
@@ -107,7 +128,7 @@ function getImageList(): Promise<ImageItem[]> {
     getSubscribeImageList(page).then(res => {
       page++;
       resolve(res);
-    }).catch(err => {
+    }).catch(() => {
       reject()
       const toast = new Toasty({
         text: '数据获取失败',
@@ -147,7 +168,7 @@ function onTabPress(target: number) {
 </script>
 <style lang="scss" scoped>
 .tab {
-  background-color: #fff;
+  // background-color: #fff;
 }
 
 .tab-bar {

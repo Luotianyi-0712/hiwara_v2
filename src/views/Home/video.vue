@@ -15,10 +15,10 @@
     <ContentView row="1" v-if="onLoading">
       <loadingAnimation />
     </ContentView>
-    <ContentView row="1" v-if="onError">
+    <ContentView row="1" v-if="onError" @tap="retry">
       <ErrorImg />
     </ContentView>
-    <ContentView row="1" v-else>
+    <ContentView row="1" v-if="!onError && !onLoading">
       <videoList :data="listData" @loadMoreItems="nextPage" />
     </ContentView>
   </GridLayout>
@@ -47,38 +47,49 @@ interface VideoItem {
   loss: boolean
 }
 const listData = ref<VideoItem[]>([])
-const tab = ref(0)
+const tab = ref(0);
 const onLoading = ref(true)
 const onError = ref(false)
-var page = 0;
-var isLoading = false;
+let page = 0
+let isLoading = false
 getList('date').then((res) => {
-  listData.value = res;
+  listData.value = res
 }).catch(() => {
   onError.value = true
 }).finally(() => {
   onLoading.value = false
 })
+function retry() {
+  onError.value = false;
+  onLoading.value = true;
+  let sort: string = 'date'
+  switch (tab.value) {
+    case 0: sort = 'date'; break;
+    case 1: sort = 'trending'; break;
+    case 2: sort = 'popularity'; break;
+    case 3: sort = 'views'; break;
+    case 4: sort = 'likes'; break;
+    default: sort = 'date'; break;
+  }
+  getList(sort).then((res) => {
+    listData.value = res;
+  }).catch(() => {
+    onError.value = true
+  }).finally(() => {
+    onLoading.value = false
+  })
+}
 function nextPage() {
   if (!isLoading) {
     isLoading = true;
     let sort: string = 'date'
     switch (tab.value) {
-      case 0:
-        sort = 'date'
-        break;
-      case 1:
-        sort = 'trending'
-        break;
-      case 2:
-        sort = 'popularity'
-        break;
-      case 3:
-        sort = 'views'
-        break;
-      case 4:
-        sort = 'likes'
-        break;
+      case 0: sort = 'date'; break;
+      case 1: sort = 'trending'; break;
+      case 2: sort = 'popularity'; break;
+      case 3: sort = 'views'; break;
+      case 4: sort = 'likes'; break;
+      default: sort = 'date'; break;
     }
     getList(sort).then((res) => {
       listData.value = listData.value.concat(res);
@@ -91,7 +102,7 @@ function getList(sort: string): Promise<VideoItem[]> {
     getVideoList(page, sort).then(res => {
       page++;
       resolve(res);
-    }).catch(err => {
+    }).catch(() => {
       reject()
       const toast = new Toasty({
         text: '数据获取失败',
@@ -110,21 +121,12 @@ function onTabPress(target: number) {
     listData.value = [];
     let sort: string = 'date'
     switch (target) {
-      case 0:
-        sort = 'date'
-        break;
-      case 1:
-        sort = 'trending'
-        break;
-      case 2:
-        sort = 'popularity'
-        break;
-      case 3:
-        sort = 'views'
-        break;
-      case 4:
-        sort = 'likes'
-        break;
+      case 0: sort = 'date'; break;
+      case 1: sort = 'trending'; break;
+      case 2: sort = 'popularity'; break;
+      case 3: sort = 'views'; break;
+      case 4: sort = 'likes'; break;
+      default: sort = 'date'; break;
     }
     getList(sort).then((res) => {
       listData.value = res;
@@ -139,7 +141,7 @@ function onTabPress(target: number) {
 
 <style lang="scss" scoped>
 .tab {
-  background-color: #fff;
+  // background-color: #fff;
 }
 
 .tab-bar {

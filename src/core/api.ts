@@ -1,6 +1,6 @@
-const xVersion: string = '5nFp9kmbNnHdAFhaqMvt';
+// const xVersion: string = '5nFp9kmbNnHdAFhaqMvt';
 const testUserToken: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxZTBkOWZiLTdlZjgtNDg5OC1hODZjLThiYzMzZDdiYWM1ZiIsInR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaXNzIjoiaXdhcmEiLCJpYXQiOjE3Mjc4ODIzMzMsImV4cCI6MTczMDQ3NDMzM30.9X7P-gMVNrwtYpVhBIyLvBHyUOOlRq4hGxNInnT4zhA';
-var accessToken: string | null = null;
+let accessToken: string | null = null;
 interface ApiResponse {
   results: any[];
 }
@@ -39,10 +39,10 @@ function get(apiPath: string, query: any): Promise<ApiResponse> {
       })
     }
     function send() {
-      let queryString = Object.keys(query)
+      const queryString = Object.keys(query)
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
         .join('&');
-      let sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
+      const sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
       fetch(sendUrl, {
         method: 'GET',
         headers: {
@@ -96,10 +96,10 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: item.file ?
-            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-            '~/assets/img/loss.png',
-          // img: '~/assets/img/not-img.jpg',
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -130,10 +130,10 @@ export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: item.file ?
-            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-            '~/assets/img/loss.png',
-          // img: '~/assets/img/not-img.jpg',
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -177,8 +177,8 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          // img: '~/assets/img/not-img.jpg'
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -208,8 +208,8 @@ export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          // img: '~/assets/img/not-img.jpg'
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)

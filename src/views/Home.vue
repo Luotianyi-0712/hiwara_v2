@@ -6,7 +6,7 @@
           <StackLayout col="0" class="user-button">
             <Image src="~/assets/icon/user-w.png" class="img" />
           </StackLayout>
-          <StackLayout col="1" @tap="$navigateTo(Search)">
+          <StackLayout col="1" @tap="toSearch">
             <StackLayout orientation="horizontal" class="search-input">
               <Label text="&#x1f50d; " class="font-awesome-solid" />
               <Label text="搜索" />
@@ -54,11 +54,13 @@
 import subscribe from "./Home/subscribe.vue";
 import videoList from "./Home/video.vue";
 import imageList from "./Home/image.vue";
-import { ref, $navigateTo } from "nativescript-vue";
-/** router */
-import Search from "./Search.vue";
+import { ref } from "nativescript-vue";
+import { navigateTo } from "../navigate"
 
 const navTab = ref(2);
+function toSearch() {
+  navigateTo("/search");
+}
 function onNavTabPress(target: number) {
   navTab.value = target;
 }
