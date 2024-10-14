@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.toml": "toml",
+    "*.gradle": "gradle",
+    "*.java": "java",
+    "string": "cpp",
+    "xlocinfo": "cpp",
+    "xstring": "cpp"
+  },
+  "C_Cpp.errorSquiggles": "disabled"
+}
