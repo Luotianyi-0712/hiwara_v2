@@ -17,17 +17,12 @@ android {
     versionName "0.2.0"
     
     generatedDensities = []
-
-    externalNativeBuild {
-      cmake {
-        cppFlags ""
-      }
-    }
   }
 
   externalNativeBuild {
     cmake {
-      path "src/main/cpp/CMakeLists.txt"
+      path = file("src/main/cpp/CMakeLists.txt")
+      version = "3.22.1"
     }
   }
 
