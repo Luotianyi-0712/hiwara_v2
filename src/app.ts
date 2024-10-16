@@ -4,11 +4,17 @@ import Home from './views/Home.vue';
 const app = createApp(Home);
 app.start();
 
-import { initialize } from "@nativescript-community/ui-image";
+import { initialize, Img } from "@nativescript-community/ui-image";
 initialize({ isDownsampleEnabled: true });
+registerElement('Img', () => Img);
 
-registerElement('Img', () => require('@nativescript-community/ui-image').Img);
+import { Video } from 'nativescript-videoplayer';
+registerElement('VideoPlayer', () => Video);
 
-declare const com: any
-const MainActivity=new com.example.MainActivity
-console.log(MainActivity.getString())
+import { Pager, PagerItem } from '@nativescript-community/ui-pager';
+registerElement('Pager', () => Pager);
+registerElement('PagerItem', () => PagerItem);
+
+// declare const com: any
+// const MainActivity=new com.example.MainActivity
+// console.log(MainActivity.getString())

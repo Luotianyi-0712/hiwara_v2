@@ -1,6 +1,6 @@
 <template>
   <StackLayout class="item">
-    <GridLayout class="item-content" rows="60px,60px,50px,20px" columns="3*,2*">
+    <GridLayout class="item-content" rows="60px,60px,50px,20px" columns="*,*">
       <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="img"
         failureImageUri="~/assets/img/not-img.jpg" placeholderImageUri="~/assets/img/placeholder.png"
         stretch="aspectFill" class="img" fadeDuration="300" />
@@ -132,7 +132,7 @@ function formatDuration(seconds: number): string {
 }
 
 .info {
-  padding: 10px 20px;
-  font-size: 10px;
+  padding: 0 20px;
+  font-size: 11px;
 }
 </style>

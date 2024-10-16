@@ -46,6 +46,7 @@
         <videoList v-if="navTab == 0" />
         <imageList v-if="navTab == 1" />
         <subscribe v-if="navTab == 2" />
+        <my v-if="navTab == 4" />
       </DockLayout>
     </Page>
   </Frame>
@@ -54,10 +55,12 @@
 import subscribe from "./Home/subscribe.vue";
 import videoList from "./Home/video.vue";
 import imageList from "./Home/image.vue";
-import { ref } from "nativescript-vue";
+import my from "./Home/My.vue";
+import { onMounted, ref } from "nativescript-vue";
 import { navigateTo } from "../navigate"
 
 const navTab = ref(2);
+
 function toSearch() {
   navigateTo("/search");
 }

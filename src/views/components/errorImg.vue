@@ -1,6 +1,7 @@
 <template>
   <StackLayout class="loading-container">
-    <Image :src="src"  width="300px"/>
+    <Image :src="src" width="300px" />
+    <Label text="数据加载失败，请点击尝试" textAlignment="center" />"/>
   </StackLayout>
 </template>
 <script lang="ts" setup>
@@ -12,5 +13,12 @@ src.value = "~/assets/img/error-huawu/" + (Math.floor(Math.random() * 8) + 1) + 
 .loading-container {
   width: 100%;
   vertical-align: center;
+}
+
+Label {
+  color: #00796B;
+  font-family: "zihuntouhaowanjia", "zihuntouhaowanjia";
+  font-weight: 400;
+  font-size: 18px;
 }
 </style>

@@ -1,12 +1,12 @@
 // const xVersion: string = '5nFp9kmbNnHdAFhaqMvt';
 const testUserToken: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxZTBkOWZiLTdlZjgtNDg5OC1hODZjLThiYzMzZDdiYWM1ZiIsInR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaXNzIjoiaXdhcmEiLCJpYXQiOjE3Mjc4ODIzMzMsImV4cCI6MTczMDQ3NDMzM30.9X7P-gMVNrwtYpVhBIyLvBHyUOOlRq4hGxNInnT4zhA';
 let accessToken: string | null = null;
-interface ApiResponse {
-  results: any[];
-}
+const apiPath = "https://api.iwara.tv"
+
+setInterval(setInterval, 36000000)
 function getAccessToken(): Promise<string> {
   return new Promise((resolve, reject) => {
-    fetch('https://api.iwara.tv/user/token', {
+    fetch(apiPath + '/user/token', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + testUserToken
@@ -26,7 +26,7 @@ function getAccessToken(): Promise<string> {
 }
 
 
-function get(apiPath: string, query: any): Promise<ApiResponse> {
+function get(apiPath: string, query: any): Promise<any> {
   return new Promise((resolve, reject) => {
     if (accessToken) {
       send()
@@ -39,10 +39,16 @@ function get(apiPath: string, query: any): Promise<ApiResponse> {
       })
     }
     function send() {
-      const queryString = Object.keys(query)
-        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
-        .join('&');
-      const sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
+      let sendUrl: string
+      if (query) {
+        const queryString = Object.keys(query)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
+          .join('&');
+        sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
+      } else {
+        sendUrl = apiPath
+      }
+      console.log(sendUrl)
       fetch(sendUrl, {
         method: 'GET',
         headers: {
@@ -83,7 +89,7 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
       subscribed: true,
       page: page
     }
-    get('https://api.iwara.tv/videos', query).then(data => {
+    get(apiPath + '/videos', query).then(data => {
       let videoList: VideoItem[] = []
       for (let item of data.results) {
         videoList.push({
@@ -117,7 +123,7 @@ export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
       sort: sort,
       page: page
     }
-    get('https://api.iwara.tv/videos', query).then(data => {
+    get(apiPath + '/videos', query).then(data => {
       let videoList: VideoItem[] = []
       for (let item of data.results) {
         videoList.push({
@@ -144,6 +150,120 @@ export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
   })
 }
 
+export function getUserTestimonialsVideoList(user: string, exclude: string): Promise<VideoItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      user: user,
+      exclude: exclude,
+      limit: 6
+    }
+    get(apiPath + '/videos', query).then(data => {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
+          loss: item.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getSystemTestimonialsVideoList(exclude: string): Promise<VideoItem[]> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/video/' + exclude + '/related', null).then(data => {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          // img: item.file ?
+          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          //   '~/assets/img/loss.png',
+          img: '~/assets/img/not-img.jpg',
+          loss: item.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+interface VideoData {
+  id: string,
+  title: string,
+  up: string,
+  uid: string,
+  body: string,
+  numViews: number,
+  numLikes: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  liked: boolean,
+  following: boolean,
+  friend: boolean,
+  thumbnail: string,
+  avatar: string,
+  loss: boolean
+}
+
+export function getVideoData(id: string): Promise<VideoData> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/video/' + id, null).then(res => {
+      const data = res
+      const videoData: VideoData = {
+        id: data.id,
+        title: data.title,
+        up: data.user.name,
+        uid: data.user.id,
+        body: data.body,
+        numViews: data.numViews,
+        numLikes: data.numLikes,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        ecchi: data.rating == 'ecchi' ? true : false,
+        liked: data.liked ? true : false,
+        following: data.user.following ? true : false,
+        friend: data.user.friend ? true : false,
+        thumbnail: data.file ?
+          'https://i.iwara.tv/image/thumbnail/' + data.file.id + '/thumbnail-' + data.thumbnail.toString().padStart(2, '0') + '.jpg' :
+          '~/assets/img/loss.png',
+        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+        loss: data.file ? false : true
+      }
+      resolve(videoData)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
 interface ImageItem {
   id: string,
   title: string,
@@ -164,7 +284,7 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
       subscribed: true,
       page: page
     }
-    get('https://api.iwara.tv/images', query).then(data => {
+    get(apiPath + '/images', query).then(data => {
       let imageList: ImageItem[] = []
       for (let item of data.results) {
         imageList.push({
@@ -195,7 +315,7 @@ export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
       sort: sort,
       page: page
     }
-    get('https://api.iwara.tv/images', query).then(data => {
+    get(apiPath + '/images', query).then(data => {
       let imageList: ImageItem[] = []
       for (let item of data.results) {
         imageList.push({

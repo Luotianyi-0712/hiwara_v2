@@ -55,9 +55,6 @@ function refactorArray(arr: any[]) {
     return acc;
   }, []);
 }
-function onTouch(id: string) {
-  console.log(id)
-}
 </script>
 
 <style scoped lang="scss">

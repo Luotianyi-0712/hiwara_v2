@@ -113,7 +113,7 @@ function getList(sort: string): Promise<ImageItem[]> {
     }).catch(err => {
       reject()
       const toast = new Toasty({
-        text: '数据获取失败',
+        text: '数据加载失败了喵~',
         duration: ToastDuration.Short,
         variant: ToastVariant.Error
       })
