@@ -3,6 +3,7 @@ $keyStorePassword = "<your store password>"
 $keyStoreAlias = "hiwara"
 $keyStoreAliasPassword = "<your store alias password>"
 
+ns clean
 ns build android --release --clean `
   --key-store-path $keyStorePath `
   --key-store-password $keyStorePassword `

@@ -41,8 +41,8 @@ onUnmounted(() => {
 
 Label {
   color: #00796B;
-  font-family: "zihuntouhaowanjia", "zihuntouhaowanjia";
+  font-size: 16px;
+  font-family: "Alimama FangYuanTi VF Thin", "AlimamaFangYuanTiVF-Thin-2";
   font-weight: 400;
-  font-size: 18px;
 }
 </style>

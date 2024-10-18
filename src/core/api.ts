@@ -1,7 +1,10 @@
-// const xVersion: string = '5nFp9kmbNnHdAFhaqMvt';
+const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
 const testUserToken: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxZTBkOWZiLTdlZjgtNDg5OC1hODZjLThiYzMzZDdiYWM1ZiIsInR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaXNzIjoiaXdhcmEiLCJpYXQiOjE3Mjc4ODIzMzMsImV4cCI6MTczMDQ3NDMzM30.9X7P-gMVNrwtYpVhBIyLvBHyUOOlRq4hGxNInnT4zhA';
-let accessToken: string | null = null;
+
+import CryptoJS from 'crypto-js';
+
 const apiPath = "https://api.iwara.tv"
+let accessToken: string | null = null;
 
 setInterval(setInterval, 36000000)
 function getAccessToken(): Promise<string> {
@@ -230,7 +233,9 @@ interface VideoData {
   friend: boolean,
   thumbnail: string,
   avatar: string,
-  loss: boolean
+  loss: boolean,
+  fileUrl: string,
+  fid: string
 }
 
 export function getVideoData(id: string): Promise<VideoData> {
@@ -255,9 +260,89 @@ export function getVideoData(id: string): Promise<VideoData> {
           'https://i.iwara.tv/image/thumbnail/' + data.file.id + '/thumbnail-' + data.thumbnail.toString().padStart(2, '0') + '.jpg' :
           '~/assets/img/loss.png',
         avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
-        loss: data.file ? false : true
+        loss: data.file ? false : true,
+        fileUrl: data.fileUrl,
+        fid: data.file ? data.file.id : ''
       }
       resolve(videoData)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getVideoFiles(fileUrl: string): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const fileId = fileUrl.split('?')[0].split('/').pop()
+    const expires = fileUrl.split('=')[1].split('&')[0]
+    const xVersion = CryptoJS.SHA1(fileId + '_' + expires + secretKey).toString()
+    fetch(fileUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'X-Version': xVersion
+      }
+    }).then(res => {
+      if (!res.ok) {
+        throw new Error('Failed to fetch:' + res.statusText)
+      }
+      return res.json()
+    }).then(data => {
+      if (Array.isArray(data)) {
+        resolve(data)
+      } else {
+        reject('This not array!')
+      }
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+interface Comments {
+  id: string,
+  body: string,
+  createdAt: string,
+  updatedAt: string,
+  userName: string,
+  uid: string,
+  avatar: string,
+  numReplies: number
+}
+export function getVideoComments(id: string, page: number, parent?: string): Promise<Comments[]> {
+  return new Promise((resolve, reject) => {
+    let query: {
+      limit: number,
+      page: number,
+      parent?: string
+    }
+    if (parent) {
+      query = {
+        limit: 32,
+        page: page,
+        parent: parent
+      }
+    } else {
+      query = {
+        limit: 32,
+        page: page
+      }
+    }
+    get(apiPath + '/video/' + id + '/comments', query).then(data => {
+      let commentsList: Comments[] = []
+      for (let item of data.results) {
+        commentsList.push({
+          id: item.id,
+          body: item.body,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          userName: item.user.name,
+          uid: item.user.id,
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          numReplies: item.numReplies
+        })
+      }
+      resolve(commentsList)
     }).catch(err => {
       reject(err)
     })

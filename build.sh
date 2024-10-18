@@ -5,6 +5,7 @@ KEY_STORE_PASSWORD="<your store password>"
 KEY_STORE_ALIAS="hiwara"
 KEY_STORE_ALIAS_PASSWORD="<your store alias password>"
 
+ns clean
 ns build android --release --clean \
   --key-store-path "$KEY_STORE_PATH" \
   --key-store-password "$KEY_STORE_PASSWORD" \

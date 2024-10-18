@@ -17,8 +17,9 @@ src.value = "~/assets/img/error-huawu/" + (Math.floor(Math.random() * 8) + 1) + 
 
 Label {
   color: #00796B;
-  font-family: "zihuntouhaowanjia", "zihuntouhaowanjia";
+  font-size: 16px;
+  padding: 20px;
+  font-family: "Alimama FangYuanTi VF Thin", "AlimamaFangYuanTiVF-Thin-2";
   font-weight: 400;
-  font-size: 18px;
 }
 </style>

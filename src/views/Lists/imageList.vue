@@ -37,7 +37,7 @@ const props = defineProps({
     required: true
   }
 })
-const items = ref(new ObservableArray<Item[]>());
+const items = ref(new ObservableArray<Item[][]>());
 if (props.data.length > 0) {
   items.value = refactorArray(props.data)
 }
