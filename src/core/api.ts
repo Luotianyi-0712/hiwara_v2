@@ -29,7 +29,7 @@ function getAccessToken(): Promise<string> {
 }
 
 
-function get(apiPath: string, query: any): Promise<any> {
+function get(path: string, query: any): Promise<any> {
   return new Promise((resolve, reject) => {
     if (accessToken) {
       send()
@@ -47,9 +47,9 @@ function get(apiPath: string, query: any): Promise<any> {
         const queryString = Object.keys(query)
           .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
           .join('&');
-        sendUrl = apiPath + '?' + new URLSearchParams(queryString).toString()
+        sendUrl = path + '?' + new URLSearchParams(queryString).toString()
       } else {
-        sendUrl = apiPath
+        sendUrl = path
       }
       console.log(sendUrl)
       fetch(sendUrl, {
@@ -57,6 +57,50 @@ function get(apiPath: string, query: any): Promise<any> {
         headers: {
           'Authorization': 'Bearer ' + accessToken
         }
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch:' + res.statusText)
+        }
+        return res.json()
+      }).then(data => {
+        resolve(data)
+      }).catch(err => {
+        reject(err)
+      })
+    }
+  })
+}
+
+function post(path: string, query: any, body: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (accessToken) {
+      send()
+    }
+    else {
+      getAccessToken().then(() => {
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      let sendUrl: string
+      if (query) {
+        const queryString = Object.keys(query)
+          .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(query[key]))
+          .join('&');
+        sendUrl = path + '?' + new URLSearchParams(queryString).toString()
+      } else {
+        sendUrl = path
+      }
+      console.log(sendUrl)
+      fetch(sendUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
       }).then(res => {
         if (!res.ok) {
           throw new Error('Failed to fetch:' + res.statusText)
@@ -344,6 +388,23 @@ export function getVideoComments(id: string, page: number, parent?: string): Pro
       }
       resolve(commentsList)
     }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+
+export function addCommentForVideo(id: string, body: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    console.log('评论发送')
+    post(apiPath + '/video/' + id + '/comments', null, {
+      body: body,
+      rulesAgreement: true
+    }).then(data => {
+      console.log(data)
+      resolve(data)
+    }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })

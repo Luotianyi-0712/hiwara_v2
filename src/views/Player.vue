@@ -246,7 +246,6 @@ function switchDefinition() {
 .player {
   background-color: black;
   width: 100%;
-  z-index: 1000;
 }
 
 .tab-bar {

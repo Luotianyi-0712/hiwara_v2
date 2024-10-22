@@ -8,7 +8,7 @@
 </template>
 <script setup lang="ts">
 import commentItem from './commentItem.vue';
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, defineProps, watch } from 'nativescript-vue'
 import { getVideoComments } from '../../core/api'
 const props = defineProps<{
   id: string,
@@ -27,22 +27,38 @@ interface Comments {
 const replys = ref<Comments[]>([])
 let isLoading = false
 let page = 0
-getVideoComments(props.id, page, props.detailId).then(res => {
-  replys.value = res
-  page++
+let isEnd = false
+watch(() => props.detailId, val => {
+  page = 0
+  isEnd = false
+  replys.value = []
+  if (val != '') {
+    isLoading = true
+    replys.value = []
+    getVideoComments(props.id, page, val).then(res => {
+      replys.value = res
+      isLoading = false
+      page++
+    })
+  }
 })
 function nextPage() {
   if (!isLoading) {
     isLoading = true
     getVideoComments(props.id, page, props.detailId).then(res => {
-      replys.value = replys.value.concat(res)
-      isLoading = false
-      page++
+      if (res.length === 0) {
+        isEnd = true
+      } else {
+        replys.value = replys.value.concat(res)
+        isLoading = false
+        page++
+      }
     })
   }
 }
 function flush() {
   page = 0
+  isEnd = false
   isLoading = true
   replys.value = []
   getVideoComments(props.id, page, props.detailId).then(res => {

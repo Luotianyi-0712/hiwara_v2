@@ -16,7 +16,7 @@
       <Label text="回复" />
     </StackLayout>
     <StackLayout row="2" col="2" orientation="horizontal" class="options" horizontalAlignment="right"
-      v-if="numReplies > 0" @tap="$emit('detail', id, index)">
+      v-if="numReplies > 0" @tap="$emit('detail', id)">
       <Label text="&#xf103; " class="font-awesome-solid" />
       <Label :text="'查看' + numReplies + '条回复'" />
     </StackLayout>
