@@ -6,6 +6,7 @@
           :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="onOpenDrawer" />
       </template>
     </ListView>
+    <Label row="0" textAlignment="center" text="还没有评论喵~" v-if="comments.length === 0" />
     <GridLayout row="1" columns="*,80px"
       style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;padding: 0 20px;">
       <TextField col="0" hint="添加评论" style="font-size: 16px;" v-model="myComments" />

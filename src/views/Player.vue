@@ -1,12 +1,11 @@
 <template>
   <Page actionBarHidden="true">
     <GridLayout columns="*" rows="auto,*">
-      <GridLayout columns="*" rows="*" col="0" row="0" :height="calculateHeight()" class="player">
-        <VideoPlayer col="0" row="0" :src="playerSrc" autoplay="false" />
-      </GridLayout>
+      <videoPlayer col="0" row="0" :playerSrc="playerSrc" :height="calculateHeight()" />
       <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
-        <GridLayout columns="10px,150px,*,175px,10px" row="0" style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;">
+        <GridLayout columns="10px,150px,*,175px,10px" row="0"
+          style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;">
           <GridLayout col="1" row="0" rows="35px,3px" columns="*,*" class="tab">
             <Label text="简介" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
             <Label text="评论" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
@@ -41,7 +40,7 @@
             </ScrollView>
           </PagerItem>
           <PagerItem>
-            <comments :id="id"/>
+            <comments :id="id" />
           </PagerItem>
         </Pager>
       </GridLayout>
@@ -55,6 +54,7 @@ import { getVideoData, getVideoFiles } from '../core/api'
 import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import videoPlayer from './Player/videoPlayer.vue';
 import recommend from './Player/recommend.vue';
 import loadingAnimation from './Components/loadingAnimation.vue';
 import info from './Player/info.vue';
@@ -63,6 +63,7 @@ import comments from './Player/comments.vue';
 const props = defineProps<{
   id: string;
 }>();
+
 const title = ref<string>('')
 const up = ref<string>('')
 const uid = ref<string>('')
@@ -82,7 +83,8 @@ const loading = ref(true)
 let fileUrl = ''
 let fid = ''
 const files = ref<any[]>()
-const playerSrc = ref<string>('')
+// const playerSrc = ref<string>('')
+const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
 const definitionLabel = ref<string>('')
 const serviceName = ref<string>('')
 const definition = ref<string>('Source')
@@ -112,7 +114,7 @@ getVideoData(props.id).then(res => {
     const found = files.value.filter(function (item) {
       return item.name === definition.value;
     });
-    playerSrc.value = 'https:' + found[0].src.view
+    // playerSrc.value = 'https:' + found[0].src.view
     definitionLabel.value = parseDefinitionLabel(found[0].name)
     serviceName.value = parseServiceName(found[0].src.view)
     filesloaded.value = true
@@ -137,7 +139,7 @@ watch(definition, val => {
     const found = files.value.filter(function (item) {
       return item.name === val;
     })
-    playerSrc.value = 'https:' + found[0].src.view
+    // playerSrc.value = 'https:' + found[0].src.view
     definitionLabel.value = parseDefinitionLabel(found[0].name)
     serviceName.value = parseServiceName(found[0].src.view)
   }
@@ -205,7 +207,7 @@ function switchService() {
       const found = files.value.filter(function (item) {
         return item.name === definition.value;
       });
-      playerSrc.value = 'https:' + found[0].src.view
+      // playerSrc.value = 'https:' + found[0].src.view
       definitionLabel.value = parseDefinitionLabel(found[0].name)
       serviceName.value = parseServiceName(found[0].src.view)
     }).catch(err => {
@@ -240,14 +242,8 @@ function switchDefinition() {
     }
   })
 }
-
 </script>
 <style scoped lang="scss">
-.player {
-  background-color: black;
-  width: 100%;
-}
-
 .tab-bar {
   background-color: #00796B;
   height: 8px;
