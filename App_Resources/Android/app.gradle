@@ -36,3 +36,9 @@ android {
     additionalParameters "--no-version-vectors"
   }
 }
+
+repositories {
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    // 如果还需要使用其他仓库，可以继续添加
+    // mavenCentral()
+}
