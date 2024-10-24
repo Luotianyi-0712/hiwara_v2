@@ -9,7 +9,7 @@ initialize({ isDownsampleEnabled: true });
 registerElement('Img', () => Img);
 
 import { Video } from 'nativescript-videoplayer';
-registerElement('Video', () => Video);
+registerElement('VideoPlayer', () => Video);
 
 import { Pager, PagerItem } from '@nativescript-community/ui-pager';
 registerElement('Pager', () => Pager);

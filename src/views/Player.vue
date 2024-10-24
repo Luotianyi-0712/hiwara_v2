@@ -1,7 +1,8 @@
 <template>
   <Page actionBarHidden="true">
-    <GridLayout columns="*" rows="auto,*">
-      <videoPlayer col="0" row="0" :playerSrc="playerSrc" :height="calculateHeight()" />
+    <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
+      <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :isFullscreen="isFullscreen"
+        :height="isFullscreen ? '100%' : calculateHeight()" @onFullscreen="onFullscreen" />
       <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
         <GridLayout columns="10px,150px,*,175px,10px" row="0"
@@ -49,16 +50,17 @@
 </template>
 <script setup lang="ts">
 import { Screen, Dialogs } from '@nativescript/core';
-import { ref, defineProps, watch } from 'nativescript-vue'
+import { ref, defineProps, watch, onUnmounted } from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
 import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
-import videoPlayer from './Player/videoPlayer.vue';
+import videoPlayerFrame from './Player/videoPlayer.vue';
 import recommend from './Player/recommend.vue';
 import loadingAnimation from './Components/loadingAnimation.vue';
 import info from './Player/info.vue';
 import comments from './Player/comments.vue';
+import { isAndroid, isIOS, Application } from '@nativescript/core'
 
 const props = defineProps<{
   id: string;
@@ -84,12 +86,14 @@ let fileUrl = ''
 let fid = ''
 const files = ref<any[]>()
 // const playerSrc = ref<string>('')
-const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
+const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
 const definitionLabel = ref<string>('')
 const serviceName = ref<string>('')
 const definition = ref<string>('Source')
 const filesloaded = ref(false)
+const isFullscreen = ref(false)
 let switchServiceIng = false
+let videoHeight = 0
 
 getVideoData(props.id).then(res => {
   // console.log(res)
@@ -134,6 +138,14 @@ getVideoData(props.id).then(res => {
   })
   toast.show()
 })
+onUnmounted(() => {
+  if (isAndroid) {
+    const activity = Application.android.foregroundActivity || Application.android.startActivity
+    if (activity) {
+      activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    }
+  }
+})
 watch(definition, val => {
   if (files.value) {
     const found = files.value.filter(function (item) {
@@ -144,6 +156,30 @@ watch(definition, val => {
     serviceName.value = parseServiceName(found[0].src.view)
   }
 })
+watch(isFullscreen, (val) => {
+  if (isAndroid) {
+    const activity = Application.android.foregroundActivity || Application.android.startActivity;
+    if (activity) {
+      const window = activity.getWindow();
+      const decorView = window.getDecorView();
+      const insetsController = decorView.getWindowInsetsController();
+      if (val) {
+        // 全屏模式
+        activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if (insetsController) {
+          insetsController.hide(android.view.WindowInsets.Type.statusBars() | android.view.WindowInsets.Type.navigationBars());
+          insetsController.setSystemBarsBehavior(android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        }
+      } else {
+        // 非全屏模式
+        activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (insetsController) {
+          insetsController.show(android.view.WindowInsets.Type.statusBars() | android.view.WindowInsets.Type.navigationBars());
+        }
+      }
+    }
+  }
+});
 function getFiles(fileUrl: string, id: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     getVideoFiles(fileUrl).then(res => {
@@ -154,7 +190,10 @@ function getFiles(fileUrl: string, id: string): Promise<any[]> {
   })
 }
 function calculateHeight() {
-  return Screen.mainScreen.widthDIPs * 9 / 16;
+  if (videoHeight == 0) {
+    videoHeight = Screen.mainScreen.widthDIPs * 9 / 16
+  }
+  return videoHeight
 }
 function onTabPress(target: number) {
   if (tab.value != target) {
@@ -241,6 +280,10 @@ function switchDefinition() {
       definition.value = unParseDefinitionLabel(result)
     }
   })
+}
+
+function onFullscreen() {
+  isFullscreen.value = !isFullscreen.value
 }
 </script>
 <style scoped lang="scss">
