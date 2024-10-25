@@ -18,6 +18,3 @@ registerElement('PagerItem', () => PagerItem);
 import DrawerPlugin from '@nativescript-community/ui-drawer/vue3'
 app.use(DrawerPlugin)
 
-// declare const com: any
-// const MainActivity=new com.example.MainActivity
-// console.log(MainActivity.getString())

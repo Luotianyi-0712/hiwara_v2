@@ -55,7 +55,7 @@
 import subscribe from "./Home/subscribe.vue";
 import videoList from "./Home/video.vue";
 import imageList from "./Home/image.vue";
-import my from "./Home/My.vue";
+import my from "./Home/my.vue";
 import { onMounted, ref } from "nativescript-vue";
 import { navigateTo } from "../navigate"
 

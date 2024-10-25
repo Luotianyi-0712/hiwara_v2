@@ -1,7 +1,7 @@
 <template>
   <Page actionBarHidden="true">
     <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
-      <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :isFullscreen="isFullscreen"
+      <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :isFullscreen="isFullscreen"
         :height="isFullscreen ? '100%' : calculateHeight()" @onFullscreen="onFullscreen" />
       <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
@@ -50,7 +50,7 @@
 </template>
 <script setup lang="ts">
 import { Screen, Dialogs } from '@nativescript/core';
-import { ref, defineProps, watch, onUnmounted } from 'nativescript-vue'
+import { ref, defineProps, watch, onMounted, onUnmounted } from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
 import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
@@ -87,6 +87,7 @@ let fid = ''
 const files = ref<any[]>()
 // const playerSrc = ref<string>('')
 const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
+// const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
 const definitionLabel = ref<string>('')
 const serviceName = ref<string>('')
 const definition = ref<string>('Source')
@@ -138,12 +139,32 @@ getVideoData(props.id).then(res => {
   })
   toast.show()
 })
+onMounted(() => {
+  if (isAndroid) {
+    Application.android.on(Application.AndroidApplication.activityBackPressedEvent, (args: any) => {
+      args.cancel = true
+      console.log('返回')
+      if (isFullscreen.value) {
+        isFullscreen.value = false
+      }else{
+        args.cancel = false
+      }
+    })
+  }
+})
 onUnmounted(() => {
   if (isAndroid) {
     const activity = Application.android.foregroundActivity || Application.android.startActivity
     if (activity) {
       activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+      const window = activity.getWindow()
+      const decorView = window.getDecorView()
+      const insetsController = decorView.getWindowInsetsController()
+      if (insetsController) {
+        insetsController.show(android.view.WindowInsets.Type.statusBars() | android.view.WindowInsets.Type.navigationBars())
+      }
     }
+    Application.android.off(Application.AndroidApplication.activityBackPressedEvent)
   }
 })
 watch(definition, val => {
