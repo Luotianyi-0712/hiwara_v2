@@ -9,8 +9,10 @@
     "@nativescript-community/ui-drawer": "^0.1.28",
     "@nativescript-community/ui-image": "^4.5.3",
     "@nativescript-community/ui-pager": "^14.1.27",
+    "@nativescript/brightness": "^2.0.0",
     "@nativescript/core": "~8.7.0",
     "crypto-js": "^4.2.0",
+    "nativescript-dna-deviceinfo": "^3.7.3",
     "nativescript-videoplayer": "^5.0.1",
     "nativescript-vue": "3.0.0-rc.2",
     "sass": "^1.79.4"

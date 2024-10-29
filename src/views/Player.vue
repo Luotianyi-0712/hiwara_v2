@@ -1,8 +1,10 @@
 <template>
   <Page actionBarHidden="true">
     <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
-      <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :isFullscreen="isFullscreen"
-        :height="isFullscreen ? '100%' : calculateHeight()" @onFullscreen="onFullscreen" />
+      <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :definition="definition"
+        :definitionList="definitionList" :isFullscreen="isFullscreen"
+        :height="isFullscreen ? '100%' : calculateHeight()" @onFullscreen="onFullscreen"
+        @changeDefinition="changeDefinition" />
       <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
         <GridLayout columns="10px,150px,*,175px,10px" row="0"
@@ -33,7 +35,7 @@
           <PagerItem>
             <ScrollView>
               <StackLayout>
-                <info :title="title" :up="up" :body="body" :numViews="numViews" :numLikes="numLikes"
+                <info :title="title" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews" :numLikes="numLikes"
                   :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following" :friend="friend"
                   :thumbnail="thumbnail" :avatar="avatar" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
@@ -88,9 +90,10 @@ const files = ref<any[]>()
 // const playerSrc = ref<string>('')
 const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
 // const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
-const definitionLabel = ref<string>('')
-const serviceName = ref<string>('')
 const definition = ref<string>('Source')
+const definitionLabel = ref<string>('')
+const definitionList = ref<any[]>([])
+const serviceName = ref<string>('')
 const filesloaded = ref(false)
 const isFullscreen = ref(false)
 let switchServiceIng = false
@@ -122,6 +125,11 @@ getVideoData(props.id).then(res => {
     // playerSrc.value = 'https:' + found[0].src.view
     definitionLabel.value = parseDefinitionLabel(found[0].name)
     serviceName.value = parseServiceName(found[0].src.view)
+    files.value.forEach(element => {
+      if (element.name !== 'preview') {
+        definitionList.value.push(element.name)
+      }
+    })
     filesloaded.value = true
   }).catch(err => {
     const toast = new Toasty({
@@ -146,7 +154,7 @@ onMounted(() => {
       console.log('返回')
       if (isFullscreen.value) {
         isFullscreen.value = false
-      }else{
+      } else {
         args.cancel = false
       }
     })
@@ -284,12 +292,8 @@ function switchService() {
 }
 function switchDefinition() {
   let actions: any[] = []
-  if (files.value) {
-    files.value.forEach(element => {
-      if (element.name !== 'preview') {
-        actions.push(parseDefinitionLabel(element.name))
-      }
-    })
+  for (let i = 0; i < definitionList.value.length; i++) {
+    actions.push(parseDefinitionLabel(definitionList.value[i]))
   }
   Dialogs.action({
     title: '切换清晰度',
@@ -298,11 +302,14 @@ function switchDefinition() {
     cancelable: true,
   }).then((result) => {
     if (actions.includes(result)) {
-      definition.value = unParseDefinitionLabel(result)
+      changeDefinition(unParseDefinitionLabel(result))
     }
   })
 }
-
+function changeDefinition(val: string) {
+  console.log(val)
+  definition.value = val
+}
 function onFullscreen() {
   isFullscreen.value = !isFullscreen.value
 }

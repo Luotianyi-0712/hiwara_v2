@@ -56,11 +56,22 @@
   </StackLayout>
 </template>
 <script lang="ts" setup>
-import { defineProps, onMounted, ref } from 'nativescript-vue'
+import { defineProps, defineEmits, onMounted, ref } from 'nativescript-vue'
 import { Animation, AnimationDefinition } from '@nativescript/core'
+import { Toasty } from "@imagene.me/nativescript-toast"
+import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
+import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import {
+  likeVideo,
+  unLikeVideo,
+  followers,
+  disFollowers
+} from '../../core/api'
 const props = defineProps<{
   title: string,
+  id: string,
   up: string,
+  uid: string,
   body: string,
   numViews: number,
   numLikes: number,
@@ -72,6 +83,7 @@ const props = defineProps<{
   thumbnail: string,
   avatar: string,
 }>();
+const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)
 const titleRef = ref()
 const bodyRef = ref()
@@ -84,6 +96,60 @@ const bodyHeight = ref(0)
 onMounted(() => {
   console.log('已加载info')
 })
+function likeButtonTap() {
+  if (props.liked) {
+    // 已赞
+    emit('changeLiked', false)
+    unLikeVideo(props.id).catch((err) => {
+      emit('changeLiked', true)
+      const toast = new Toasty({
+        text: '取消点赞失败了喵~',
+        duration: ToastDuration.Short,
+        variant: ToastVariant.Error
+      })
+      toast.show()
+    })
+  } else {
+    // 未赞
+    emit('changeLiked', true)
+    likeVideo(props.id).catch((err) => {
+      emit('changeLiked', false)
+      const toast = new Toasty({
+        text: '点赞失败了喵~',
+        duration: ToastDuration.Short,
+        variant: ToastVariant.Error
+      })
+      toast.show()
+    })
+  }
+}
+function followersButtonTap() {
+  if (props.following) {
+    // 已关注
+    emit('changeFollowing', false)
+    disFollowers(props.uid).catch((err) => {
+      emit('changeFollowing', true)
+      const toast = new Toasty({
+        text: '取消关注失败了喵~',
+        duration: ToastDuration.Short,
+        variant: ToastVariant.Error
+      })
+      toast.show()
+    })
+  } else {
+    // 未关注
+    emit('changeFollowing', true)
+    followers(props.uid).catch((err) => {
+      emit('changeFollowing', false)
+      const toast = new Toasty({
+        text: '关注失败了喵~',
+        duration: ToastDuration.Short,
+        variant: ToastVariant.Error
+      })
+      toast.show()
+    })
+  }
+}
 function formatNumber(num: number): string {
   if (num < 10000) {
     return num.toString();

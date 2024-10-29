@@ -100,7 +100,40 @@ function post(path: string, query: any, body: any): Promise<any> {
           'Authorization': 'Bearer ' + accessToken,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(body)
+        body: body ? JSON.stringify(body) : null
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch:' + res.statusText)
+        }
+        return res.json()
+      }).then(data => {
+        resolve(data)
+      }).catch(err => {
+        reject(err)
+      })
+    }
+  })
+}
+
+function deletef(path: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (accessToken) {
+      send()
+    }
+    else {
+      getAccessToken().then(() => {
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      console.log(path)
+      fetch(path, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
       }).then(res => {
         if (!res.ok) {
           throw new Error('Failed to fetch:' + res.statusText)
@@ -337,6 +370,46 @@ export function getVideoFiles(fileUrl: string): Promise<any[]> {
       } else {
         reject('This not array!')
       }
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function likeVideo(id: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    post(apiPath + '/video/' + id + '/like', null, null).then(res => {
+      resolve(res)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function unLikeVideo(id: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    deletef(apiPath + '/video/' + id + '/like').then(res => {
+      resolve(res)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function followers(uid: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    post(apiPath + '/user/' + uid + '/followers', null, null).then(res => {
+      resolve(res)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function disFollowers(uid: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    deletef(apiPath + '/user/' + uid + '/followers').then(res => {
+      resolve(res)
     }).catch(err => {
       reject(err)
     })

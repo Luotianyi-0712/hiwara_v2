@@ -17,4 +17,3 @@ registerElement('PagerItem', () => PagerItem);
 
 import DrawerPlugin from '@nativescript-community/ui-drawer/vue3'
 app.use(DrawerPlugin)
-
