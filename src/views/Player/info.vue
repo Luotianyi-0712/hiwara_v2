@@ -7,7 +7,7 @@
       </StackLayout>
       <Label col="1" row="0" :text="up" class="up" />
       <StackLayout col="2" row="0">
-        <Button text="关注" />
+        <Button :text="following ? '已关注' : '关注'" @tap="followersButtonTap" />
       </StackLayout>
     </GridLayout>
     <GridLayout columns="*" rows="auto">
@@ -36,9 +36,9 @@
       </StackLayout>
     </ScrollView>
     <GridLayout columns="*,*,*,*" rows="auto">
-      <StackLayout col="0" row="0" class="button">
+      <StackLayout col="0" row="0" class="button" @tap="likeButtonTap">
         <Image :src="liked ? '~/assets/icon/like-active.png' : '~/assets/icon/like.png'" />
-        <Label text="喜欢" textAlignment="center" />
+        <Label :text="liked ? '已喜欢' : '喜欢'" textAlignment="center" />
       </StackLayout>
       <StackLayout col="1" row="0" class="button">
         <Image src="~/assets/icon/share.png" />
@@ -48,7 +48,7 @@
         <Image src="~/assets/icon/download.png" />
         <Label text="下载" textAlignment="center" />
       </StackLayout>
-      <StackLayout col="3" row="0" class="button">
+      <StackLayout col="3" row="0" class="button" @tap="copyDownloadLink">
         <Image src="~/assets/icon/copylink.png" />
         <Label text="复制链接" textAlignment="center" />
       </StackLayout>
@@ -56,17 +56,20 @@
   </StackLayout>
 </template>
 <script lang="ts" setup>
-import { defineProps, defineEmits, onMounted, ref } from 'nativescript-vue'
-import { Animation, AnimationDefinition } from '@nativescript/core'
-import { Toasty } from "@imagene.me/nativescript-toast"
-import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
-import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import {
+  defineProps,
+  defineEmits,
+  onMounted,
+  ref
+} from 'nativescript-vue'
+import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
 import {
   likeVideo,
   unLikeVideo,
   followers,
   disFollowers
 } from '../../core/api'
+import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../../core/viewFunction'
 const props = defineProps<{
   title: string,
   id: string,
@@ -82,6 +85,8 @@ const props = defineProps<{
   friend: boolean,
   thumbnail: string,
   avatar: string,
+  files: any[],
+  definitionList: any[]
 }>();
 const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)
@@ -102,24 +107,14 @@ function likeButtonTap() {
     emit('changeLiked', false)
     unLikeVideo(props.id).catch((err) => {
       emit('changeLiked', true)
-      const toast = new Toasty({
-        text: '取消点赞失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('操作失败了喵~', 'Error')
     })
   } else {
     // 未赞
     emit('changeLiked', true)
     likeVideo(props.id).catch((err) => {
       emit('changeLiked', false)
-      const toast = new Toasty({
-        text: '点赞失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('操作失败了喵~', 'Error')
     })
   }
 }
@@ -129,26 +124,44 @@ function followersButtonTap() {
     emit('changeFollowing', false)
     disFollowers(props.uid).catch((err) => {
       emit('changeFollowing', true)
-      const toast = new Toasty({
-        text: '取消关注失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('操作失败了喵~', 'Error')
     })
   } else {
     // 未关注
     emit('changeFollowing', true)
     followers(props.uid).catch((err) => {
       emit('changeFollowing', false)
-      const toast = new Toasty({
-        text: '关注失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('操作失败了喵~', 'Error')
     })
   }
+}
+function copyDownloadLink() {
+  let actions: any[] = []
+  for (let i = 0; i < props.definitionList.length; i++) {
+    actions.push(parseDefinitionLabel(props.definitionList[i]))
+  }
+  Dialogs.action({
+    title: '复制下载链接',
+    message: '复制视频下载链接',
+    actions: actions,
+    cancelable: true,
+  }).then((result) => {
+    if (actions.includes(result)) {
+      const definition = unParseDefinitionLabel(result)
+      let downloadLink = ''
+      for (let i = 0; i < props.files.length; i++) {
+        if (props.files[i].name == definition) {
+          downloadLink = 'https:' + props.files[i].src.download
+          break
+        }
+      }
+      if (downloadLink.length > 0) {
+        console.log(downloadLink)
+      } else {
+        toasty('获取下载链接失败', 'Error')
+      }
+    }
+  })
 }
 function formatNumber(num: number): string {
   if (num < 10000) {

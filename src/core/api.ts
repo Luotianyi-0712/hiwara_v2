@@ -6,7 +6,7 @@ import CryptoJS from 'crypto-js';
 const apiPath = "https://api.iwara.tv"
 let accessToken: string | null = null;
 
-setInterval(setInterval, 36000000)
+setInterval(getAccessToken, 36000000)
 function getAccessToken(): Promise<string> {
   return new Promise((resolve, reject) => {
     fetch(apiPath + '/user/token', {
@@ -134,13 +134,12 @@ function deletef(path: string): Promise<any> {
         headers: {
           'Authorization': 'Bearer ' + accessToken
         }
-      }).then(res => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch:' + res.statusText)
-        }
-        return res.json()
       }).then(data => {
-        resolve(data)
+        if (data.status == 204) {
+          resolve(null)
+        } else {
+          resolve('Response status: ' + data.status)
+        }
       }).catch(err => {
         reject(err)
       })
@@ -381,6 +380,7 @@ export function likeVideo(id: string): Promise<any> {
     post(apiPath + '/video/' + id + '/like', null, null).then(res => {
       resolve(res)
     }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })
@@ -391,6 +391,7 @@ export function unLikeVideo(id: string): Promise<any> {
     deletef(apiPath + '/video/' + id + '/like').then(res => {
       resolve(res)
     }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })
@@ -401,6 +402,7 @@ export function followers(uid: string): Promise<any> {
     post(apiPath + '/user/' + uid + '/followers', null, null).then(res => {
       resolve(res)
     }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })
@@ -411,6 +413,7 @@ export function disFollowers(uid: string): Promise<any> {
     deletef(apiPath + '/user/' + uid + '/followers').then(res => {
       resolve(res)
     }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })

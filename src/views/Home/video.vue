@@ -30,9 +30,7 @@ import ErrorImg from '../Components/errorImg.vue';
 import videoList from '../Lists/videoList.vue';
 import { ref } from 'nativescript-vue';
 import { getVideoList } from '~/core/api';
-import { Toasty } from "@imagene.me/nativescript-toast"
-import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
-import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import { toasty } from '../../core/viewFunction'
 interface VideoItem {
   id: string,
   title: string,
@@ -104,12 +102,7 @@ function getList(sort: string): Promise<VideoItem[]> {
       resolve(res);
     }).catch(() => {
       reject()
-      const toast = new Toasty({
-        text: '数据加载失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('数据加载失败了喵~', 'Error')
     })
   })
 }

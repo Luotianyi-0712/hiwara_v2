@@ -125,10 +125,10 @@ Omit | 略
 * ✅Subscribe to the list| 订阅列表
 * ✅List of videos| 视频列表
 * ✅List of images | 图片列表
-* ⬜Video play | 视频播放
+* ✅Video play | 视频播放
 * ⬜Image view | 图片查看
 * ⬜Search | 搜索
-* ⬜Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
+* ✅Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
 * ⬜Share and download external links | 分析及外链下载
 * ⬜Playlist | 播放清单
 * ⬜History | 历史记录

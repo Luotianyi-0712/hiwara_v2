@@ -100,6 +100,7 @@ import {
 } from '@nativescript/core'
 import { DeviceInfo } from "nativescript-dna-deviceinfo";
 import { Brightness } from '@nativescript/brightness'
+import { parseDefinitionLabel } from '../../core/viewFunction'
 const props = defineProps<{
   playerSrc: string
   title: string
@@ -107,7 +108,7 @@ const props = defineProps<{
   definitionList: any[]
   isFullscreen: boolean
 }>();
-const emit = defineEmits(['changeDefinition']);
+const emit = defineEmits(['onFullscreen', 'changeDefinition']);
 const videoPlayerFrame = ref()
 const videoPlayerRef = ref()
 const currentTime = ref(0)
@@ -346,18 +347,6 @@ function onOpenDrawer() {
   drawer.value.nativeView.open('right')
   hiddenTimer = setTimeout(hiddenPlayer, 5000)
 }
-function parseDefinitionLabel(value: string) {
-  switch (value) {
-    case '360':
-      return '360P'
-    case '540':
-      return '540P'
-    case 'Source':
-      return '原画'
-    default:
-      return value
-  }
-}
 function changeDefinition(val: string) {
   emit('changeDefinition', val)
   drawer.value.nativeView.close()
@@ -476,7 +465,6 @@ function changeVolume(args: any) {
     DeviceInfo.setAudioVolumeLevel(val);
   }
 }
-
 </script>
 <style scoped lang="scss">
 .player {

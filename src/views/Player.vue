@@ -37,7 +37,8 @@
               <StackLayout>
                 <info :title="title" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews" :numLikes="numLikes"
                   :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following" :friend="friend"
-                  :thumbnail="thumbnail" :avatar="avatar" />
+                  :thumbnail="thumbnail" :avatar="avatar" :files="files" :definitionList="definitionList"
+                  @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
               </StackLayout>
             </ScrollView>
@@ -52,18 +53,21 @@
 </template>
 <script setup lang="ts">
 import { Screen, Dialogs } from '@nativescript/core';
-import { ref, defineProps, watch, onMounted, onUnmounted } from 'nativescript-vue'
+import {
+  ref,
+  defineProps,
+  watch,
+  onMounted,
+  onUnmounted
+} from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
-import { Toasty } from "@imagene.me/nativescript-toast"
-import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
-import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
 import videoPlayerFrame from './Player/videoPlayer.vue';
 import recommend from './Player/recommend.vue';
 import loadingAnimation from './Components/loadingAnimation.vue';
 import info from './Player/info.vue';
 import comments from './Player/comments.vue';
 import { isAndroid, isIOS, Application } from '@nativescript/core'
-
+import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../core/viewFunction'
 const props = defineProps<{
   id: string;
 }>();
@@ -86,7 +90,7 @@ const recommendRef = ref()
 const loading = ref(true)
 let fileUrl = ''
 let fid = ''
-const files = ref<any[]>()
+const files = ref<any[]>([])
 // const playerSrc = ref<string>('')
 const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
 // const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
@@ -132,20 +136,10 @@ getVideoData(props.id).then(res => {
     })
     filesloaded.value = true
   }).catch(err => {
-    const toast = new Toasty({
-      text: '视频加载失败了喵~',
-      duration: ToastDuration.Short,
-      variant: ToastVariant.Error
-    })
-    toast.show()
+    toasty('视频加载失败了喵~', 'Error')
   })
 }).catch(err => {
-  const toast = new Toasty({
-    text: '数据加载失败了喵~',
-    duration: ToastDuration.Short,
-    variant: ToastVariant.Error
-  })
-  toast.show()
+  toasty('数据加载失败了喵~', 'Error')
 })
 onMounted(() => {
   if (isAndroid) {
@@ -237,39 +231,10 @@ function parseServiceName(url: string): string {
   const result = match ? match[1] : '未知';
   return result
 }
-function parseDefinitionLabel(value: string) {
-  switch (value) {
-    case '360':
-      return '360P'
-    case '540':
-      return '540P'
-    case 'Source':
-      return '原画'
-    default:
-      return value
-  }
-}
-function unParseDefinitionLabel(value: string) {
-  switch (value) {
-    case '360P':
-      return '360'
-    case '540P':
-      return '540'
-    case '原画':
-      return 'Source'
-    default:
-      return value
-  }
-}
 function switchService() {
   if (!switchServiceIng && fileUrl !== '' && fid !== '') {
     switchServiceIng = true
-    const toast = new Toasty({
-      text: '正在切换服务器...',
-      duration: ToastDuration.Short,
-      variant: ToastVariant.Error
-    })
-    toast.show()
+    toasty('正在切换服务器...', 'Success')
     getFiles(fileUrl, fid).then(res => {
       files.value = res
       const found = files.value.filter(function (item) {
@@ -279,12 +244,7 @@ function switchService() {
       definitionLabel.value = parseDefinitionLabel(found[0].name)
       serviceName.value = parseServiceName(found[0].src.view)
     }).catch(err => {
-      const toast = new Toasty({
-        text: '服务器切换失败',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
-      })
-      toast.show()
+      toasty('服务器切换失败', 'Error')
     }).finally(() => {
       switchServiceIng = false
     })
@@ -312,6 +272,12 @@ function changeDefinition(val: string) {
 }
 function onFullscreen() {
   isFullscreen.value = !isFullscreen.value
+}
+function changeLiked(val: boolean) {
+  liked.value = val
+}
+function changeFollowing(val: boolean) {
+  following.value = val
 }
 </script>
 <style scoped lang="scss">
