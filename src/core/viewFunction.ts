@@ -2,7 +2,7 @@ import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
 
-export function toasty(text: string, type?: string) {
+export function toasty(text: string, type?: 'Success' | 'Error') {
   let variant: any
   switch (type) {
     case 'Success':

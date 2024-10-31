@@ -27,18 +27,15 @@
               <Label :text="definitionLabel" />
             </StackLayout>
           </GridLayout>
-          <GridLayout col="3" row="0" rows="38px" columns="*,100px" v-else>
-            <ActivityIndicator row="0" col="1" color="#00796B" width="75px" height="75px" :busy="true" />
-          </GridLayout>
         </GridLayout>
         <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
           <PagerItem>
             <ScrollView>
               <StackLayout>
-                <info :title="title" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews" :numLikes="numLikes"
-                  :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following" :friend="friend"
-                  :thumbnail="thumbnail" :avatar="avatar" :files="files" :definitionList="definitionList"
-                  @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
+                <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews"
+                  :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following"
+                  :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :files="files"
+                  :definitionList="definitionList" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
               </StackLayout>
             </ScrollView>
@@ -58,14 +55,14 @@ import {
   defineProps,
   watch,
   onMounted,
-  onUnmounted
+  onBeforeUnmount
 } from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
-import videoPlayerFrame from './Player/videoPlayer.vue';
-import recommend from './Player/recommend.vue';
-import loadingAnimation from './Components/loadingAnimation.vue';
-import info from './Player/info.vue';
-import comments from './Player/comments.vue';
+import videoPlayerFrame from './player/videoPlayer.vue';
+import recommend from './player/recommend.vue';
+import loadingAnimation from './components/loadingAnimation.vue';
+import info from './player/info.vue';
+import comments from './player/comments.vue';
 import { isAndroid, isIOS, Application } from '@nativescript/core'
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../core/viewFunction'
 const props = defineProps<{
@@ -73,6 +70,7 @@ const props = defineProps<{
 }>();
 
 const title = ref<string>('')
+const slug = ref<string>('')
 const up = ref<string>('')
 const uid = ref<string>('')
 const body = ref<string>('')
@@ -106,6 +104,7 @@ let videoHeight = 0
 getVideoData(props.id).then(res => {
   // console.log(res)
   title.value = res.title
+  slug.value = res.slug
   up.value = res.up
   uid.value = res.uid
   body.value = res.body
@@ -154,7 +153,7 @@ onMounted(() => {
     })
   }
 })
-onUnmounted(() => {
+onBeforeUnmount(() => {
   if (isAndroid) {
     const activity = Application.android.foregroundActivity || Application.android.startActivity
     if (activity) {

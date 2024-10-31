@@ -17,9 +17,9 @@
     <GridLayout col="0" row="0" columns="*" rows="auto,*,auto" class="player-controls" v-if="controlsShow">
       <GridLayout col="0" row="0" columns="auto,*,auto" rows="auto">
         <StackLayout col="0" row="0" orientation="horizontal" style="padding: 0 10px;">
-          <Label text="&#xf104;" class="font-awesome-solid"
+          <Label text="&#xf104;" class="font-awesome-solid" @tap="back"
             :class="isFullscreen ? 'back-icon-fullscreen' : 'back-icon'" />
-          <Label text="&#xf80b;" class="font-awesome-solid back-icon" v-if="!isFullscreen" />
+          <Label text="&#xf80b;" class="font-awesome-solid back-icon" @tap="navigateBackHome" v-if="!isFullscreen" />
         </StackLayout>
         <Label col="1" row="0" :text="title" class="video-title" v-if="isFullscreen" />
         <StackLayout col="2" row="0" orientation="horizontal" horizontalAlignment="right" style="padding:0 10px;"
@@ -88,19 +88,12 @@
   </GridLayout>
 </template>
 <script setup lang="ts">
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  onMounted,
-  onUnmounted,
-} from 'nativescript-vue'
-import {
-  Connectivity,
-} from '@nativescript/core'
+import { ref, defineProps, defineEmits, onMounted,onBeforeUnmount } from 'nativescript-vue'
+import { Connectivity, } from '@nativescript/core'
 import { DeviceInfo } from "nativescript-dna-deviceinfo";
 import { Brightness } from '@nativescript/brightness'
 import { parseDefinitionLabel } from '../../core/viewFunction'
+import { navigateBack, navigateBackHome } from '../../core/navigate'
 const props = defineProps<{
   playerSrc: string
   title: string
@@ -156,7 +149,7 @@ onMounted(() => {
     nowTime.value = getCurrentTime24Hour()
   }, 1000)
 })
-onUnmounted(() => {
+onBeforeUnmount(() => {
   clearTimeout(timer)
   clearTimeout(hiddenTimer)
 })
@@ -463,6 +456,13 @@ function changeVolume(args: any) {
   }
   function setVolume(val: number) {
     DeviceInfo.setAudioVolumeLevel(val);
+  }
+}
+function back() {
+  if (props.isFullscreen) {
+    emit('onFullscreen')
+  } else {
+    navigateBack()
   }
 }
 </script>

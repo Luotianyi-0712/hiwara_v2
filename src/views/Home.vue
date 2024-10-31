@@ -1,66 +1,61 @@
 <template>
-  <Frame>
-    <Page>
-      <ActionBar>
-        <GridLayout class="navigation-bar" rows="*" columns="45px,*,75px">
-          <StackLayout col="0" class="user-button">
-            <Image src="~/assets/icon/user-w.png" class="img" />
+  <Page>
+    <ActionBar>
+      <GridLayout class="navigation-bar" rows="*" columns="45px,*,75px">
+        <StackLayout col="0" class="user-button">
+          <Image src="~/assets/icon/user-w.png" class="img" />
+        </StackLayout>
+        <StackLayout col="1" @tap="toSearch">
+          <StackLayout orientation="horizontal" class="search-input">
+            <Label text="&#x1f50d; " class="font-awesome-solid" />
+            <Label text="搜索" />
           </StackLayout>
-          <StackLayout col="1" @tap="toSearch">
-            <StackLayout orientation="horizontal" class="search-input">
-              <Label text="&#x1f50d; " class="font-awesome-solid" />
-              <Label text="搜索" />
-            </StackLayout>
-          </StackLayout>
-          <Label col="2" text="Hiwara" class="logo-text" />
-        </GridLayout>
-      </ActionBar>
-      <DockLayout stretchLastChild="false">
-        <GridLayout class="bottom-bar" dock="bottom" rows="auto" columns="*,*,*,*,*">
-          <StackLayout col="0" class="btn" @tap="onNavTabPress(0)"
-            :class="{ select: navTab == 0, unSelect: navTab != 0 }">
-            <Image :src="navTab == 0 ? '~/assets/icon/video-w.png' : '~/assets/icon/video-g.png'" class="img" />
-            <Label text="视频" />
-          </StackLayout>
-          <StackLayout col="1" class="btn" @tap="onNavTabPress(1)"
-            :class="{ select: navTab == 1, unSelect: navTab != 1 }"">
+        </StackLayout>
+        <Label col="2" text="Hiwara" class="logo-text" />
+      </GridLayout>
+    </ActionBar>
+    <DockLayout stretchLastChild="false">
+      <GridLayout class="bottom-bar" dock="bottom" rows="auto" columns="*,*,*,*,*">
+        <StackLayout col="0" class="btn" @tap="onNavTabPress(0)"
+          :class="{ select: navTab == 0, unSelect: navTab != 0 }">
+          <Image :src="navTab == 0 ? '~/assets/icon/video-w.png' : '~/assets/icon/video-g.png'" class="img" />
+          <Label text="视频" />
+        </StackLayout>
+        <StackLayout col="1" class="btn" @tap="onNavTabPress(1)" :class="{ select: navTab == 1, unSelect: navTab != 1 }"">
             <Image :src="navTab == 1 ? '~/assets/icon/pic-w.png' : '~/assets/icon/pic-g.png'" class=" img" />
-          <Label text="图片" />
-          </StackLayout>
-          <StackLayout col="2" class="btn" @tap="onNavTabPress(2)"
-            :class="{ select: navTab == 2, unSelect: navTab != 2 }">
-            <Image :src="navTab == 2 ? '~/assets/icon/rss-w.png' : '~/assets/icon/rss-g.png'" class="img" />
-            <Label text="订阅" />
-          </StackLayout>
-          <StackLayout col="3" class="btn" @tap="onNavTabPress(3)"
-            :class="{ select: navTab == 3, unSelect: navTab != 3 }">
-            <Image :src="navTab == 3 ? '~/assets/icon/comments-w.png' : '~/assets/icon/comments-g.png'" class="img" />
-            <Label text="论坛" />
-          </StackLayout>
-          <StackLayout col="4" class="btn" @tap="onNavTabPress(4)"
-            :class="{ select: navTab == 4, unSelect: navTab != 4 }">
-            <Image :src="navTab == 4 ? '~/assets/icon/user-w.png' : '~/assets/icon/user-g.png'" class="img" />
-            <Label text="我的" />
-          </StackLayout>
-        </GridLayout>
-        <videoList v-if="navTab == 0" />
-        <imageList v-if="navTab == 1" />
-        <subscribe v-if="navTab == 2" />
-        <my v-if="navTab == 4" />
-      </DockLayout>
-    </Page>
-  </Frame>
+        <Label text="图片" />
+        </StackLayout>
+        <StackLayout col="2" class="btn" @tap="onNavTabPress(2)"
+          :class="{ select: navTab == 2, unSelect: navTab != 2 }">
+          <Image :src="navTab == 2 ? '~/assets/icon/rss-w.png' : '~/assets/icon/rss-g.png'" class="img" />
+          <Label text="订阅" />
+        </StackLayout>
+        <StackLayout col="3" class="btn" @tap="onNavTabPress(3)"
+          :class="{ select: navTab == 3, unSelect: navTab != 3 }">
+          <Image :src="navTab == 3 ? '~/assets/icon/comments-w.png' : '~/assets/icon/comments-g.png'" class="img" />
+          <Label text="论坛" />
+        </StackLayout>
+        <StackLayout col="4" class="btn" @tap="onNavTabPress(4)"
+          :class="{ select: navTab == 4, unSelect: navTab != 4 }">
+          <Image :src="navTab == 4 ? '~/assets/icon/user-w.png' : '~/assets/icon/user-g.png'" class="img" />
+          <Label text="我的" />
+        </StackLayout>
+      </GridLayout>
+      <videoList v-if="navTab == 0" />
+      <imageList v-if="navTab == 1" />
+      <subscribe v-if="navTab == 2" />
+      <my v-if="navTab == 4" />
+    </DockLayout>
+  </Page>
 </template>
 <script lang="ts" setup>
-import subscribe from "./Home/subscribe.vue";
-import videoList from "./Home/video.vue";
-import imageList from "./Home/image.vue";
-import my from "./Home/my.vue";
-import { onMounted, ref } from "nativescript-vue";
-import { navigateTo } from "../navigate"
-
+import subscribe from "./home/subscribe.vue";
+import videoList from "./home/video.vue";
+import imageList from "./home/image.vue";
+import my from "./home/my.vue";
+import { ref } from "nativescript-vue";
+import { navigateTo } from "../core/navigate"
 const navTab = ref(2);
-
 function toSearch() {
   navigateTo("/search");
 }

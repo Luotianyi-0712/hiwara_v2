@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 
 const onElementBecomesVisible = () => {
   console.log('Event B triggered because Element A is visible');
@@ -41,7 +41,7 @@ onMounted(() => {
   }
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   if (observer.value) {
     observer.value.disconnect();
   }

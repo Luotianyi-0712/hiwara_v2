@@ -5,7 +5,7 @@
   </StackLayout>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "nativescript-vue";
+import { ref, onMounted, onBeforeUnmount } from "nativescript-vue";
 const src = ref<string>('~/assets/img/loading-huawu/1.png');
 let i = 1;
 let animation: any;
@@ -28,7 +28,7 @@ onMounted(() => {
     }
   }, 250);
 })
-onUnmounted(() => {
+onBeforeUnmount(() => {
   clearInterval(animation);
   clearInterval(loadingTextAnime);
 })

@@ -296,6 +296,7 @@ export function getSystemTestimonialsVideoList(exclude: string): Promise<VideoIt
 interface VideoData {
   id: string,
   title: string,
+  slug: string,
   up: string,
   uid: string,
   body: string,
@@ -321,6 +322,7 @@ export function getVideoData(id: string): Promise<VideoData> {
       const videoData: VideoData = {
         id: data.id,
         title: data.title,
+        slug: data.slug,
         up: data.user.name,
         uid: data.user.id,
         body: data.body,

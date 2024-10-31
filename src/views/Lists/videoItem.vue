@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { defineProps } from 'nativescript-vue';
-import { navigateTo } from "../../navigate";
+import { navigateTo } from "../../core/navigate";
 const props = defineProps<{
   id: string;
   title: string;

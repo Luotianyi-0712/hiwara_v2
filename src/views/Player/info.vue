@@ -40,11 +40,11 @@
         <Image :src="liked ? '~/assets/icon/like-active.png' : '~/assets/icon/like.png'" />
         <Label :text="liked ? '已喜欢' : '喜欢'" textAlignment="center" />
       </StackLayout>
-      <StackLayout col="1" row="0" class="button">
+      <StackLayout col="1" row="0" class="button" @tap="share">
         <Image src="~/assets/icon/share.png" />
         <Label text="分享" textAlignment="center" />
       </StackLayout>
-      <StackLayout col="2" row="0" class="button">
+      <StackLayout col="2" row="0" class="button" @tap="downloadFile">
         <Image src="~/assets/icon/download.png" />
         <Label text="下载" textAlignment="center" />
       </StackLayout>
@@ -62,16 +62,13 @@ import {
   onMounted,
   ref
 } from 'nativescript-vue'
-import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
-import {
-  likeVideo,
-  unLikeVideo,
-  followers,
-  disFollowers
-} from '../../core/api'
+import { Animation, AnimationDefinition, Dialogs, Utils } from '@nativescript/core'
+import { likeVideo, unLikeVideo, followers, disFollowers } from '../../core/api'
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../../core/viewFunction'
+import * as SocialShare from "@nativescript/social-share"
 const props = defineProps<{
   title: string,
+  slug: string,
   id: string,
   up: string,
   uid: string,
@@ -98,70 +95,101 @@ const bodyShadow = ref()
 const titleFoldHeight = ref(0)
 const titleUnfoldHeight = ref(0)
 const bodyHeight = ref(0)
+let likeing = false
+let followering = false
 onMounted(() => {
   console.log('已加载info')
 })
 function likeButtonTap() {
-  if (props.liked) {
-    // 已赞
-    emit('changeLiked', false)
-    unLikeVideo(props.id).catch((err) => {
-      emit('changeLiked', true)
-      toasty('操作失败了喵~', 'Error')
-    })
-  } else {
-    // 未赞
-    emit('changeLiked', true)
-    likeVideo(props.id).catch((err) => {
+  if (likeing) {
+    likeing = true
+    if (props.liked) {
+      // 已赞
       emit('changeLiked', false)
-      toasty('操作失败了喵~', 'Error')
-    })
+      unLikeVideo(props.id).catch((err) => {
+        emit('changeLiked', true)
+        toasty('操作失败了喵~', 'Error')
+      }).finally(() => {
+        likeing = false
+      })
+    } else {
+      // 未赞
+      emit('changeLiked', true)
+      likeVideo(props.id).catch((err) => {
+        emit('changeLiked', false)
+        toasty('操作失败了喵~', 'Error')
+      }).finally(() => {
+        likeing = false
+      })
+    }
   }
 }
 function followersButtonTap() {
-  if (props.following) {
-    // 已关注
-    emit('changeFollowing', false)
-    disFollowers(props.uid).catch((err) => {
-      emit('changeFollowing', true)
-      toasty('操作失败了喵~', 'Error')
-    })
-  } else {
-    // 未关注
-    emit('changeFollowing', true)
-    followers(props.uid).catch((err) => {
+  if (followering) {
+    followering = true
+    if (props.following) {
+      // 已关注
       emit('changeFollowing', false)
-      toasty('操作失败了喵~', 'Error')
-    })
+      disFollowers(props.uid).catch((err) => {
+        emit('changeFollowing', true)
+        toasty('操作失败了喵~', 'Error')
+      }).finally(() => {
+        followering = false
+      })
+    } else {
+      // 未关注
+      emit('changeFollowing', true)
+      followers(props.uid).catch((err) => {
+        emit('changeFollowing', false)
+        toasty('操作失败了喵~', 'Error')
+      }).finally(() => {
+        followering = false
+      })
+    }
   }
 }
+function share() {
+  const title = props.title + ' - ' + props.up
+  const url = 'https://www.iwara.tv/video/' + props.id + '/' + props.slug
+  const separate = '\n------------------------------------\n'
+  SocialShare.shareText('【Iwara.tv】' + separate + title + separate + url)
+}
+function downloadFile() {
+  toasty('功能未开放', 'Error')
+}
 function copyDownloadLink() {
-  let actions: any[] = []
-  for (let i = 0; i < props.definitionList.length; i++) {
-    actions.push(parseDefinitionLabel(props.definitionList[i]))
-  }
-  Dialogs.action({
-    title: '复制下载链接',
-    message: '复制视频下载链接',
-    actions: actions,
-    cancelable: true,
-  }).then((result) => {
-    if (actions.includes(result)) {
-      const definition = unParseDefinitionLabel(result)
-      let downloadLink = ''
-      for (let i = 0; i < props.files.length; i++) {
-        if (props.files[i].name == definition) {
-          downloadLink = 'https:' + props.files[i].src.download
-          break
+  if (props.definitionList.length > 0) {
+    let actions: any[] = []
+    for (let i = 0; i < props.definitionList.length; i++) {
+      actions.push(parseDefinitionLabel(props.definitionList[i]))
+    }
+    Dialogs.action({
+      title: '复制下载链接',
+      message: '复制视频下载链接',
+      actions: actions,
+      cancelable: true,
+    }).then((result) => {
+      if (actions.includes(result)) {
+        const definition = unParseDefinitionLabel(result)
+        let downloadLink = ''
+        for (let i = 0; i < props.files.length; i++) {
+          if (props.files[i].name == definition) {
+            downloadLink = 'https:' + props.files[i].src.download
+            break
+          }
+        }
+        if (downloadLink.length > 0) {
+          console.log(downloadLink)
+          Utils.copyToClipboard(downloadLink)
+          toasty('已复制到剪切板', 'Success')
+        } else {
+          toasty('获取下载链接失败', 'Error')
         }
       }
-      if (downloadLink.length > 0) {
-        console.log(downloadLink)
-      } else {
-        toasty('获取下载链接失败', 'Error')
-      }
-    }
-  })
+    })
+  } else {
+    toasty('请等待视频加载完成后再试', 'Error')
+  }
 }
 function formatNumber(num: number): string {
   if (num < 10000) {

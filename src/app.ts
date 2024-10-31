@@ -1,7 +1,7 @@
 import { createApp, registerElement } from 'nativescript-vue';
-import Home from './views/Home.vue';
+import App from './app.vue';
 
-const app = createApp(Home);
+const app = createApp(App);
 app.start();
 
 import { initialize, Img } from "@nativescript-community/ui-image";
