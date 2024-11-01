@@ -3,7 +3,7 @@
     <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
       <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :definition="definition"
         :definitionList="definitionList" :isFullscreen="isFullscreen"
-        :height="isFullscreen ? '100%' : calculateHeight()" @onFullscreen="onFullscreen"
+        :height="isFullscreen ? '100%' : widthDIPs * 9 / 16" @onFullscreen="onFullscreen"
         @changeDefinition="changeDefinition" />
       <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
@@ -50,13 +50,7 @@
 </template>
 <script setup lang="ts">
 import { Screen, Dialogs } from '@nativescript/core';
-import {
-  ref,
-  defineProps,
-  watch,
-  onMounted,
-  onBeforeUnmount
-} from 'nativescript-vue'
+import { ref, defineProps, watch, onMounted, onBeforeUnmount } from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
 import videoPlayerFrame from './player/videoPlayer.vue';
 import recommend from './player/recommend.vue';
@@ -73,7 +67,7 @@ const title = ref<string>('')
 const slug = ref<string>('')
 const up = ref<string>('')
 const uid = ref<string>('')
-const body = ref<string>('')
+const body = ref<string | null>('')
 const numViews = ref<number>(0)
 const numLikes = ref<number>(0)
 const createdAt = ref<string>('')
@@ -91,13 +85,13 @@ let fid = ''
 const files = ref<any[]>([])
 // const playerSrc = ref<string>('')
 const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
-// const playerSrc = ref<string>('~/assets/video/VID_20220416_033049_395.mp4')
 const definition = ref<string>('Source')
 const definitionLabel = ref<string>('')
 const definitionList = ref<any[]>([])
 const serviceName = ref<string>('')
 const filesloaded = ref(false)
 const isFullscreen = ref(false)
+const widthDIPs = ref(Screen.mainScreen.widthDIPs)
 let switchServiceIng = false
 let videoHeight = 0
 
@@ -210,12 +204,6 @@ function getFiles(fileUrl: string, id: string): Promise<any[]> {
       reject(err)
     })
   })
-}
-function calculateHeight() {
-  if (videoHeight == 0) {
-    videoHeight = Screen.mainScreen.widthDIPs * 9 / 16
-  }
-  return videoHeight
 }
 function onTabPress(target: number) {
   if (tab.value != target) {

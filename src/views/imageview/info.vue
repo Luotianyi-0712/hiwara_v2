@@ -48,27 +48,22 @@
         <Image src="~/assets/icon/download.png" />
         <Label text="下载" textAlignment="center" />
       </StackLayout>
-      <StackLayout col="3" row="0" class="button" @tap="copyDownloadLink">
-        <Image src="~/assets/icon/copylink.png" />
-        <Label text="复制链接" textAlignment="center" />
+      <StackLayout col="3" row="0" class="button" @tap="$emit('navigateToComments')">
+        <Image src="~/assets/icon/comments.png" />
+        <Label text="评论" textAlignment="center" />
       </StackLayout>
     </GridLayout>
   </StackLayout>
 </template>
 <script lang="ts" setup>
-import {
-  defineProps,
-  defineEmits,
-  onMounted,
-  ref
-} from 'nativescript-vue'
-import { Animation, AnimationDefinition, Dialogs, Utils } from '@nativescript/core'
+import { defineProps, defineEmits, onMounted, ref } from 'nativescript-vue'
+import { Animation, AnimationDefinition, Utils } from '@nativescript/core'
 import { likeVideo, unLikeVideo, followers, disFollowers } from '../../core/api'
-import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../../core/viewFunction'
+import { toasty } from '../../core/viewFunction'
 import * as SocialShare from "@nativescript/social-share"
 const props = defineProps<{
   title: string,
-  slug: string,
+  slug: string | null,
   id: string,
   up: string,
   uid: string,
@@ -81,11 +76,9 @@ const props = defineProps<{
   following: boolean,
   friend: boolean,
   thumbnail: string,
-  avatar: string,
-  files: any[],
-  definitionList: any[]
+  avatar: string
 }>();
-const emit = defineEmits(['changeLiked', 'changeFollowing']);
+const emit = defineEmits(['navigateToComments', 'changeLiked', 'changeFollowing']);
 const allView = ref(false)
 const titleRef = ref()
 const bodyRef = ref()
@@ -150,46 +143,12 @@ function followersButtonTap() {
 }
 function share() {
   const title = props.title + ' - ' + props.up
-  const url = 'https://www.iwara.tv/video/' + props.id + '/' + props.slug
+  const url = 'https://www.iwara.tv/image/' + props.id + '/' + props.slug
   const separate = '\n------------------------------------\n'
   SocialShare.shareText('【Iwara.tv】' + separate + title + separate + url)
 }
 function downloadFile() {
   toasty('功能未开放', 'Error')
-}
-function copyDownloadLink() {
-  if (props.definitionList.length > 0) {
-    let actions: any[] = []
-    for (let i = 0; i < props.definitionList.length; i++) {
-      actions.push(parseDefinitionLabel(props.definitionList[i]))
-    }
-    Dialogs.action({
-      title: '复制下载链接',
-      message: '复制视频下载链接',
-      actions: actions,
-      cancelable: true,
-    }).then((result) => {
-      if (actions.includes(result)) {
-        const definition = unParseDefinitionLabel(result)
-        let downloadLink = ''
-        for (let i = 0; i < props.files.length; i++) {
-          if (props.files[i].name == definition) {
-            downloadLink = 'https:' + props.files[i].src.download
-            break
-          }
-        }
-        if (downloadLink.length > 0) {
-          console.log(downloadLink)
-          Utils.copyToClipboard(downloadLink)
-          toasty('已复制到剪切板', 'Success')
-        } else {
-          toasty('获取下载链接失败', 'Error')
-        }
-      }
-    })
-  } else {
-    toasty('请等待视频加载完成后再试', 'Error')
-  }
 }
 function formatNumber(num: number): string {
   if (num < 10000) {

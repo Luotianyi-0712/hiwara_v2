@@ -15,7 +15,7 @@
   </StackLayout>
 </template>
 <script setup lang="ts">
-import videoItem from '../Lists/videoItem.vue';
+import videoItem from '../lists/videoItem.vue';
 import { ref, defineProps, watch } from 'nativescript-vue'
 import { getUserTestimonialsVideoList, getSystemTestimonialsVideoList } from '../../core/api'
 const props = defineProps<{

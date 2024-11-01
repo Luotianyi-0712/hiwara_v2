@@ -299,7 +299,7 @@ interface VideoData {
   slug: string,
   up: string,
   uid: string,
-  body: string,
+  body: string | null,
   numViews: number,
   numLikes: number,
   createdAt: string,
@@ -421,73 +421,6 @@ export function disFollowers(uid: string): Promise<any> {
   })
 }
 
-interface Comments {
-  id: string,
-  body: string,
-  createdAt: string,
-  updatedAt: string,
-  userName: string,
-  uid: string,
-  avatar: string,
-  numReplies: number
-}
-export function getVideoComments(id: string, page: number, parent?: string): Promise<Comments[]> {
-  return new Promise((resolve, reject) => {
-    let query: {
-      limit: number,
-      page: number,
-      parent?: string
-    }
-    if (parent) {
-      query = {
-        limit: 32,
-        page: page,
-        parent: parent
-      }
-    } else {
-      query = {
-        limit: 32,
-        page: page
-      }
-    }
-    get(apiPath + '/video/' + id + '/comments', query).then(data => {
-      let commentsList: Comments[] = []
-      for (let item of data.results) {
-        commentsList.push({
-          id: item.id,
-          body: item.body,
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt,
-          userName: item.user.name,
-          uid: item.user.id,
-          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
-          numReplies: item.numReplies
-        })
-      }
-      resolve(commentsList)
-    }).catch(err => {
-      reject(err)
-    })
-  })
-}
-
-
-export function addCommentForVideo(id: string, body: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    console.log('评论发送')
-    post(apiPath + '/video/' + id + '/comments', null, {
-      body: body,
-      rulesAgreement: true
-    }).then(data => {
-      console.log(data)
-      resolve(data)
-    }).catch(err => {
-      console.log(err)
-      reject(err)
-    })
-  })
-}
-
 interface ImageItem {
   id: string,
   title: string,
@@ -558,6 +491,252 @@ export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
       }
       resolve(imageList)
     }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getUserTestimonialsImageList(uid: string, pid: string): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 6,
+      user: uid,
+      exclude: pid
+    }
+    get(apiPath + '/images', query).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getSystemTestimonialsImageList(pid: string): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/image/' + pid + '/related', null).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+interface ImageData {
+  id: string,
+  title: string,
+  slug: string,
+  up: string,
+  uid: string,
+  body: string | null,
+  numViews: number,
+  numLikes: number,
+  numImages: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  liked: boolean,
+  following: boolean,
+  friend: boolean,
+  thumbnail: string,
+  avatar: string
+  loss: boolean,
+  files: string[]
+}
+
+export function getImageData(id: string): Promise<ImageData> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/image/' + id, null).then(res => {
+      const data = res
+      const imageData: ImageData = {
+        id: data.id,
+        title: data.title,
+        slug: data.slug,
+        up: data.user.name,
+        uid: data.user.id,
+        body: data.body,
+        numViews: data.numViews,
+        numLikes: data.numLikes,
+        numImages: data.numImages,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        ecchi: data.rating == 'ecchi' ? true : false,
+        liked: data.liked ? true : false,
+        following: data.user.following ? true : false,
+        friend: data.user.friend ? true : false,
+        thumbnail: 'https://i.iwara.tv/image/thumbnail/' + data.thumbnail.id + '/' + data.thumbnail.name,
+        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+        loss: data.files ? false : true,
+        files: getImageUrl(data.files)
+      }
+      resolve(imageData)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+  function getImageUrl(files: any): string[] {
+    if (!files) { return [] } else {
+      let arr = []
+      for (let i = 0; i < files.length; i++) {
+        arr.push('https://i.iwara.tv/image/original/' + files[i].id + '/' + files[i].name)
+      }
+      return arr
+    }
+  }
+}
+
+interface Comments {
+  id: string,
+  body: string,
+  createdAt: string,
+  updatedAt: string,
+  userName: string,
+  uid: string,
+  avatar: string,
+  numReplies: number
+}
+
+export function getVideoComments(id: string, page: number, parent?: string): Promise<Comments[]> {
+  return new Promise((resolve, reject) => {
+    let query: {
+      limit: number,
+      page: number,
+      parent?: string
+    }
+    if (parent) {
+      query = {
+        limit: 32,
+        page: page,
+        parent: parent
+      }
+    } else {
+      query = {
+        limit: 32,
+        page: page
+      }
+    }
+    get(apiPath + '/video/' + id + '/comments', query).then(data => {
+      let commentsList: Comments[] = []
+      for (let item of data.results) {
+        commentsList.push({
+          id: item.id,
+          body: item.body,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          userName: item.user.name,
+          uid: item.user.id,
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          numReplies: item.numReplies
+        })
+      }
+      resolve(commentsList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+
+export function addCommentForVideo(id: string, body: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    console.log('评论发送')
+    post(apiPath + '/video/' + id + '/comments', null, {
+      body: body,
+      rulesAgreement: true
+    }).then(data => {
+      console.log(data)
+      resolve(data)
+    }).catch(err => {
+      console.log(err)
+      reject(err)
+    })
+  })
+}
+
+export function getImageComments(id: string, page: number, parent?: string): Promise<Comments[]> {
+  return new Promise((resolve, reject) => {
+    let query: {
+      limit: number,
+      page: number,
+      parent?: string
+    }
+    if (parent) {
+      query = {
+        limit: 32,
+        page: page,
+        parent: parent
+      }
+    } else {
+      query = {
+        limit: 32,
+        page: page
+      }
+    }
+    get(apiPath + '/image/' + id + '/comments', query).then(data => {
+      let commentsList: Comments[] = []
+      for (let item of data.results) {
+        commentsList.push({
+          id: item.id,
+          body: item.body,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          userName: item.user.name,
+          uid: item.user.id,
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          numReplies: item.numReplies
+        })
+      }
+      resolve(commentsList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+
+export function addCommentForImage(id: string, body: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    console.log('评论发送')
+    post(apiPath + '/image/' + id + '/comments', null, {
+      body: body,
+      rulesAgreement: true
+    }).then(data => {
+      console.log(data)
+      resolve(data)
+    }).catch(err => {
+      console.log(err)
       reject(err)
     })
   })

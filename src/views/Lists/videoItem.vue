@@ -4,7 +4,7 @@
       <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="img"
         failureImageUri="~/assets/img/not-img.jpg" placeholderImageUri="~/assets/img/placeholder.png"
         stretch="aspectFill" class="img" fadeDuration="300" />
-      <StackLayout row="0" col="1" class="r18" style="horizontal-align: right;">
+      <StackLayout row="0" col="1" class="r18" horizontalAlignment="right">
         <Label v-show="ecchi" text="R-18" class="label" />
       </StackLayout>
       <StackLayout orientation="horizontal" row="1" col="0" class="tip">
@@ -13,7 +13,7 @@
         <Label verticalAlignment="bottom" text=" &#x1f9e1; " class="text font-awesome-regular" />
         <Label verticalAlignment="bottom" :text="formatNumber(numLikes)" class="text" />
       </StackLayout>
-      <StackLayout orientation="horizontal" row="1" col="1" class="tip" style="horizontal-align: right;">
+      <StackLayout orientation="horizontal" row="1" col="1" class="tip" horizontalAlignment="right">
         <Label verticalAlignment="bottom" :text="formatDuration(duration)" class="text" />
       </StackLayout>
       <Label @tap="onTouch()" row="2" col="0" colSpan="2" :text="title" class="title" textWrap="true"
@@ -22,7 +22,7 @@
         <Label text="&#x1f464; " class="font-awesome-regular" />
         <Label :text="up" />
       </StackLayout>
-      <StackLayout orientation="horizontal" row="3" col="1" class="info" style="horizontal-align: right;">
+      <StackLayout orientation="horizontal" row="3" col="1" class="info" horizontalAlignment="right">
         <Label text="&#x1f553; " class="font-awesome-regular" />
         <Label :text="formatIsoToChineseDate(createdAt)" />
       </StackLayout>

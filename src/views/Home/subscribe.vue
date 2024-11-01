@@ -20,10 +20,10 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'nativescript-vue';
-import videoList from '../Lists/videoList.vue';
-import imageList from '../Lists/imageList.vue';
-import loadingAnimation from '../Components/loadingAnimation.vue';
-import ErrorImg from '../Components/errorImg.vue';
+import videoList from '../lists/videoList.vue';
+import imageList from '../lists/imageList.vue';
+import loadingAnimation from '../components/loadingAnimation.vue';
+import ErrorImg from '../components/errorImg.vue';
 import {
   getSubscribeVideoList,
   getSubscribeImageList

@@ -25,9 +25,9 @@
 </template>
 
 <script lang="ts" setup>
-import loadingAnimation from '../Components/loadingAnimation.vue';
-import ErrorImg from '../Components/errorImg.vue';
-import imageList from '../Lists/imageList.vue';
+import loadingAnimation from '../components/loadingAnimation.vue';
+import ErrorImg from '../components/errorImg.vue';
+import imageList from '../lists/imageList.vue';
 import { ref } from 'nativescript-vue';
 import { getImageList } from '../../core/api';
 import { toasty } from '../../core/viewFunction'
