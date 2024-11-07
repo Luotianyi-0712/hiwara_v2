@@ -130,7 +130,7 @@ let metadataHeight: number = 0
 let frameHeigth: number = 0
 let frameWidth: number = 0
 let hiddenTimer: any
-let autoplay = false
+let autoplay = true
 let timer: any
 let sliderTrigger = false
 let brightnessTrigger = false

@@ -1,37 +1,53 @@
-const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
-const testUserToken: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIxZTBkOWZiLTdlZjgtNDg5OC1hODZjLThiYzMzZDdiYWM1ZiIsInR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiaXNzIjoiaXdhcmEiLCJpYXQiOjE3Mjc4ODIzMzMsImV4cCI6MTczMDQ3NDMzM30.9X7P-gMVNrwtYpVhBIyLvBHyUOOlRq4hGxNInnT4zhA';
-
 import CryptoJS from 'crypto-js';
+import { getUserToken } from './database'
+import { isTokenValid } from './viewFunction'
 
+const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
 const apiPath = "https://api.iwara.tv"
+
+const defaultAvatar = 'https://www.iwara.tv/images/default-avatar.jpg'
+const lossImgSrc = '~/assets/img/loss.png'
+
+let userToken: string | null = null;
 let accessToken: string | null = null;
 
-setInterval(getAccessToken, 36000000)
 function getAccessToken(): Promise<string> {
   return new Promise((resolve, reject) => {
-    fetch(apiPath + '/user/token', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + testUserToken
-      }
-    }).then(res => {
-      if (!res.ok) {
-        throw new Error('Failed to fetch:' + res.statusText)
-      }
-      return res.json()
-    }).then(data => {
-      accessToken = data.accessToken
-      resolve(data.accessToken)
-    }).catch(err => {
-      reject(err)
-    })
+    if (userToken) {
+      send()
+    } else {
+      getUserToken().then(res => {
+        userToken = res
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      fetch(apiPath + '/user/token', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + userToken
+        }
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch:' + res.statusText)
+        }
+        return res.json()
+      }).then(data => {
+        accessToken = data.accessToken
+        resolve(data.accessToken)
+      }).catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    }
   })
 }
 
-
 function get(path: string, query: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (accessToken) {
+    if (isTokenValid(accessToken)) {
       send()
     }
     else {
@@ -65,6 +81,7 @@ function get(path: string, query: any): Promise<any> {
       }).then(data => {
         resolve(data)
       }).catch(err => {
+        console.log(err)
         reject(err)
       })
     }
@@ -73,7 +90,7 @@ function get(path: string, query: any): Promise<any> {
 
 function post(path: string, query: any, body: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (accessToken) {
+    if (isTokenValid(accessToken)) {
       send()
     }
     else {
@@ -117,7 +134,7 @@ function post(path: string, query: any, body: any): Promise<any> {
 
 function deletef(path: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (accessToken) {
+    if (isTokenValid(accessToken)) {
       send()
     }
     else {
@@ -144,6 +161,43 @@ function deletef(path: string): Promise<any> {
         reject(err)
       })
     }
+  })
+}
+
+export function login(email: string, password: string): Promise<any> {
+  const body = {
+    email: email,
+    password: password
+  }
+  console.log(body)
+  return new Promise((resolve, reject) => {
+    fetch(apiPath + '/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).then(res => {
+      switch (res.status) {
+        case 200:
+          return res.json().then(data => ({
+            status: 200,
+            data: data
+          }))
+        case 400:
+          return {
+            status: 400,
+            data: res.statusText
+          }
+        default:
+          throw new Error('Failed to fetch:' + res.statusText)
+      }
+    }).then(data => {
+      userToken = data.data.token
+      resolve(data)
+    }).catch(err => {
+      reject(err)
+    })
   })
 }
 
@@ -181,10 +235,10 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -215,10 +269,10 @@ export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -250,10 +304,10 @@ export function getUserTestimonialsVideoList(user: string, exclude: string): Pro
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -279,10 +333,10 @@ export function getSystemTestimonialsVideoList(exclude: string): Promise<VideoIt
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: item.file ?
-          //   'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          //   '~/assets/img/loss.png',
-          img: '~/assets/img/not-img.jpg',
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
           loss: item.file ? false : true
         })
       }
@@ -336,8 +390,8 @@ export function getVideoData(id: string): Promise<VideoData> {
         friend: data.user.friend ? true : false,
         thumbnail: data.file ?
           'https://i.iwara.tv/image/thumbnail/' + data.file.id + '/thumbnail-' + data.thumbnail.toString().padStart(2, '0') + '.jpg' :
-          '~/assets/img/loss.png',
-        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          lossImgSrc,
+        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : defaultAvatar,
         loss: data.file ? false : true,
         fileUrl: data.fileUrl,
         fid: data.file ? data.file.id : ''
@@ -454,8 +508,8 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -485,8 +539,8 @@ export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -517,8 +571,8 @@ export function getUserTestimonialsImageList(uid: string, pid: string): Promise<
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -543,8 +597,8 @@ export function getSystemTestimonialsImageList(pid: string): Promise<ImageItem[]
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           ecchi: item.rating == 'ecchi' ? true : false,
-          // img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
-          img: '~/assets/img/not-img.jpg'
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
         })
       }
       resolve(imageList)
@@ -597,7 +651,7 @@ export function getImageData(id: string): Promise<ImageData> {
         following: data.user.following ? true : false,
         friend: data.user.friend ? true : false,
         thumbnail: 'https://i.iwara.tv/image/thumbnail/' + data.thumbnail.id + '/' + data.thumbnail.name,
-        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+        avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : defaultAvatar,
         loss: data.files ? false : true,
         files: getImageUrl(data.files)
       }
@@ -615,6 +669,28 @@ export function getImageData(id: string): Promise<ImageData> {
       return arr
     }
   }
+}
+
+export function likeImage(id: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    post(apiPath + '/image/' + id + '/like', null, null).then(res => {
+      resolve(res)
+    }).catch(err => {
+      console.log(err)
+      reject(err)
+    })
+  })
+}
+
+export function unLikeImage(id: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    deletef(apiPath + '/image/' + id + '/like').then(res => {
+      resolve(res)
+    }).catch(err => {
+      console.log(err)
+      reject(err)
+    })
+  })
 }
 
 interface Comments {
@@ -657,7 +733,7 @@ export function getVideoComments(id: string, page: number, parent?: string): Pro
           updatedAt: item.updatedAt,
           userName: item.user.name,
           uid: item.user.id,
-          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : defaultAvatar,
           numReplies: item.numReplies
         })
       }
@@ -714,7 +790,7 @@ export function getImageComments(id: string, page: number, parent?: string): Pro
           updatedAt: item.updatedAt,
           userName: item.user.name,
           uid: item.user.id,
-          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : 'https://www.iwara.tv/images/default-avatar.jpg',
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : defaultAvatar,
           numReplies: item.numReplies
         })
       }
@@ -725,18 +801,57 @@ export function getImageComments(id: string, page: number, parent?: string): Pro
   })
 }
 
-
-export function addCommentForImage(id: string, body: string): Promise<any> {
+export function addCommentForImage(id: string, body: string, parentId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     console.log('评论发送')
-    post(apiPath + '/image/' + id + '/comments', null, {
-      body: body,
-      rulesAgreement: true
-    }).then(data => {
+    let send: any
+    if (parentId) {
+      send = {
+        body: body,
+        parentId: parentId
+      }
+    } else {
+      send = {
+        body: body,
+        rulesAgreement: true
+      }
+    }
+    post(apiPath + '/image/' + id + '/comments', null, send).then(data => {
       console.log(data)
       resolve(data)
     }).catch(err => {
       console.log(err)
+      reject(err)
+    })
+  })
+}
+
+interface UserData {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string,
+  email: string,
+  body: string
+}
+export function getMyselfUserData(): Promise<UserData> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/user', null).then(res => {
+      const users = res.user
+      const profile = res.profile
+      resolve({
+        uid: users.id,
+        name: users.name,
+        username: users.username,
+        avatar: users.avatar ? 'https://i.iwara.tv/image/avatar/' + users.avatar.id + '/' + users.avatar.name : defaultAvatar,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        email: users.email,
+        body: profile.body
+      })
+    }).catch(err => {
       reject(err)
     })
   })

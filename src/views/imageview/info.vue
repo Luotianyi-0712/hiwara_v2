@@ -57,8 +57,8 @@
 </template>
 <script lang="ts" setup>
 import { defineProps, defineEmits, onMounted, ref } from 'nativescript-vue'
-import { Animation, AnimationDefinition, Utils } from '@nativescript/core'
-import { likeVideo, unLikeVideo, followers, disFollowers } from '../../core/api'
+import { Animation, AnimationDefinition } from '@nativescript/core'
+import { likeImage, unLikeImage, followers, disFollowers } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import * as SocialShare from "@nativescript/social-share"
 const props = defineProps<{
@@ -94,12 +94,12 @@ onMounted(() => {
   console.log('已加载info')
 })
 function likeButtonTap() {
-  if (likeing) {
+  if (!likeing) {
     likeing = true
     if (props.liked) {
       // 已赞
       emit('changeLiked', false)
-      unLikeVideo(props.id).catch((err) => {
+      unLikeImage(props.id).catch((err) => {
         emit('changeLiked', true)
         toasty('操作失败了喵~', 'Error')
       }).finally(() => {
@@ -108,7 +108,7 @@ function likeButtonTap() {
     } else {
       // 未赞
       emit('changeLiked', true)
-      likeVideo(props.id).catch((err) => {
+      likeImage(props.id).catch((err) => {
         emit('changeLiked', false)
         toasty('操作失败了喵~', 'Error')
       }).finally(() => {
@@ -118,7 +118,8 @@ function likeButtonTap() {
   }
 }
 function followersButtonTap() {
-  if (followering) {
+  console.log(followering)
+  if (!followering) {
     followering = true
     if (props.following) {
       // 已关注

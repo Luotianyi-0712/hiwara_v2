@@ -3,7 +3,7 @@
     <ActionBar>
       <GridLayout class="navigation-bar" rows="*" columns="45px,*,75px">
         <StackLayout col="0" class="user-button">
-          <Image src="~/assets/icon/user-w.png" class="img" />
+          <Img :src="avatar" class="img" placeholderImageUri="~/assets/img/avatar-default.png" />
         </StackLayout>
         <StackLayout col="1" @tap="toSearch">
           <StackLayout orientation="horizontal" class="search-input">
@@ -55,7 +55,31 @@ import imageList from "./home/image.vue";
 import my from "./home/my.vue";
 import { ref } from "nativescript-vue";
 import { navigateTo } from "../core/navigate"
-const navTab = ref(2);
+import { getMyselfUserData } from "../core/api"
+import { saveUserData } from "../core/database"
+const navTab = ref(2)
+const uid = ref<string>('')
+const name = ref<string>('')
+const username = ref<string>('')
+const avatar = ref<string>('')
+const createdAt = ref<string>('')
+const updatedAt = ref<string>('')
+const email = ref<string>('')
+const body = ref<string>('')
+
+getMyselfUserData().then(res => {
+  uid.value = res.uid
+  name.value = res.name
+  username.value = res.username
+  avatar.value = res.avatar
+  createdAt.value = res.createdAt
+  updatedAt.value = res.updatedAt
+  email.value = res.email
+  body.value = res.body
+  saveUserData(res.uid, res.name, res.username, res.avatar, res.createdAt, res.updatedAt, res.email, res.body).catch(e => {
+    console.log(e)
+  })
+})
 function toSearch() {
   navigateTo("/search");
 }
@@ -74,7 +98,7 @@ function onNavTabPress(target: number) {
 
   .img {
     width: 90px;
-    background-color: #9E9E9E;
+    height: 90px;
     border-radius: 50%;
   }
 }

@@ -5,8 +5,11 @@
         :definitionList="definitionList" :isFullscreen="isFullscreen"
         :height="isFullscreen ? '100%' : widthDIPs * 9 / 16" @onFullscreen="onFullscreen"
         @changeDefinition="changeDefinition" />
-      <loadingAnimation row="1" col="0" :class="loading ? 'visible' : 'hidden'" />
-      <GridLayout columns="*" rows="auto,*" row="1" col="0" :class="loading ? 'hidden' : 'visible'">
+      <loadingAnimation row="1" col="0" :class="{ 'visible': loading, 'hidden': !loading }" />
+      <errorImg col="0" row="1" text="数据加载失败，请点击尝试" :class="{ 'visible': loadingError, 'hidden': !loadingError }"
+        @tap="getData" />
+      <GridLayout columns="*" rows="auto,*" row="1" col="0"
+        :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }">
         <GridLayout columns="10px,150px,*,175px,10px" row="0"
           style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;">
           <GridLayout col="1" row="0" rows="35px,3px" columns="*,*" class="tab">
@@ -55,6 +58,7 @@ import { getVideoData, getVideoFiles } from '../core/api'
 import videoPlayerFrame from './player/videoPlayer.vue';
 import recommend from './player/recommend.vue';
 import loadingAnimation from './components/loadingAnimation.vue';
+import errorImg from './components/errorImg.vue';
 import info from './player/info.vue';
 import comments from './player/comments.vue';
 import { isAndroid, isIOS, Application } from '@nativescript/core'
@@ -79,12 +83,13 @@ const thumbnail = ref<string>('')
 const avatar = ref<string>('')
 const tab = ref(0)
 const recommendRef = ref()
-const loading = ref(true)
+const loading = ref<boolean>(true)
+const loadingError = ref<boolean>(false)
 let fileUrl = ''
 let fid = ''
 const files = ref<any[]>([])
-// const playerSrc = ref<string>('')
-const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
+const playerSrc = ref<string>('')
+// const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
 const definition = ref<string>('Source')
 const definitionLabel = ref<string>('')
 const definitionList = ref<any[]>([])
@@ -93,47 +98,7 @@ const filesloaded = ref(false)
 const isFullscreen = ref(false)
 const widthDIPs = ref(Screen.mainScreen.widthDIPs)
 let switchServiceIng = false
-let videoHeight = 0
-
-getVideoData(props.id).then(res => {
-  // console.log(res)
-  title.value = res.title
-  slug.value = res.slug
-  up.value = res.up
-  uid.value = res.uid
-  body.value = res.body
-  numViews.value = res.numViews
-  numLikes.value = res.numLikes
-  createdAt.value = res.createdAt
-  ecchi.value = res.ecchi
-  liked.value = res.liked
-  following.value = res.following
-  friend.value = res.friend
-  thumbnail.value = res.thumbnail
-  avatar.value = res.avatar
-  fileUrl = res.fileUrl
-  fid = res.fid
-  loading.value = false
-  getFiles(fileUrl, fid).then(res => {
-    files.value = res
-    const found = files.value.filter(function (item) {
-      return item.name === definition.value;
-    });
-    // playerSrc.value = 'https:' + found[0].src.view
-    definitionLabel.value = parseDefinitionLabel(found[0].name)
-    serviceName.value = parseServiceName(found[0].src.view)
-    files.value.forEach(element => {
-      if (element.name !== 'preview') {
-        definitionList.value.push(element.name)
-      }
-    })
-    filesloaded.value = true
-  }).catch(err => {
-    toasty('视频加载失败了喵~', 'Error')
-  })
-}).catch(err => {
-  toasty('数据加载失败了喵~', 'Error')
-})
+getData()
 onMounted(() => {
   if (isAndroid) {
     Application.android.on(Application.AndroidApplication.activityBackPressedEvent, (args: any) => {
@@ -167,7 +132,7 @@ watch(definition, val => {
     const found = files.value.filter(function (item) {
       return item.name === val;
     })
-    // playerSrc.value = 'https:' + found[0].src.view
+    playerSrc.value = 'https:' + found[0].src.view
     definitionLabel.value = parseDefinitionLabel(found[0].name)
     serviceName.value = parseServiceName(found[0].src.view)
   }
@@ -195,7 +160,50 @@ watch(isFullscreen, (val) => {
       }
     }
   }
-});
+})
+function getData() {
+  loadingError.value = false
+  loading.value = true
+  getVideoData(props.id).then(res => {
+    // console.log(res)
+    title.value = res.title
+    slug.value = res.slug
+    up.value = res.up
+    uid.value = res.uid
+    body.value = res.body
+    numViews.value = res.numViews
+    numLikes.value = res.numLikes
+    createdAt.value = res.createdAt
+    ecchi.value = res.ecchi
+    liked.value = res.liked
+    following.value = res.following
+    friend.value = res.friend
+    thumbnail.value = res.thumbnail
+    avatar.value = res.avatar
+    fileUrl = res.fileUrl
+    fid = res.fid
+    loading.value = false
+    getFiles(fileUrl, fid).then(res => {
+      files.value = res
+      const found = files.value.filter(function (item) {
+        return item.name === definition.value;
+      });
+      playerSrc.value = 'https:' + found[0].src.view
+      definitionLabel.value = parseDefinitionLabel(found[0].name)
+      serviceName.value = parseServiceName(found[0].src.view)
+      files.value.forEach(element => {
+        if (element.name !== 'preview') {
+          definitionList.value.push(element.name)
+        }
+      })
+      filesloaded.value = true
+    }).catch(err => {
+      toasty('视频加载失败了喵~', 'Error')
+    })
+  }).catch(err => {
+    toasty('数据加载失败了喵~', 'Error')
+  })
+}
 function getFiles(fileUrl: string, id: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     getVideoFiles(fileUrl).then(res => {
@@ -227,7 +235,7 @@ function switchService() {
       const found = files.value.filter(function (item) {
         return item.name === definition.value;
       });
-      // playerSrc.value = 'https:' + found[0].src.view
+      playerSrc.value = 'https:' + found[0].src.view
       definitionLabel.value = parseDefinitionLabel(found[0].name)
       serviceName.value = parseServiceName(found[0].src.view)
     }).catch(err => {

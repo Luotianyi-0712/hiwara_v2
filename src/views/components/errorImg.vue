@@ -1,12 +1,15 @@
 <template>
   <StackLayout class="loading-container">
     <Image :src="src" width="300px" />
-    <Label text="数据加载失败，请点击尝试" textAlignment="center" />"/>
+    <Label :text="text" textAlignment="center" />"/>
   </StackLayout>
 </template>
 <script lang="ts" setup>
-import { ref } from "nativescript-vue";
+import { ref, defineProps } from "nativescript-vue";
 const src = ref<string>();
+const props = defineProps<{
+  text: string;
+}>();
 src.value = "~/assets/img/error-huawu/" + (Math.floor(Math.random() * 8) + 1) + ".png";
 </script>
 <style lang="scss" scoped>

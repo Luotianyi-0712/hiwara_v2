@@ -3,11 +3,16 @@
     <GridLayout columns="*" rows="auto,*">
       <GridLayout col="0" row="0" rowSpan="2" columns="*" rows="auto,*">
         <preview col="0" row="0" :files="files" :height="widthDIPs" />
-        <ScrollView col="0" row="1">
+        <loadingAnimation col="0" row="1" :class="{ 'visible': loading, 'hidden': !loading }" />
+        <errorImg col="0" row="1" text="数据加载失败，请点击尝试" :class="{ 'visible': loadingError, 'hidden': !loadingError }"
+          @tap="getData" />
+        <ScrollView col="0" row="1"
+          :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }">
           <StackLayout>
             <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews"
               :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following"
-              :friend="friend" :thumbnail="thumbnail" :avatar="avatar" @navigateToComments="navigateToComments" />
+              :friend="friend" :thumbnail="thumbnail" :avatar="avatar" @navigateToComments="navigateToComments"
+              @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
             <recommend ref="recommendRef" :pid="id" :uid="uid" />
           </StackLayout>
         </ScrollView>
@@ -30,6 +35,8 @@ import info from './imageview/info.vue'
 import preview from './imageview/preview.vue'
 import recommend from './imageview/recommend.vue'
 import comments from './imageview/comments.vue'
+import loadingAnimation from './components/loadingAnimation.vue'
+import errorImg from './components/errorImg.vue';
 const props = defineProps<{
   id: string;
 }>();
@@ -49,25 +56,35 @@ const friend = ref<boolean>(false)
 const thumbnail = ref<string>('')
 const avatar = ref<string>('')
 const files = ref<string[]>([])
-getImageData(props.id).then(res => {
-  title.value = res.title
-  slug.value = res.slug
-  up.value = res.up
-  uid.value = res.uid
-  body.value = res.body
-  numViews.value = res.numViews
-  numLikes.value = res.numLikes
-  createdAt.value = res.createdAt
-  ecchi.value = res.ecchi
-  liked.value = res.liked
-  following.value = res.following
-  friend.value = res.friend
-  thumbnail.value = res.thumbnail
-  avatar.value = res.avatar
-  files.value = res.files
-}).catch(err => {
-  toasty('数据加载失败了喵~', 'Error')
-})
+const loading = ref<boolean>(true)
+const loadingError = ref<boolean>(false)
+getData()
+function getData() {
+  loadingError.value = false
+  loading.value = true
+  getImageData(props.id).then(res => {
+    title.value = res.title
+    slug.value = res.slug
+    up.value = res.up
+    uid.value = res.uid
+    body.value = res.body
+    numViews.value = res.numViews
+    numLikes.value = res.numLikes
+    createdAt.value = res.createdAt
+    ecchi.value = res.ecchi
+    liked.value = res.liked
+    following.value = res.following
+    friend.value = res.friend
+    thumbnail.value = res.thumbnail
+    avatar.value = res.avatar
+    files.value = res.files
+  }).catch(err => {
+    toasty('数据加载失败了喵~', 'Error')
+    loadingError.value = true
+  }).finally(() => {
+    loading.value = false
+  })
+}
 function navigateToComments() {
   $navigateTo(comments, {
     props: {
@@ -79,6 +96,12 @@ function navigateToComments() {
     }
   })
 }
+function changeLiked(val: boolean) {
+  liked.value = val
+}
+function changeFollowing(val: boolean) {
+  following.value = val
+}
 </script>
 <style scoped lang="scss">
 .back-icon {
@@ -88,5 +111,25 @@ function navigateToComments() {
   margin: 40px 10px;
   text-align: center;
   color: #fff
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  animation-name: animeVisible;
+  animation-duration: 100ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animeVisible {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

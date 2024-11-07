@@ -16,7 +16,7 @@
       <loadingAnimation />
     </ContentView>
     <ContentView row="1" v-if="onError" @tap="retry">
-      <ErrorImg />
+      <ErrorImg text="数据加载失败，请点击尝试" />
     </ContentView>
     <ContentView row="1" v-if="!onError && !onLoading">
       <videoList :data="listData" @loadMoreItems="nextPage" />

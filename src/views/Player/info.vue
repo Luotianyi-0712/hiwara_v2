@@ -101,7 +101,7 @@ onMounted(() => {
   console.log('已加载info')
 })
 function likeButtonTap() {
-  if (likeing) {
+  if (!likeing) {
     likeing = true
     if (props.liked) {
       // 已赞
@@ -125,7 +125,7 @@ function likeButtonTap() {
   }
 }
 function followersButtonTap() {
-  if (followering) {
+  if (!followering) {
     followering = true
     if (props.following) {
       // 已关注
