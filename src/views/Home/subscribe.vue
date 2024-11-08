@@ -12,8 +12,9 @@
           <GridLayout rows="*">
             <videoList row="0" :data="videoListData" @loadMoreItems="videoNextPage"
               :class="{ 'visible': videoOnload && !videoLoadError, 'hidden': !videoOnload || videoLoadError }" />
-            <loadingAnimation row="0" :class="{ 'visible': !videoOnload, 'hidden': videoOnload }" />
-            <errorImg text="数据加载失败，请点击重试" v-show="videoLoadError" @tap="videoRetry"
+            <loadingAnimation row="0" v-show="!videoOnload"
+              :class="{ 'visible': !videoOnload, 'hidden': videoOnload }" />
+            <errorImg text="数据加载失败，请点击重试" @tap="videoRetry" v-show="videoLoadError"
               :class="{ 'visible': videoLoadError, 'hidden': !videoLoadError }" />
           </GridLayout>
         </PagerItem>
@@ -22,7 +23,7 @@
             <imageList row="0" :data="imageListData" @loadMoreItems="imageNextPage"
               :class="{ 'visible': imageOnload && !imageLoadError, 'hidden': !imageOnload || imageLoadError }" />
             <loadingAnimation row="0" :class="{ 'visible': !imageOnload, 'hidden': imageOnload }" />
-            <errorImg text="数据加载失败，请点击重试" v-show="imageLoadError" @tap="imageRetry"
+            <errorImg text="数据加载失败，请点击重试" @tap="imageRetry"
               :class="{ 'visible': imageLoadError, 'hidden': !imageLoadError }" />
           </GridLayout>
         </PagerItem>
@@ -31,7 +32,7 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'nativescript-vue';
+import { ref, watch,onBeforeUnmount } from 'nativescript-vue';
 import videoList from '../lists/videoList.vue';
 import imageList from '../lists/imageList.vue';
 import loadingAnimation from '../components/loadingAnimation.vue';
@@ -78,7 +79,9 @@ let imagePage = 0;
 let videoLoading = false;
 let imageLoading = false;
 getVideoList().then((res) => {
-  videoListData.value = res;
+  if (res) {
+    videoListData.value = res
+  }
 }).catch(() => {
   videoLoadError.value = true
 }).finally(() => {
@@ -88,7 +91,9 @@ watch(tab, (val) => {
   if (val == 0) {
     if (imageListData.value.length == 0) {
       getVideoList().then((res) => {
-        videoListData.value = res;
+        if (res) {
+          videoListData.value = res;
+        }
       }).catch(() => {
         videoLoadError.value = true
       }).finally(() => {
@@ -98,7 +103,9 @@ watch(tab, (val) => {
   } else {
     if (imageListData.value.length == 0) {
       getImageList().then((res) => {
-        imageListData.value = res;
+        if (res) {
+          imageListData.value = res;
+        }
       }).catch(() => {
         imageLoadError.value = true
       }).finally(() => {
@@ -113,7 +120,9 @@ function videoRetry() {
   videoOnload.value = false
   videoLoadError.value = false
   getVideoList().then((res) => {
-    videoListData.value = videoListData.value.concat(res)
+    if (res) {
+      videoListData.value = videoListData.value.concat(res)
+    }
   }).catch(res => {
     videoLoadError.value = true
   }).finally(() => {
@@ -126,7 +135,9 @@ function imageRetry() {
   imageOnload.value = false
   imageLoadError.value = false
   getImageList().then((res) => {
-    imageListData.value = imageListData.value.concat(res)
+    if (res) {
+      imageListData.value = imageListData.value.concat(res)
+    }
   }).catch(res => {
     imageLoadError.value = true
   }).finally(() => {
@@ -135,43 +146,51 @@ function imageRetry() {
 }
 function videoNextPage() {
   getVideoList().then((res) => {
-    videoListData.value = videoListData.value.concat(res)
+    if (res) {
+      videoListData.value = videoListData.value.concat(res)
+    }
   })
 }
 function imageNextPage() {
   getImageList().then((res) => {
-    imageListData.value = imageListData.value.concat(res)
+    if (res) {
+      imageListData.value = imageListData.value.concat(res)
+    }
   })
 }
-function getVideoList(): Promise<VideoItem[]> {
+function getVideoList(): Promise<VideoItem[] | null> {
   return new Promise((resolve, reject) => {
     if (!videoLoading) {
       videoLoading = true
       getSubscribeVideoList(videoPage).then(res => {
-        videoPage++;
-        resolve(res);
+        videoPage++
+        resolve(res)
       }).catch(() => {
         reject()
         toasty('数据加载失败了喵~', 'Error')
       }).finally(() => {
         videoLoading = false
       })
+    } else {
+      resolve(null)
     }
   })
 }
-function getImageList(): Promise<ImageItem[]> {
+function getImageList(): Promise<ImageItem[] | null> {
   return new Promise((resolve, reject) => {
     if (!imageLoading) {
       imageLoading = true;
       getSubscribeImageList(imagePage).then(res => {
-        imagePage++;
-        resolve(res);
+        imagePage++
+        resolve(res)
       }).catch(() => {
         reject()
         toasty('数据加载失败了喵~', 'Error')
       }).finally(() => {
         imageLoading = false
       })
+    } else {
+      resolve(null)
     }
   })
 }

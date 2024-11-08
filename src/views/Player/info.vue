@@ -37,19 +37,19 @@
     </ScrollView>
     <GridLayout columns="*,*,*,*" rows="auto">
       <StackLayout col="0" row="0" class="button" @tap="likeButtonTap">
-        <Image :src="liked ? '~/assets/icon/like-active.png' : '~/assets/icon/like.png'" />
+        <Img :src="liked ? '~/assets/icon/like-active.png' : '~/assets/icon/like.png'" />
         <Label :text="liked ? '已喜欢' : '喜欢'" textAlignment="center" />
       </StackLayout>
       <StackLayout col="1" row="0" class="button" @tap="share">
-        <Image src="~/assets/icon/share.png" />
+        <Img src="~/assets/icon/share.png" />
         <Label text="分享" textAlignment="center" />
       </StackLayout>
       <StackLayout col="2" row="0" class="button" @tap="downloadFile">
-        <Image src="~/assets/icon/download.png" />
+        <Img src="~/assets/icon/download.png" />
         <Label text="下载" textAlignment="center" />
       </StackLayout>
       <StackLayout col="3" row="0" class="button" @tap="copyDownloadLink">
-        <Image src="~/assets/icon/copylink.png" />
+        <Img src="~/assets/icon/copylink.png" />
         <Label text="复制链接" textAlignment="center" />
       </StackLayout>
     </GridLayout>
@@ -294,7 +294,7 @@ function getBodyHeight() {
 .button {
   margin: 30px;
 
-  Image {
+  Img {
     height: 64px;
     width: 64px;
   }

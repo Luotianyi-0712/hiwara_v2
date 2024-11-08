@@ -1,6 +1,6 @@
 <template>
   <StackLayout class="loading-container">
-    <Image :src="src" width="300px" />
+    <Img :src="src" width="300px" />
     <Label :text="text" textAlignment="center" />"/>
   </StackLayout>
 </template>

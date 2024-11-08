@@ -12,24 +12,31 @@
       <StackLayout row="1" col="3" class="tab-bar" :class="{ 'hidden': tab != 3, 'visible': tab == 3 }"></StackLayout>
       <StackLayout row="1" col="4" class="tab-bar" :class="{ 'hidden': tab != 4, 'visible': tab == 4 }"></StackLayout>
     </GridLayout>
-    <ContentView row="1" v-if="onLoading">
-      <loadingAnimation />
-    </ContentView>
-    <ContentView row="1" v-if="onError" @tap="retry">
-      <ErrorImg text="数据加载失败，请点击尝试" />
-    </ContentView>
-    <ContentView row="1" v-if="!onError && !onLoading">
-      <imageList :data="listData" @loadMoreItems="nextPage" />
-    </ContentView>
+    <GridLayout row="1" rows="*">
+      <GridLayout row="1" rows="*">
+        <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
+          <PagerItem v-for="i in 5">
+            <GridLayout rows="*">
+              <imageList row="0" :data="listData[i - 1]" @loadMoreItems="nextPage(i - 1)"
+                :class="{ 'visible': onLoaded[i - 1] && !onLoadError[i - 1], 'hidden': !onLoaded[i - 1] || onLoadError[i - 1] }" />
+              <loadingAnimation row="0" v-show="!onLoaded[i - 1]"
+                :class="{ 'visible': !onLoaded[i - 1], 'hidden': onLoaded[i - 1] }" />
+              <errorImg text="数据加载失败，请点击重试" @tap="retry(i - 1)" v-show="onLoadError[i - 1]"
+                :class="{ 'visible': onLoadError[i - 1], 'hidden': !onLoadError[i - 1] }" />
+            </GridLayout>
+          </PagerItem>
+        </Pager>
+      </GridLayout>
+    </GridLayout>
   </GridLayout>
 </template>
 
 <script lang="ts" setup>
 import loadingAnimation from '../components/loadingAnimation.vue';
-import ErrorImg from '../components/errorImg.vue';
+import errorImg from '../components/errorImg.vue';
 import imageList from '../lists/imageList.vue';
-import { ref } from 'nativescript-vue';
-import { getImageList } from '../../core/api';
+import { ref, watch } from 'nativescript-vue';
+import { getImageList } from '~/core/api';
 import { toasty } from '../../core/viewFunction'
 interface ImageItem {
   id: string,
@@ -43,24 +50,59 @@ interface ImageItem {
   ecchi: boolean,
   img: string
 }
-const listData = ref<ImageItem[]>([])
+const listData = ref<ImageItem[][]>([[], [], [], [], []])
+
 const tab = ref(0)
-const onLoading = ref(true)
-const onError = ref(false)
-let page = 0;
-let isLoading = false;
-getList('date').then((res) => {
-  listData.value = res;
+const onLoaded = ref([false, false, false, false, false])
+const onLoadError = ref([false, false, false, false, false])
+let page = [0, 0, 0, 0, 0]
+let isLoading = [false, false, false, false, false]
+getList(0).then((res) => {
+  if (res) {
+    listData.value[0] = res
+  }
 }).catch(() => {
-  onError.value = true
+  onLoadError.value[0] = true
 }).finally(() => {
-  onLoading.value = false
+  onLoaded.value[0] = true
 })
-function retry() {
-  onError.value = false;
-  onLoading.value = true;
-  let sort: string = 'date'
-  switch (tab.value) {
+watch(tab, (val) => {
+  if (listData.value[val].length == 0) {
+    getList(val).then((res) => {
+      if (res) {
+        listData.value[val] = res
+      }
+    }).catch(() => {
+      onLoadError.value[val] = true
+    }).finally(() => {
+      onLoaded.value[val] = true
+    })
+  }
+})
+function retry(tab: number) {
+  page[tab] = 0
+  onLoaded.value[tab] = false
+  onLoadError.value[tab] = false
+  getList(tab).then((res) => {
+    if (res) {
+      listData.value[tab] = res
+    }
+  }).catch(() => {
+    onLoadError.value[tab] = true
+  }).finally(() => {
+    onLoaded.value[tab] = true
+  })
+}
+function nextPage(tab: number) {
+  getList(tab).then((res) => {
+    if (res) {
+      listData.value[tab] = listData.value[tab].concat(res)
+    }
+  })
+}
+function getList(tab: number): Promise<ImageItem[] | null> {
+  let sort: string
+  switch (tab) {
     case 0: sort = 'date'; break;
     case 1: sort = 'trending'; break;
     case 2: sort = 'popularity'; break;
@@ -68,84 +110,30 @@ function retry() {
     case 4: sort = 'likes'; break;
     default: sort = 'date'; break;
   }
-  getList(sort).then((res) => {
-    listData.value = res;
-  }).catch(() => {
-    onError.value = true
-  }).finally(() => {
-    onLoading.value = false
-  })
-}
-function nextPage() {
-  if (!isLoading) {
-    isLoading = true;
-    let sort: string = 'date'
-    switch (tab.value) {
-      case 0:
-        sort = 'date'
-        break;
-      case 1:
-        sort = 'trending'
-        break;
-      case 2:
-        sort = 'popularity'
-        break;
-      case 3:
-        sort = 'views'
-        break;
-      case 4:
-        sort = 'likes'
-        break;
-    }
-    getList(sort).then((res) => {
-      listData.value = listData.value.concat(res);
-      isLoading = false;
-    })
-  }
-}
-function getList(sort: string): Promise<ImageItem[]> {
   return new Promise((resolve, reject) => {
-    getImageList(page, sort).then(res => {
-      page++;
-      resolve(res);
-    }).catch(err => {
-      reject()
-      toasty('数据加载失败了喵~', 'Error')
-    })
+    if (!isLoading[tab]) {
+      isLoading[tab] = true
+      getImageList(page[tab], sort).then(res => {
+        page[tab]++
+        resolve(res)
+      }).catch(() => {
+        reject()
+        toasty('数据加载失败了喵~', 'Error')
+      }).finally(() => {
+        isLoading[tab] = false
+      })
+    } else {
+      resolve(null)
+    }
   })
 }
 function onTabPress(target: number) {
   if (tab.value != target) {
-    onLoading.value = true;
-    tab.value = target;
-    page = 0;
-    listData.value = [];
-    let sort: string = 'date'
-    switch (target) {
-      case 0:
-        sort = 'date'
-        break;
-      case 1:
-        sort = 'trending'
-        break;
-      case 2:
-        sort = 'popularity'
-        break;
-      case 3:
-        sort = 'views'
-        break;
-      case 4:
-        sort = 'likes'
-        break;
-    }
-    getList(sort).then((res) => {
-      listData.value = res;
-    }).catch(() => {
-      onError.value = true
-    }).finally(() => {
-      onLoading.value = false
-    })
+    tab.value = target
   }
+}
+function onTabChange(args: any) {
+  tab.value = args.value
 }
 </script>
 
