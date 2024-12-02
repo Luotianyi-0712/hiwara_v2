@@ -121,12 +121,12 @@ Omit | 略
 ### Plan to implement features | 计划实现功能
 
 
-* ⬜Login | 登录
+* ✅Login | 登录
 * ✅Subscribe to the list| 订阅列表
 * ✅List of videos| 视频列表
 * ✅List of images | 图片列表
 * ✅Video play | 视频播放
-* ⬜Image view | 图片查看
+* ✅Image view | 图片查看
 * ⬜Search | 搜索
 * ✅Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
 * ⬜Share and download external links | 分析及外链下载
