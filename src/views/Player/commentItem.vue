@@ -11,11 +11,11 @@
     <StackLayout row="1" col="0" colSpan="3" class="body">
       <Label class="comment" :text="body" textWrap="true" />
     </StackLayout>
-    <StackLayout row="2" col="0" orientation="horizontal" class="options">
+    <StackLayout v-show="reply" row="2" col="0" orientation="horizontal" class="options" @tap="$emit('reply', id)">
       <Label text="&#x1f5e9; " class="font-awesome-regular" />
       <Label text="回复" />
     </StackLayout>
-    <StackLayout row="2" col="2" orientation="horizontal" class="options" horizontalAlignment="right"
+    <StackLayout v-show="reply" row="2" col="2" orientation="horizontal" class="options" horizontalAlignment="right"
       v-if="numReplies > 0" @tap="$emit('detail', id)">
       <Label text="&#xf103; " class="font-awesome-solid" />
       <Label :text="'查看' + numReplies + '条回复'" />
@@ -31,6 +31,7 @@ const props = defineProps<{
   createdAt: string
   body: string
   numReplies: number
+  reply: boolean
 }>()
 function formatIsoToChineseDate(isoDate: string): string {
   const date = new Date(isoDate);

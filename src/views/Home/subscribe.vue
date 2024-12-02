@@ -1,12 +1,13 @@
 <template>
-  <GridLayout rows="auto, *">
-    <GridLayout row="0" rows="35px,3px" columns="*,*" class="tab">
+  <GridLayout rows="60px, auto, *">
+    <topBar row="0" />
+    <GridLayout row="1" rows="35px,3px" columns="*,*" class="tab">
       <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
       <Label text="图片" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
       <StackLayout row="1" col="0" class="tab-bar" :class="{ 'hidden': tab != 0, 'visible': tab == 0 }"></StackLayout>
       <StackLayout row="1" col="1" class="tab-bar" :class="{ 'hidden': tab != 1, 'visible': tab == 1 }"></StackLayout>
     </GridLayout>
-    <GridLayout row="1" rows="*">
+    <GridLayout row="2" rows="*">
       <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
         <PagerItem>
           <GridLayout rows="*">
@@ -32,15 +33,16 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, watch,onBeforeUnmount } from 'nativescript-vue';
-import videoList from '../lists/videoList.vue';
-import imageList from '../lists/imageList.vue';
-import loadingAnimation from '../components/loadingAnimation.vue';
-import errorImg from '../components/errorImg.vue';
+import { ref, watch, onBeforeUnmount } from 'nativescript-vue'
+import topBar from './topBar.vue'
+import videoList from '../lists/videoList.vue'
+import imageList from '../lists/imageList.vue'
+import loadingAnimation from '../components/loadingAnimation.vue'
+import errorImg from '../components/errorImg.vue'
 import {
   getSubscribeVideoList,
   getSubscribeImageList
-} from '../../core/api';
+} from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 interface VideoItem {
   id: string,

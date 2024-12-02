@@ -1,15 +1,17 @@
 <template>
-  <GridLayout rows="*,50px">
+  <GridLayout rows="*,50px" @tap="addCommentsBlur">
     <ListView row="0" :items="comments" @loadMoreItems="nextPage">
       <template #default="{ item, index }">
         <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body"
-          :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="onOpenDrawer" />
+          :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="onOpenDrawer" :reply="true"
+          @tap="addCommentsBlur" @reply="replyComments" />
       </template>
     </ListView>
     <Label row="0" textAlignment="center" text="还没有评论喵~" v-if="comments.length === 0" />
     <GridLayout row="1" columns="*,80px"
       style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;padding: 0 20px;">
-      <TextField col="0" hint="添加评论" style="font-size: 16px;" v-model="myComments" />
+      <TextField col="0" hint="添加评论" style="font-size: 16px;" v-model="myComments" ref="addCommentsRef"
+        @blur="addCommentsInputBlur" />
       <Button col="1" text="发送" height="110px" @tap="addComment" />
     </GridLayout>
   </GridLayout>
@@ -26,11 +28,9 @@
 <script setup lang="ts">
 import commentItem from './commentItem.vue';
 import commentReplys from './commentReplys.vue';
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, defineProps, onBeforeUnmount } from 'nativescript-vue'
 import { getVideoComments, addCommentForVideo } from '../../core/api'
-import { Toasty } from "@imagene.me/nativescript-toast"
-import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
-import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import { toasty } from '../../core/viewFunction'
 const props = defineProps<{
   id: string
 }>()
@@ -48,12 +48,18 @@ const comments = ref<Comments[]>([])
 const drawer = ref()
 const detailId = ref('')
 const myComments = ref('')
+const addCommentsRef = ref()
+let replyParentId: string | null = null
 let isLoading = false
 let page = 0
 let isEnd = false
+let timer: any
 getVideoComments(props.id, page).then(res => {
   comments.value = res
   page++
+})
+onBeforeUnmount(() => {
+  clearTimeout(timer)
 })
 function nextPage() {
   if (!isLoading && !isEnd) {
@@ -90,30 +96,38 @@ function closeDrawer() {
 function addComment() {
   console.log(myComments.value)
   if (myComments.value.length > 0) {
-    addCommentForVideo(props.id, myComments.value).then(() => {
-      const toast = new Toasty({
-        text: '评论发送成功！',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Success
+    if (replyParentId) {
+      addCommentForVideo(props.id, myComments.value, replyParentId).then(() => {
+        toasty('评论发送成功！', 'Success')
+        flush()
+      }).catch(() => {
+        toasty('评论发送失败了喵~', 'Error')
       })
-      toast.show()
-      flush()
-    }).catch(() => {
-      const toast = new Toasty({
-        text: '评论发送失败了喵~',
-        duration: ToastDuration.Short,
-        variant: ToastVariant.Error
+    } else {
+      addCommentForVideo(props.id, myComments.value).then(() => {
+        toasty('评论发送成功！', 'Success')
+        flush()
+      }).catch(() => {
+        toasty('评论发送失败了喵~', 'Error')
       })
-      toast.show()
-    })
+    }
   } else {
-    const toast = new Toasty({
-      text: '评论不能为空喵~',
-      duration: ToastDuration.Short,
-      variant: ToastVariant.Error
-    })
-    toast.show()
+    toasty('评论不能为空喵~', 'Error')
   }
+}
+function replyComments(id: string) {
+  replyParentId = id
+  timer = setTimeout(() => {
+    addCommentsRef.value.nativeView.focus()
+  }, 100)
+}
+function addCommentsBlur() {
+  replyParentId = null
+  addCommentsRef.value.nativeView.dismissSoftInput()
+}
+function addCommentsInputBlur() {
+  console.log('addCommentsInputBlur')
+  replyParentId = null
 }
 </script>
 <style scoped lang="scss"></style>

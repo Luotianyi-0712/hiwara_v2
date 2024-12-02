@@ -1,29 +1,20 @@
 <template>
-  <Page>
-    <ActionBar>
-      <GridLayout class="navigation-bar" rows="*" columns="45px,*,75px">
-        <StackLayout col="0" class="user-button">
-          <Img :src="avatar" class="img" placeholderImageUri="~/assets/img/avatar-default.png" />
-        </StackLayout>
-        <StackLayout col="1" @tap="toSearch">
-          <StackLayout orientation="horizontal" class="search-input">
-            <Label text="&#x1f50d; " class="font-awesome-solid" />
-            <Label text="搜索" />
-          </StackLayout>
-        </StackLayout>
-        <Label col="2" text="Hiwara" class="logo-text" />
-      </GridLayout>
-    </ActionBar>
-    <DockLayout stretchLastChild="false">
-      <GridLayout class="bottom-bar" dock="bottom" rows="auto" columns="*,*,*,*,*">
+  <Page actionBarHidden="true">
+    <GridLayout v-show="onLoaded" v-if="isLogin" rows="*,auto">
+      <videoList row="0" v-if="navTab == 0" />
+      <imageList row="0" v-if="navTab == 1" />
+      <subscribe row="0" v-if="navTab == 2" />
+      <my row="0" v-if="navTab == 4" />
+      <GridLayout row="1" class="bottom-bar" rows="auto" columns="*,*,*,*,*">
         <StackLayout col="0" class="btn" @tap="onNavTabPress(0)"
           :class="{ select: navTab == 0, unSelect: navTab != 0 }">
           <Img :src="navTab == 0 ? '~/assets/icon/video-w.png' : '~/assets/icon/video-g.png'" class="img" />
           <Label text="视频" />
         </StackLayout>
-        <StackLayout col="1" class="btn" @tap="onNavTabPress(1)" :class="{ select: navTab == 1, unSelect: navTab != 1 }"">
-            <Img :src="navTab == 1 ? '~/assets/icon/pic-w.png' : '~/assets/icon/pic-g.png'" class=" img" />
-        <Label text="图片" />
+        <StackLayout col="1" class="btn" @tap="onNavTabPress(1)"
+          :class="{ select: navTab == 1, unSelect: navTab != 1 }">
+          <Img :src="navTab == 1 ? '~/assets/icon/pic-w.png' : '~/assets/icon/pic-g.png'" class="img" />
+          <Label text="图片" />
         </StackLayout>
         <StackLayout col="2" class="btn" @tap="onNavTabPress(2)"
           :class="{ select: navTab == 2, unSelect: navTab != 2 }">
@@ -41,22 +32,20 @@
           <Label text="我的" />
         </StackLayout>
       </GridLayout>
-      <videoList v-if="navTab == 0" />
-      <imageList v-if="navTab == 1" />
-      <subscribe v-if="navTab == 2" />
-      <my v-if="navTab == 4" />
-    </DockLayout>
+    </GridLayout>
+    <loginComponents v-show="onLoaded" v-else @loginSuccess="loginSuccess" />
   </Page>
 </template>
 <script lang="ts" setup>
+import loginComponents from "./home/login.vue";
 import subscribe from "./home/subscribe.vue";
 import videoList from "./home/video.vue";
 import imageList from "./home/image.vue";
 import my from "./home/my.vue";
 import { ref } from "nativescript-vue";
-import { navigateTo } from "../core/navigate"
 import { getMyselfUserData } from "../core/api"
-import { saveUserData } from "../core/database"
+import { saveUserData, getUserToken } from "../core/database"
+import { isTokenValid, toasty } from '../core/viewFunction'
 const navTab = ref(2)
 const uid = ref<string>('')
 const name = ref<string>('')
@@ -66,70 +55,57 @@ const createdAt = ref<string>('')
 const updatedAt = ref<string>('')
 const email = ref<string>('')
 const body = ref<string>('')
-
-getMyselfUserData().then(res => {
-  uid.value = res.uid
-  name.value = res.name
-  username.value = res.username
-  avatar.value = res.avatar
-  createdAt.value = res.createdAt
-  updatedAt.value = res.updatedAt
-  email.value = res.email
-  body.value = res.body
-  saveUserData(res.uid, res.name, res.username, res.avatar, res.createdAt, res.updatedAt, res.email, res.body).catch(e => {
-    console.log(e)
-  })
+const onLoaded = ref<boolean>(false)
+const isLogin = ref<boolean>(false)
+getUserToken().then(res => {
+  if (isTokenValid(res)) {
+    console.log('已登录')
+    isLogin.value = true
+    myselfData()
+  } else {
+    console.log('未登录')
+    isLogin.value = false
+  }
+}).catch(err => {
+  console.log(err)
+}).finally(() => {
+  onLoaded.value = true
 })
-function toSearch() {
-  navigateTo("/search");
+function myselfData() {
+  getMyselfUserData().then(res => {
+    uid.value = res.uid
+    name.value = res.name
+    username.value = res.username
+    avatar.value = res.avatar
+    createdAt.value = res.createdAt
+    updatedAt.value = res.updatedAt
+    email.value = res.email
+    body.value = res.body
+    saveUserData(res.uid, res.name, res.username, res.avatar, res.createdAt, res.updatedAt, res.email, res.body).catch(e => {
+      console.log(e)
+    })
+  }).catch(err => {
+    console.log(err)
+    toasty('用户数据失败', 'Error')
+  })
+}
+function loginSuccess() {
+  myselfData()
+  isLogin.value = true
 }
 function onNavTabPress(target: number) {
   navTab.value = target;
 }
 </script>
 <style scoped lang="scss">
-.navigation-bar {
-  color: #fff;
-  z-index: 400;
-}
-
-.user-button {
-  horizontal-align: left;
-
-  .img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-  }
-}
-
-.search-input {
-  background-color: #fff;
-  border-radius: 50%;
-  padding: 0 20;
-  font-size: 14;
-  height: 90px;
-  color: #484848;
-}
-
-.logo-text {
-  font-family: "&eåeLOGO", "riwenlogo";
-  font-weight: 400;
-  font-size: 14px;
-  text-align: right;
-  padding-right: 30px;
-  text-shadow: 1px 1px 4px #00000080;
-}
-
 .bottom-bar {
-  background-color: #fff;
-  z-index: 390;
   color: #484848;
 
   .btn {
     padding: 15px;
     font-size: 12px;
     text-align: center;
+    // background-color: #fff;
 
     .img {
       height: 60px;
@@ -145,9 +121,6 @@ function onNavTabPress(target: number) {
   }
 
   .unSelect {
-    animation-name: animeUnSelect;
-    animation-duration: 100ms;
-    animation-fill-mode: forwards;
     color: #484848;
   }
 

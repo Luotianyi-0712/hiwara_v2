@@ -3,9 +3,9 @@
     <GridLayout columns="*" rows="auto,*">
       <GridLayout col="0" row="0" rowSpan="2" columns="*" rows="auto,*">
         <preview col="0" row="0" :files="files" :height="widthDIPs" />
-        <loadingAnimation col="0" row="1" :class="{ 'visible': loading, 'hidden': !loading }" />
-        <errorImg col="0" row="1" text="数据加载失败，请点击尝试" :class="{ 'visible': loadingError, 'hidden': !loadingError }"
-          @tap="getData" />
+        <loadingAnimation col="0" row="1" v-show="!loading" :class="{ 'visible': loading, 'hidden': !loading }" />
+        <errorImg col="0" row="1" text="数据加载失败，请点击尝试" v-show="loadingError"
+          :class="{ 'visible': loadingError, 'hidden': !loadingError }" @tap="getData" />
         <ScrollView col="0" row="1"
           :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }">
           <StackLayout>

@@ -745,13 +745,22 @@ export function getVideoComments(id: string, page: number, parent?: string): Pro
 }
 
 
-export function addCommentForVideo(id: string, body: string): Promise<any> {
+export function addCommentForVideo(id: string, body: string, parentId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     console.log('评论发送')
-    post(apiPath + '/video/' + id + '/comments', null, {
-      body: body,
-      rulesAgreement: true
-    }).then(data => {
+    let send: any
+    if (parentId) {
+      send = {
+        body: body,
+        parentId: parentId
+      }
+    } else {
+      send = {
+        body: body,
+        rulesAgreement: true
+      }
+    }
+    post(apiPath + '/video/' + id + '/comments', null, send).then(data => {
       console.log(data)
       resolve(data)
     }).catch(err => {

@@ -1,6 +1,7 @@
 <template>
-  <GridLayout rows="auto, *">
-    <GridLayout row="0" rows="35px,3px" columns="*,*,*,*,*" class="tab">
+  <GridLayout rows="60px, auto, *">
+    <topBar row="0" />
+    <GridLayout row="1" rows="35px,3px" columns="*,*,*,*,*" class="tab">
       <Label text="最新" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
       <Label text="流行" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
       <Label text="人气" row="0" col="2" @tap="onTabPress(2)" textAlignment="center" />
@@ -12,7 +13,7 @@
       <StackLayout row="1" col="3" class="tab-bar" :class="{ 'hidden': tab != 3, 'visible': tab == 3 }"></StackLayout>
       <StackLayout row="1" col="4" class="tab-bar" :class="{ 'hidden': tab != 4, 'visible': tab == 4 }"></StackLayout>
     </GridLayout>
-    <GridLayout row="1" rows="*">
+    <GridLayout row="2" rows="*">
       <GridLayout row="1" rows="*">
         <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
           <PagerItem v-for="i in 5">
@@ -32,6 +33,7 @@
 </template>
 
 <script lang="ts" setup>
+import topBar from './topBar.vue'
 import loadingAnimation from '../components/loadingAnimation.vue';
 import errorImg from '../components/errorImg.vue';
 import videoList from '../lists/videoList.vue';

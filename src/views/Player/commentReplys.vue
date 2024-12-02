@@ -2,7 +2,7 @@
   <ListView :items="replys" @loadMoreItems="nextPage">
     <template #default="{ item, index }">
       <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body" :createdAt="item.createdAt"
-        :numReplies="item.numReplies" @detail="" />
+        :numReplies="item.numReplies" @detail="" :reply="false" />
     </template>
   </ListView>
 </template>

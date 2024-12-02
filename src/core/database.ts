@@ -9,6 +9,7 @@ function initDatabase(): Promise<void> {
       createdTable().then(() => {
         resolve()
       }).catch(err => {
+        console.log(err)
         reject(err)
       })
     } else {
@@ -16,6 +17,7 @@ function initDatabase(): Promise<void> {
       createdTable().then(() => {
         resolve()
       }).catch(err => {
+        console.log(err)
         reject(err)
       })
     }
@@ -69,7 +71,9 @@ function createdTable(): Promise<void> {
     Promise.all([
       tableQuery('user').then(exist => {
         if (!exist) {
-          sqlite.execute(userTableCrate)
+          sqlite.execute(userTableCrate).catch((err: any) => {
+            console.log(err)
+          })
           sqlite.execute("INSERT INTO user ( " + userTable.map(item => item[0]).join(',') + " ) VALUES ( '" + generateUUID() + "'" + ",null".repeat(11) + " );").catch((err: any) => {
             console.log(err)
           })
@@ -77,7 +81,9 @@ function createdTable(): Promise<void> {
       }),
       tableQuery('config').then(exist => {
         if (!exist) {
-          sqlite.execute(configTableCrate)
+          sqlite.execute(configTableCrate).catch((err: any) => {
+            console.log(err)
+          })
           const values = [
             1, 4, "'Source'", "'auto'", "null", 0, "null", "null", "null"
           ]
@@ -88,12 +94,16 @@ function createdTable(): Promise<void> {
       }),
       tableQuery('videoHistory').then(exist => {
         if (!exist) {
-          sqlite.execute(videoHistoryTableCrate)
+          sqlite.execute(videoHistoryTableCrate).catch((err: any) => {
+            console.log(err)
+          })
         }
       }),
       tableQuery('imageHistory').then(exist => {
         if (!exist) {
-          sqlite.execute(imageHistoryTableCrate)
+          sqlite.execute(imageHistoryTableCrate).catch((err: any) => {
+            console.log(err)
+          })
         }
       })
     ]).then(() => {
