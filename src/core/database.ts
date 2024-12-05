@@ -34,8 +34,9 @@ function createdTable(): Promise<void> {
     ['avatar', 'TEXT'],
     ['email', 'TEXT'],
     ['createdAt', 'TEXT'],
-    ['updatedAt	', 'TEXT'],
-    ['body	', 'TEXT'],
+    ['updatedAt', 'TEXT'],
+    ['body', 'TEXT'],
+    ['premium', 'TEXT'],
     ['login', 'TEXT'],
     ['passwd', 'TEXT'],
     ['token', 'TEXT'],
@@ -74,7 +75,7 @@ function createdTable(): Promise<void> {
           sqlite.execute(userTableCrate).catch((err: any) => {
             console.log(err)
           })
-          sqlite.execute("INSERT INTO user ( " + userTable.map(item => item[0]).join(',') + " ) VALUES ( '" + generateUUID() + "'" + ",null".repeat(11) + " );").catch((err: any) => {
+          sqlite.execute("INSERT INTO user ( " + userTable.map(item => item[0]).join(',') + " ) VALUES ( '" + generateUUID() + "'" + ",null".repeat(userTable.length - 1) + " );").catch((err: any) => {
             console.log(err)
           })
         }
@@ -183,14 +184,24 @@ export function saveUserToken(login: string, passwd: string, token: string): Pro
   })
 }
 
-export function saveUserData(uid: string, name: string, username: string, avatar: string, createdAt: string, updatedAt: string, email: string, body: string): Promise<void> {
+export function saveUserData(uid: string, name: string, username: string, avatar: string, createdAt: string, updatedAt: string, email: string, body: string, premium: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     getQuery('SELECT uuid FROM user;').then(res => {
-      sqlite.execute("UPDATE user SET uid = '" + uid + "', name = '" + name + "', username = '" + username + "', avatar = '" + avatar + "', createdAt = '" + createdAt + "', updatedAt = '" + updatedAt + "', email = '" + email + "',  body = '" + body + "' WHERE uuid = '" + res.uuid + "'").then(() => {
+      sqlite.execute("UPDATE user SET uid = '" + uid + "', name = '" + name + "', username = '" + username + "', avatar = '" + avatar + "', createdAt = '" + createdAt + "', updatedAt = '" + updatedAt + "', email = '" + email + "',  body = '" + body + "',  premium = '" + (premium ? 1 : 0) + "' WHERE uuid = '" + res.uuid + "';").then(() => {
         resolve()
       }).catch((err: any) => {
         reject(err)
       })
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getUserData(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getQuery('SELECT uid, name, username, avatar, createdAt, updatedAt, email, body, premium FROM user;').then(res => {
+      resolve(res)
     }).catch(err => {
       reject(err)
     })

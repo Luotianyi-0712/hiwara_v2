@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import { getUserToken } from './database'
+import { getUserToken, getUserData } from './database'
 import { isTokenValid } from './viewFunction'
 
 const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
@@ -8,8 +8,9 @@ const apiPath = "https://api.iwara.tv"
 const defaultAvatar = 'https://www.iwara.tv/images/default-avatar.jpg'
 const lossImgSrc = '~/assets/img/loss.png'
 
-let userToken: string | null = null;
-let accessToken: string | null = null;
+let userToken: string | null = null
+let accessToken: string | null = null
+let uid: string | null = null
 
 function getAccessToken(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -835,7 +836,7 @@ export function addCommentForImage(id: string, body: string, parentId?: string):
   })
 }
 
-interface UserData {
+interface MyselfData {
   uid: string,
   name: string,
   username: string,
@@ -843,13 +844,15 @@ interface UserData {
   createdAt: string,
   updatedAt: string,
   email: string,
-  body: string
+  body: string,
+  premium: boolean
 }
-export function getMyselfUserData(): Promise<UserData> {
+export function getMyselfUserData(): Promise<MyselfData> {
   return new Promise((resolve, reject) => {
     get(apiPath + '/user', null).then(res => {
       const users = res.user
       const profile = res.profile
+      uid = users.id
       resolve({
         uid: users.id,
         name: users.name,
@@ -858,10 +861,141 @@ export function getMyselfUserData(): Promise<UserData> {
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
         email: users.email,
-        body: profile.body
+        body: profile.body,
+        premium: users.premium
       })
     }).catch(err => {
       reject(err)
+    })
+  })
+}
+
+function getUID(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    getUserData().then(data => {
+      if (data.uid != "null") {
+        uid = data.uid
+        resolve()
+      } else {
+        get(apiPath + '/user', null).then(res => {
+          uid = res.user.id
+          resolve()
+        }).catch(err => {
+          console.log(err)
+          reject(err)
+        })
+      }
+    }).catch(err => {
+      console.log(err)
+      reject(err)
+    })
+  })
+}
+export function getFollowingList(page: number, limit: number): Promise<any> {
+  // 关注列表
+  return new Promise((resolve, reject) => {
+    const query = {
+      page: page,
+      limit: limit
+    }
+    if (uid) {
+      send()
+    } else {
+      getUID().then(() => {
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      get(apiPath + '/user/' + uid + '/following', query).then(res => {
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    }
+  })
+}
+export function getFollowersList(page: number, limit: number): Promise<any> {
+  // 粉丝列表
+  return new Promise((resolve, reject) => {
+    const query = {
+      page: page,
+      limit: limit
+    }
+    if (uid) {
+      send()
+    } else {
+      getUID().then(() => {
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      get(apiPath + '/user/' + uid + '/followers', query).then(res => {
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    }
+  })
+}
+export function getMyPosts(page: number, limit: number): Promise<any> {
+  // 发布内容
+  return new Promise((resolve, reject) => {
+    if (uid) {
+      send()
+    } else {
+      getUID().then(() => {
+        send()
+      }).catch(err => {
+        reject(err)
+      })
+    }
+    function send() {
+      const query = {
+        user: uid,
+        page: page,
+        limit: limit
+      }
+      get(apiPath + '/posts', query).then(res => {
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    }
+  })
+}
+
+interface UserData {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string,
+  body: string,
+  premium: boolean,
+  status: string,
+  header: string
+}
+export function getZoneUserData(username: string): Promise<UserData> {
+  return new Promise((resolve, reject) => {
+    get(apiPath + '/profile/' + username, null).then(res => {
+      const users = res.user
+      resolve({
+        uid: users.id,
+        name: users.name,
+        username: users.username,
+        avatar: users.avatar ? 'https://i.iwara.tv/image/avatar/' + users.avatar.id + '/' + users.avatar.name : defaultAvatar,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        body: res.body,
+        premium: users.premium,
+        status: users.status,
+        header: res.header
+      })
     })
   })
 }

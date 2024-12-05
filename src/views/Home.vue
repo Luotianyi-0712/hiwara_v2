@@ -43,18 +43,10 @@ import videoList from "./home/video.vue";
 import imageList from "./home/image.vue";
 import my from "./home/my.vue";
 import { ref } from "nativescript-vue";
-import { getMyselfUserData } from "../core/api"
-import { saveUserData, getUserToken } from "../core/database"
-import { isTokenValid, toasty } from '../core/viewFunction'
+import { getUserToken } from "../core/database"
+import { isTokenValid, myselfData } from '../core/viewFunction'
 const navTab = ref(2)
-const uid = ref<string>('')
-const name = ref<string>('')
-const username = ref<string>('')
-const avatar = ref<string>('')
-const createdAt = ref<string>('')
-const updatedAt = ref<string>('')
-const email = ref<string>('')
-const body = ref<string>('')
+
 const onLoaded = ref<boolean>(false)
 const isLogin = ref<boolean>(false)
 getUserToken().then(res => {
@@ -71,27 +63,9 @@ getUserToken().then(res => {
 }).finally(() => {
   onLoaded.value = true
 })
-function myselfData() {
-  getMyselfUserData().then(res => {
-    uid.value = res.uid
-    name.value = res.name
-    username.value = res.username
-    avatar.value = res.avatar
-    createdAt.value = res.createdAt
-    updatedAt.value = res.updatedAt
-    email.value = res.email
-    body.value = res.body
-    saveUserData(res.uid, res.name, res.username, res.avatar, res.createdAt, res.updatedAt, res.email, res.body).catch(e => {
-      console.log(e)
-    })
-  }).catch(err => {
-    console.log(err)
-    toasty('用户数据失败', 'Error')
-  })
-}
 function loginSuccess() {
-  myselfData()
   isLogin.value = true
+  myselfData()
 }
 function onNavTabPress(target: number) {
   navTab.value = target;

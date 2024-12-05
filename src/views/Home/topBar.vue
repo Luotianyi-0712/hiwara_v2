@@ -13,7 +13,15 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
+import { ref } from "nativescript-vue"
 import { navigateTo } from "../../core/navigate"
+import { toasty, myselfData } from '../../core/viewFunction'
+const avatar = ref<string>('')
+myselfData().then(data => {
+  avatar.value = data.avatar
+}).catch(err => {
+  toasty("用户信息获取失败", "Error")
+})
 
 function toSearch() {
   navigateTo("/search");

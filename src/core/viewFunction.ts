@@ -1,6 +1,8 @@
 import { Toasty } from "@imagene.me/nativescript-toast"
 import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import { getMyselfUserData } from "./api"
+import { saveUserData, getUserData } from "./database"
 
 export function toasty(text: string, type?: 'Success' | 'Error') {
   let variant: any
@@ -82,4 +84,39 @@ function base64Decode(str: string): string {
     }
   }
   return output.replace(/\0/g, '');
+}
+
+export function myselfData(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getUserData().then(data => {
+      if (data.uid == null) {
+        getMyselfUserData().then(res => {
+          saveUserData(res.uid, res.name, res.username, res.avatar, res.createdAt, res.updatedAt, res.email, res.body, res.premium).then(() => {
+            resolve({
+              uid: res.uid,
+              name: res.name,
+              username: res.username,
+              avatar: res.avatar,
+              createdAt: res.createdAt,
+              updatedAt: res.updatedAt,
+              email: res.email,
+              body: res.body,
+              premium: res.premium
+            })
+          }).catch(err => {
+            console.log(err)
+            reject(err)
+          })
+        }).catch(err => {
+          console.log(err)
+          reject(err)
+        })
+      } else {
+        resolve(data)
+      }
+    }).catch(err => {
+      console.log(err)
+      reject(err)
+    })
+  })
 }

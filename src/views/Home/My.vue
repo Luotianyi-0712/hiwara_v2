@@ -1,6 +1,6 @@
 <template>
   <GridLayout rows="auto,*">
-    <GridLayout rows="auto,auto,20px,auto" class="top">
+    <GridLayout rows="auto,75px,20px,auto" class="top">
       <GridLayout row="0" columns="*,32px,32px,32px,32px" class="msg-icon">
         <Label col="1" text="&#xf029;" class="font-awesome-solid" />
         <Label col="2" text="&#xf53f;" class="font-awesome-solid" />
@@ -8,35 +8,33 @@
         <Label col="4" v-if="true" text="&#xf186;" class="font-awesome-solid" />
         <Label col="4" v-else text="&#xf185;" class="font-awesome-solid" />
       </GridLayout>
-      <GridLayout row="1" rows="auto,4px,auto" columns="auto, *,auto">
-        <Img col="0" row="0" rowSpan="3" :src="avatar" class="avatar"
-          placeholderImageUri="~/assets/img/avatar-default.png" />
-        <Label col="1" row="0" text="My Name" class="userName" />
-        <GridLayout v-if="true" col="1" row="2" columns="auto,*">
-          <GridLayout columns="auto,auto" class="tip vip">
-            <Label col="0" text="&#xf005; " class="font-awesome-solid" style="color: #ff5ecc;" />
-            <Label col="1" text="高级会员" />
-          </GridLayout>
+      <GridLayout row="1" columns="auto,*,auto" @tap="toMyZone">
+        <Img col="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
+        <GridLayout col="1" rows="*,*">
+          <Label row="0" :text="name" class="userName" />
+          <StackLayout v-if="premium" row="1" horizontalAlignment="left" verticalAlignment="center" class="tip">
+            <Label text="高级会员" class="vip" />
+          </StackLayout>
+          <StackLayout v-else row="1" horizontalAlignment="left" verticalAlignment="center" class="tip">
+            <Label text="普通用户" />
+          </StackLayout>
         </GridLayout>
-        <GridLayout v-else col="1" row="2" columns="auto,*">
-          <Label col="0" text="普通用户" class="tip" />
-        </GridLayout>
-        <StackLayout row="0" rowSpan="3" col="2" orientation="horizontal" style="opacity: 0.8;">
+        <StackLayout row="0" col="2" orientation="horizontal" style="opacity: 0.8;">
           <Label text="空间" />
           <Label text=" &#xf054;" class="font-awesome-solid" />
         </StackLayout>
       </GridLayout>
       <GridLayout row="3" rows="40px" columns="30px,*,*,*,30px" style="text-align: center;">
         <StackLayout col="1">
-          <Label text="123" style="font-size: 16px;" />
+          <Label :text="posts" style="font-size: 16px;" />
           <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
         <StackLayout col="2" style="border-color:#ffffffcc;border-left-width:1px;border-right-width:1px">
-          <Label text="123" style="font-size: 16px;" />
+          <Label :text="following" style="font-size: 16px;" />
           <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
         <StackLayout col="3">
-          <Label text="123" style="font-size: 16px;" />
+          <Label :text="followers" style="font-size: 16px;" />
           <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
       </GridLayout>
@@ -119,7 +117,41 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'nativescript-vue'
-const avatar = ref('https://avatars.githubusercontent.com/u/39371540?v=4')
+import { myselfData, toasty } from '../../core/viewFunction'
+import { getFollowingList, getFollowersList, getMyPosts } from '../../core/api'
+import { navigateTo } from "../../core/navigate";
+const premium = ref<boolean>(false)
+const avatar = ref<string>('')
+const name = ref<string>('')
+const posts = ref<number | '-'>('-')
+const following = ref<number | '-'>('-')
+const followers = ref<number | '-'>('-')
+let uid: string | null = null
+let username: string | null = null
+myselfData().then(data => {
+  uid = data.uid
+  username = data.username
+  avatar.value = data.avatar
+  name.value = data.name
+  premium.value = data.premium == 1
+}).catch(err => {
+  toasty("用户信息获取失败", "Error")
+})
+getMyPosts(0, 1).then(res => {
+  posts.value = res.count
+})
+getFollowingList(0, 1).then(res => {
+  following.value = res.count
+})
+getFollowersList(0, 1).then(res => {
+  followers.value = res.count
+})
+function toMyZone() {
+  navigateTo('/zone', {
+    uid: uid,
+    username: username
+  })
+}
 </script>
 <style lang="scss" scoped>
 .top {
@@ -135,31 +167,37 @@ const avatar = ref('https://avatars.githubusercontent.com/u/39371540?v=4')
   }
 
   .avatar {
-    width: 140px;
     border-radius: 50%;
   }
 
   .userName {
-    font-size: 18px;
+    font-size: 20px;
     padding: 0 32px;
   }
 
   .tip {
-    font-size: 10px;
-    margin-left: 32px;
-    padding: 2px 8px;
-    opacity: 0.8;
-    border-color: #fff;
-    border-width: 3px;
-    border-radius: 8px;
+    padding: 0 32px;
+
+    Label {
+      font-size: 10px;
+      color: #ffffffcc;
+      border-color: #ffffffcc;
+      border-width: 2px;
+      border-radius: 8px;
+      height: 48px;
+      width: 130px;
+      text-align: center;
+    }
+
+    .vip {
+      color: #ffffff;
+      background-color: #ff5ecc;
+      border-radius: 50%;
+      width: 160px;
+    }
   }
-  .vip{
-    opacity: 1 !important;
-    color: #ff5ecc;
-    font-weight: bold;
-    border-width: 4px;
-    border-color: #ff5ecc;
-  }
+
+
 }
 
 .button {

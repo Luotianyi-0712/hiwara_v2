@@ -3,6 +3,7 @@ import home from "../views/home.vue";
 import search from "../views/search.vue";
 import player from "../views/player.vue";
 import imageview from "../views/imgaeview.vue";
+import zone from "../views/zone.vue";
 
 interface NativeRoute {
   path: string;
@@ -19,6 +20,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/imageview",
     component: imageview
+  }, {
+    path: "/zone",
+    component: zone
   }
 ]
 
