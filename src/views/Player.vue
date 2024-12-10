@@ -5,7 +5,7 @@
         :definitionList="definitionList" :isFullscreen="isFullscreen"
         :height="isFullscreen ? '100%' : widthDIPs * 9 / 16" @onFullscreen="onFullscreen"
         @changeDefinition="changeDefinition" />
-      <loadingAnimation row="1" col="0" v-show="!loading" :class="{ 'visible': loading, 'hidden': !loading }" />
+      <loadingAnimation row="1" col="0" v-show="loading" :class="{ 'visible': loading, 'hidden': !loading }" />
       <errorImg col="0" row="1" text="数据加载失败，请点击尝试" v-show="loadingError"
         :class="{ 'visible': loadingError, 'hidden': !loadingError }" @tap="getData" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0"

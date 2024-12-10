@@ -245,7 +245,7 @@ function toggleExpand() {
         height: props.body ? bodyHeight.value + 'px' : 0, // 动画的目标高度
       }
     ]
-    new Animation(animationDefinition).play().then
+    new Animation(animationDefinition).play()
   }
 }
 function getTitleFoldHeight() {
