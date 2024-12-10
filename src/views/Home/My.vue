@@ -8,7 +8,7 @@
         <Label col="4" v-if="true" text="&#xf186;" class="font-awesome-solid" />
         <Label col="4" v-else text="&#xf185;" class="font-awesome-solid" />
       </GridLayout>
-      <GridLayout row="1" columns="auto,*,auto" @tap="toMyZone">
+      <GridLayout row="1" columns="75px,*,auto" @tap="toMyZone">
         <Img col="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
         <GridLayout col="1" rows="*,*">
           <Label row="0" :text="name" class="userName" />

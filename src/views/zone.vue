@@ -1,16 +1,38 @@
 <template>
   <Page actionBarHidden="true">
     <GridLayout rows="auto, *">
-      <GridLayout row="0" rowSpan="2" rows="60px,30px,70px, *">
+      <GridLayout row="0" rowSpan="2" rows="60px,30px,90px,*">
         <GridLayout row="0" rowSpan="2" style="background-color:#00796B;"></GridLayout>
-        <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 60px;">
-          <Img :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
+        <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 40px;">
+          <GridLayout col="0" rows="100px,*">
+            <Img row="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
+          </GridLayout>
+          <GridLayout col="1" rows="30px,4px,auto,4px,*" style="padding-left: 40px;">
+            <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
+              <StackLayout col="0">
+                <Label text="123" style="font-size: 16px;" />
+                <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
+              </StackLayout>
+              <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px">
+                <Label text="123" style="font-size: 16px;" />
+                <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
+              </StackLayout>
+              <StackLayout col="2">
+                <Label text="123" style="font-size: 16px;" />
+                <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
+              </StackLayout>
+            </GridLayout>
+            <Button col="1" row="4" text="关注" />
+          </GridLayout>
         </GridLayout>
-        <GridLayout row="2" rows="auto,*">
-        </GridLayout>
-        <GridLayout row="3" rows="auto,*">
-          <Label row="0" :text="username" />
-        </GridLayout>
+        <StackLayout row="3" style="padding:0 40px;">
+          <StackLayout orientation="horizontal">
+            <Label :text="uname" class="userName" />
+            <StackLayout verticalAlignment="center" >
+              <Label text="高级会员" class="vip" />
+            </StackLayout>
+          </StackLayout>
+        </StackLayout>
       </GridLayout>
       <StackLayout col="0" row="0" orientation="horizontal" style="padding: 0 10px;">
         <Label text="&#xf104;" class="font-awesome-solid back-icon" @tap="navigateBack" />
@@ -29,9 +51,11 @@ const props = defineProps<{
   username: string
 }>()
 const avatar = ref('')
+const uname = ref('')
 getZoneUserData(props.username).then(data => {
   console.log(data)
   avatar.value = data.avatar
+  uname.value = data.name
 }).catch(err => {
   console.log(err)
   toasty("用户信息获取失败", "Error")
@@ -51,5 +75,18 @@ getZoneUserData(props.username).then(data => {
   border-radius: 50%;
   border-color: #f2f2f2;
   border-width: 8px;
+}
+
+.userName {
+  font-size: 22px;
+}
+
+.vip {
+  color: #ffffff;
+  background-color: #ff5ecc;
+  border-radius: 50%;
+  padding: 4px 20px;
+  font-size: 12px;
+  margin-left: 20px;
 }
 </style>
