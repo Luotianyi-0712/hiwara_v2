@@ -94,7 +94,7 @@ function closeDrawer() {
   detailId.value = ''
 }
 function addComment() {
-  console.log(myComments.value)
+  // console.log(myComments.value)
   if (myComments.value.length > 0) {
     if (replyParentId) {
       addCommentForVideo(props.id, myComments.value, replyParentId).then(() => {
@@ -126,7 +126,7 @@ function addCommentsBlur() {
   addCommentsRef.value.nativeView.dismissSoftInput()
 }
 function addCommentsInputBlur() {
-  console.log('addCommentsInputBlur')
+  // console.log('addCommentsInputBlur')
   replyParentId = null
 }
 </script>

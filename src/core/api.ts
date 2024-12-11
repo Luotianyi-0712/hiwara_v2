@@ -348,12 +348,49 @@ export function getSystemTestimonialsVideoList(exclude: string): Promise<VideoIt
   })
 }
 
+export function getUserZoneVideoList(uid: string, page: number, sort: string): Promise<VideoItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 32,
+      sort: sort,
+      page: page,
+      user: uid
+    }
+    get(apiPath + '/videos', query).then(data => {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
+          loss: item.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
 interface VideoData {
   id: string,
   title: string,
   slug: string,
   up: string,
   uid: string,
+  username: string,
   body: string | null,
   numViews: number,
   numLikes: number,
@@ -380,6 +417,7 @@ export function getVideoData(id: string): Promise<VideoData> {
         slug: data.slug,
         up: data.user.name,
         uid: data.user.id,
+        username: data.user.username,
         body: data.body,
         numViews: data.numViews,
         numLikes: data.numLikes,
@@ -615,6 +653,7 @@ interface ImageData {
   slug: string,
   up: string,
   uid: string,
+  username: string,
   body: string | null,
   numViews: number,
   numLikes: number,
@@ -641,6 +680,7 @@ export function getImageData(id: string): Promise<ImageData> {
         slug: data.slug,
         up: data.user.name,
         uid: data.user.id,
+        username: data.user.username,
         body: data.body,
         numViews: data.numViews,
         numLikes: data.numLikes,

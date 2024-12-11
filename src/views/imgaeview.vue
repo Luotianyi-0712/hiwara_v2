@@ -9,10 +9,10 @@
         <ScrollView col="0" row="1"
           :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }">
           <StackLayout>
-            <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews"
-              :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following"
-              :friend="friend" :thumbnail="thumbnail" :avatar="avatar" @navigateToComments="navigateToComments"
-              @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
+            <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :username="username" :body="body"
+              :numViews="numViews" :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked"
+              :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar"
+              @navigateToComments="navigateToComments" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
             <recommend ref="recommendRef" :pid="id" :uid="uid" />
           </StackLayout>
         </ScrollView>
@@ -36,7 +36,7 @@ import preview from './imageview/preview.vue'
 import recommend from './imageview/recommend.vue'
 import comments from './imageview/comments.vue'
 import loadingAnimation from './components/loadingAnimation.vue'
-import errorImg from './components/errorImg.vue';
+import errorImg from './components/errorImg.vue'
 const props = defineProps<{
   id: string;
 }>();
@@ -45,6 +45,7 @@ const title = ref<string>('')
 const slug = ref<string | null>('')
 const up = ref<string>('')
 const uid = ref<string>('')
+const username = ref<string>('')
 const body = ref<string | null>('')
 const numViews = ref<number>(0)
 const numLikes = ref<number>(0)
@@ -67,6 +68,7 @@ function getData() {
     slug.value = res.slug
     up.value = res.up
     uid.value = res.uid
+    username.value = res.username
     body.value = res.body
     numViews.value = res.numViews
     numLikes.value = res.numLikes

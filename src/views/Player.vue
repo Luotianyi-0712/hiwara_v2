@@ -35,9 +35,9 @@
           <PagerItem>
             <ScrollView>
               <StackLayout>
-                <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :body="body" :numViews="numViews"
-                  :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked" :following="following"
-                  :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :files="files"
+                <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :username="username" :body="body"
+                  :numViews="numViews" :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked"
+                  :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :files="files"
                   :definitionList="definitionList" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
               </StackLayout>
@@ -71,6 +71,7 @@ const title = ref<string>('')
 const slug = ref<string>('')
 const up = ref<string>('')
 const uid = ref<string>('')
+const username = ref<string>('')
 const body = ref<string | null>('')
 const numViews = ref<number>(0)
 const numLikes = ref<number>(0)
@@ -171,6 +172,7 @@ function getData() {
     up.value = res.up
     uid.value = res.uid
     body.value = res.body
+    username.value = res.username
     numViews.value = res.numViews
     numLikes.value = res.numLikes
     createdAt.value = res.createdAt
@@ -262,7 +264,7 @@ function switchDefinition() {
   })
 }
 function changeDefinition(val: string) {
-  console.log(val)
+  // console.log(val)
   definition.value = val
 }
 function onFullscreen() {

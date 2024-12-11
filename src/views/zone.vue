@@ -4,80 +4,79 @@
       <loadingAnimation row="0" rowSpan="2" v-show="loading" :class="{ 'visible': loading, 'hidden': !loading }" />
       <errorImg row="0" rowSpan="2" text="数据加载失败，请点击尝试" v-show="loadingError"
         :class="{ 'visible': loadingError, 'hidden': !loadingError }" @tap="thisGetZoneUserData" />
-      <ScrollView row="0" rowSpan="2" v-show="!loading && !loadingError"
-        :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }" @scroll="onScroll">
-        <StackLayout>
-          <GridLayout rows="60px,30px,90px">
-            <GridLayout row="0" rowSpan="2" style="background-color:#00796B;"></GridLayout>
-            <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 40px;">
-              <GridLayout col="0" rows="100px,*">
-                <Img row="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
-              </GridLayout>
-              <GridLayout col="1" rows="30px,4px,auto,4px,*" style="padding-left: 40px;">
-                <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
-                  <StackLayout col="0">
-                    <Label text="123" style="font-size: 16px;color:#262626;" />
-                    <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
-                  </StackLayout>
-                  <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px">
-                    <Label text="123" style="font-size: 16px;color:#262626;" />
-                    <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
-                  </StackLayout>
-                  <StackLayout col="2">
-                    <Label text="123" style="font-size: 16px;color:#262626;" />
-                    <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
-                  </StackLayout>
-                </GridLayout>
-                <Button col="1" row="4" text="关注" />
-              </GridLayout>
-            </GridLayout>
+      <GridLayout row="0" rowSpan="2" v-show="!loading && !loadingError"
+        :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }" @scroll="onScroll"
+        rows="60px,30px,90px,auto,auto,auto,*">
+        <GridLayout row="0" rowSpan="2" style="background-color:#00796B;"></GridLayout>
+        <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 40px;">
+          <GridLayout col="0" rows="100px,*">
+            <Img row="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
           </GridLayout>
-          <StackLayout style="padding:0 40px;background-color: aqua;">
-            <ScrollView style="opacity: 0;height: 0px;">
-              <StackLayout>
-                <Label ref="signBodyFoldShadow" :text="body" class="signBody" @layoutChanged="getSignBodyFoldHeight" />
-                <GridLayout ref="signBodyUnfoldShadow" rows="auto,auto" class="signBody"
-                  @layoutChanged="getSignBodyUnfoldHeight">
-                  <Label row="0" :text="body" textWrap="true" />
-                  <Label row="1" :text="username" textWrap="true" />
-                </GridLayout>
+          <GridLayout col="1" rows="30px,4px,auto,4px,*" style="padding-left: 40px;">
+            <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
+              <StackLayout col="0">
+                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
-            </ScrollView>
-            <StackLayout orientation="horizontal">
-              <Label :text="uname" class="userName" />
-              <StackLayout verticalAlignment="center">
-                <Label v-if="premium" text="高级会员" class="vip" />
+              <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px">
+                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
-            </StackLayout>
-            <GridLayout rows="auto,auto" columns="*,auto" @tap="toggleExpand" class="signBody" ref="signBodyRef">
-              <Label row="0" col="0" :text="body" :textWrap="allInfo" />
-              <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3" />
-              <StackLayout row="1" orientation="horizontal" v-if="allInfo">
-                <Label text="&#xf2bb;  " class="font-awesome-regular" />
-                <Label :text="'@' + username" />
+              <StackLayout col="2">
+                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
             </GridLayout>
-            <GridLayout ref="tabsRef" row="1" rows="35px,3px" columns="*,*,*" class="tab">
-              <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
-              <Label text="图片" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
-              <Label text="发布" row="0" col="2" @tap="onTabPress(2)" textAlignment="center" />
-              <StackLayout row="1" col="0" class="tab-bar" :class="{ 'hidden': tab != 0, 'visible': tab == 0 }">
-              </StackLayout>
-              <StackLayout row="1" col="1" class="tab-bar" :class="{ 'hidden': tab != 1, 'visible': tab == 1 }">
-              </StackLayout>
-              <StackLayout row="1" col="2" class="tab-bar" :class="{ 'hidden': tab != 2, 'visible': tab == 2 }">
-              </StackLayout>
+            <Button col="1" row="4" text="关注" />
+          </GridLayout>
+        </GridLayout>
+        <ScrollView row="3" style="opacity: 0;height: 0px;">
+          <StackLayout>
+            <Label ref="signBodyFoldShadow" :text="body" class="signBody" @layoutChanged="getSignBodyFoldHeight" />
+            <GridLayout ref="signBodyUnfoldShadow" rows="auto,auto" class="signBody"
+              @layoutChanged="getSignBodyUnfoldHeight">
+              <Label row="0" :text="body" textWrap="true" />
+              <Label row="1" :text="username" textWrap="true" />
             </GridLayout>
-            <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
-              <PagerItem v-for="i in 3">
-                <videoList />
-                <imageList />
-                <publish />
-              </PagerItem>
-            </Pager>
+          </StackLayout>
+        </ScrollView>
+        <StackLayout row="3" orientation="horizontal">
+          <Label :text="uname" class="userName" />
+          <StackLayout verticalAlignment="center">
+            <Label v-if="premium" text="高级会员" class="vip" />
           </StackLayout>
         </StackLayout>
-      </ScrollView>
+        <GridLayout row="4" rows="auto,auto" columns="*,auto" @tap="toggleExpand" class="signBody" ref="signBodyRef">
+          <Label row="0" col="0" :text="body" :textWrap="allInfo" />
+          <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3" />
+          <StackLayout row="1" orientation="horizontal" v-if="allInfo">
+            <Label text="&#xf2bb;  " class="font-awesome-regular" />
+            <Label :text="'@' + username" />
+          </StackLayout>
+        </GridLayout>
+        <GridLayout row="5" ref="tabsRef" rows="35px,3px" columns="*,*,*" class="tab">
+          <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
+          <Label text="图片" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
+          <Label text="发布" row="0" col="2" @tap="onTabPress(2)" textAlignment="center" />
+          <StackLayout row="1" col="0" class="tab-bar" :class="{ 'hidden': tab != 0, 'visible': tab == 0 }">
+          </StackLayout>
+          <StackLayout row="1" col="1" class="tab-bar" :class="{ 'hidden': tab != 1, 'visible': tab == 1 }">
+          </StackLayout>
+          <StackLayout row="1" col="2" class="tab-bar" :class="{ 'hidden': tab != 2, 'visible': tab == 2 }">
+          </StackLayout>
+        </GridLayout>
+        <Pager row="6" :selectedIndex="tab" @selectedIndexChange="onTabChange">
+          <PagerItem>
+            <videoList :uid="props.uid" />
+          </PagerItem>
+          <PagerItem>
+            <imageList />
+          </PagerItem>
+          <PagerItem>
+            <publish />
+          </PagerItem>
+        </Pager>
+      </GridLayout>
       <StackLayout col="0" row="0" orientation="horizontal" style="padding: 0 10px;">
         <Label text="&#xf104;" class="font-awesome-solid back-icon" @tap="navigateBack" />
         <Label text="&#xf80b;" class="font-awesome-solid back-icon" @tap="navigateBackHome" />
@@ -88,8 +87,8 @@
 <script lang="ts" setup>
 import loadingAnimation from './components/loadingAnimation.vue'
 import errorImg from './components/errorImg.vue'
-import videoList from './zone/videoList.vue'
-import imageList from './zone/imageList.vue'
+import videoList from './zone/video.vue'
+import imageList from './zone/image.vue'
 import publish from './zone/publish.vue'
 import { ref, defineProps, onMounted } from 'nativescript-vue'
 import { getZoneUserData } from '../core/api'
@@ -124,7 +123,7 @@ function thisGetZoneUserData() {
   loading.value = true
   loadingError.value = false
   getZoneUserData(props.username).then(data => {
-    console.log(data)
+    // console.log(data)
     avatar.value = data.avatar
     uname.value = data.name
     body.value = data.body ? data.body : '这家伙很懒，什么都没有写~'
@@ -198,6 +197,7 @@ function onScroll(args: any) {
 .userName {
   font-size: 22px;
   color: #262626;
+  padding: 0 40px;
 }
 
 .vip {
@@ -210,7 +210,7 @@ function onScroll(args: any) {
 }
 
 .signBody {
-  padding: 30px 0;
+  padding: 30px 40px;
   border-color: #c0c0c0;
   border-bottom-width: 1px;
 }

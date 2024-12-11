@@ -128,7 +128,7 @@ function addCommentsBlur() {
   addCommentsRef.value.nativeView.dismissSoftInput()
 }
 function addCommentsInputBlur() {
-  console.log('addCommentsInputBlur')
+  // console.log('addCommentsInputBlur')
   replyParentId = null
 }
 </script>

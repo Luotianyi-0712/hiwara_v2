@@ -1,11 +1,11 @@
 <template>
   <StackLayout style="padding: 20px 20px 0 20px;">
     <GridLayout columns="50px,*,100px" rows="50px">
-      <StackLayout col="0" row="0">
+      <StackLayout @tap="toUserZone" col="0" row="0">
         <Img src="https://www.iwara.tv/images/default-avatar.jpg" failureImageUri="~/assets/img/not-img.jpg"
           placeholderImageUri="~/assets/img/placeholder.png" stretch="aspectFill" class="avatar" fadeDuration="300" />
       </StackLayout>
-      <Label col="1" row="0" :text="up" class="up" />
+      <Label @tap="toUserZone" col="1" row="0" :text="up" class="up" />
       <StackLayout col="2" row="0">
         <Button :text="following ? '已关注' : '关注'" @tap="followersButtonTap" />
       </StackLayout>
@@ -61,12 +61,14 @@ import { Animation, AnimationDefinition } from '@nativescript/core'
 import { likeImage, unLikeImage, followers, disFollowers } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import * as SocialShare from "@nativescript/social-share"
+import { navigateTo } from "../../core/navigate"
 const props = defineProps<{
   title: string,
   slug: string | null,
   id: string,
   up: string,
   uid: string,
+  username: string,
   body: string | null,
   numViews: number,
   numLikes: number,
@@ -91,7 +93,7 @@ const bodyHeight = ref(0)
 let likeing = false
 let followering = false
 onMounted(() => {
-  console.log('已加载info')
+  // console.log('已加载info')
 })
 function likeButtonTap() {
   if (!likeing) {
@@ -118,7 +120,7 @@ function likeButtonTap() {
   }
 }
 function followersButtonTap() {
-  console.log(followering)
+  // console.log(followering)
   if (!followering) {
     followering = true
     if (props.following) {
@@ -216,6 +218,12 @@ function getTitleUnfoldHeight() {
 }
 function getBodyHeight() {
   bodyHeight.value = bodyShadow.value.nativeView.getMeasuredHeight()
+}
+function toUserZone() {
+  navigateTo('/zone', {
+    uid: props.uid,
+    username: props.username
+  })
 }
 </script>
 <style lang="scss" scoped>

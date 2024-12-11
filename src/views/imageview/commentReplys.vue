@@ -79,7 +79,7 @@ function flush() {
   })
 }
 function addComment() {
-  console.log(myComments.value)
+  // console.log(myComments.value)
   if (myComments.value.length > 0) {
     addCommentForImage(props.id, myComments.value, props.detailId).then(() => {
       toasty('评论发送成功！', 'Success')

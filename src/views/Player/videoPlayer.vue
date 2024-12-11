@@ -172,10 +172,10 @@ function onPlaybackReady() {
     videoPlayerRef.value.nativeView.pause()
     pause.value = true
   }
-  console.log('视频加载完成')
-  console.log('duration: ' + duration.value)
-  console.log('width: ' + metadataWidth)
-  console.log('height: ' + metadataHeight)
+  // console.log('视频加载完成')
+  // console.log('duration: ' + duration.value)
+  // console.log('width: ' + metadataWidth)
+  // console.log('height: ' + metadataHeight)
 }
 function onPlay() {
   // console.log('onPlay')
@@ -218,7 +218,7 @@ function onSliderTouch(args: any) {
     case 'up':
       sliderChangeIng.value = false
       videoPlayerRef.value.nativeView.seekToTime(sliderValue.value)
-      console.log('跳转到: ' + sliderValue.value)
+      // console.log('跳转到: ' + sliderValue.value)
       hiddenTimer = setTimeout(hiddenPlayer, 5000)
       if (finished.value) {
         finished.value = false
@@ -270,7 +270,7 @@ function swipeToChangeTheProgress(args: any) {
           }
         }
         videoPlayerRef.value.nativeView.seekToTime(sliderValue.value)
-        console.log('跳转到: ' + sliderValue.value)
+        // console.log('跳转到: ' + sliderValue.value)
         sliderValueAdd.value = 0
         sliderChangeIng.value = false
         if (finished.value) {
@@ -383,7 +383,7 @@ function changeBrightness(args: any) {
       break;
   }
   function setBrightness(val: number) {
-    console.log('val:', val)
+    // console.log('val:', val)
     brightness.set({
       intensity: linearToGamma(val),
     })
@@ -427,7 +427,7 @@ function changeVolume(args: any) {
       }
       if (volumerTigger) {
         const change = volumeLevel.value - add
-        console.log(change)
+        // console.log(change)
         if (change > 0 && change < 100) {
           volumerCatch.value = add
           setVolume(change)

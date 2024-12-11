@@ -119,7 +119,7 @@
 import { ref } from 'nativescript-vue'
 import { myselfData, toasty } from '../../core/viewFunction'
 import { getFollowingList, getFollowersList, getMyPosts } from '../../core/api'
-import { navigateTo } from "../../core/navigate";
+import { navigateTo } from "../../core/navigate"
 const premium = ref<boolean>(false)
 const avatar = ref<string>('')
 const name = ref<string>('')

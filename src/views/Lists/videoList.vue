@@ -1,9 +1,8 @@
 <template>
-  <ListView :items="items" @loadMoreItems="$emit('loadMoreItems')" separatorColor="transparent"
-    style="padding-top: 10px;">
+  <ListView :items="items" @loadMoreItems="$emit('loadMoreItems')" separatorColor="transparent">
     <template #default="{ item, index }">
       <StackLayout>
-        <GridLayout rows="*" columns="*,*" class="visible">
+        <GridLayout rows="*" columns="*,*" class="visible" style="padding: 0 8px;">
           <videoItem v-for="i in 2" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
             :img="item[i - 1].img" :up="item[i - 1].up" :createdAt="item[i - 1].createdAt"
             :duration="item[i - 1].duration" :numViews="item[i - 1].numViews" :numLikes="item[i - 1].numLikes"
