@@ -3,7 +3,7 @@
     <template #default="{ item, index }">
       <StackLayout>
         <GridLayout rows="*" columns="*,*" class="visible" style="padding: 0 8px;">
-          <imageItem v-for="i in 2" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
+          <imageItem v-for="i in item.length" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
             :img="item[i - 1].img" :up="item[i - 1].up" :createdAt="item[i - 1].createdAt"
             :numImages="item[i - 1].numImages" :numViews="item[i - 1].numViews" :numLikes="item[i - 1].numLikes"
             :ecchi="item[i - 1].ecchi" />

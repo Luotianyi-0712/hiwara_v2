@@ -3,13 +3,23 @@
     <template #default="{ item, index }">
       <StackLayout>
         <GridLayout rows="*" columns="*,*" class="visible" style="padding: 0 8px;">
-          <videoItem v-for="i in 2" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
+          <videoItem v-for="i in item.length" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
             :img="item[i - 1].img" :up="item[i - 1].up" :createdAt="item[i - 1].createdAt"
             :duration="item[i - 1].duration" :numViews="item[i - 1].numViews" :numLikes="item[i - 1].numLikes"
             :ecchi="item[i - 1].ecchi" />
         </GridLayout>
-        <ActivityIndicator v-if="index === items.length - 1" color="#00796B" height="80px" width="100%"
-          style="margin:20px 0;" :busy="true" />
+        <GridLayout v-if="index === items.length - 1" rows="6px,30px,6px" columns="*">
+          <ActivityIndicator v-if="props.loading" row="1" col="0" color="#00796B" :busy="true" />
+          <StackLayout v-else row="1" col="0" orientation="horizontal" horizontalAlignment="center">
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+            <Label text=" 已经到底了 " class="alimamafont" />
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+            <Label text="&#xf068;" class="text font-awesome-solid" />
+          </StackLayout>
+        </GridLayout>
       </StackLayout>
     </template>
   </ListView>
@@ -35,9 +45,10 @@ const props = defineProps({
   data: {
     type: Array as PropType<Item[]>,
     required: true
-  }
+  },
+  loading: Boolean
 })
-const items = ref(new ObservableArray<Item[][]>());
+const items = ref(new ObservableArray<Item[][]>())
 if (props.data.length > 0) {
   items.value = refactorArray(props.data)
 }
@@ -45,18 +56,24 @@ watch(() => props.data, (newValue) => {
   items.value = refactorArray(newValue)
 })
 function refactorArray(arr: any[]) {
-  return arr.reduce((acc: Item[][], value: Item, index: number, array: Item[]) => {
+  const resultArr = arr.reduce((acc: Item[][], value: Item, index: number, array: Item[]) => {
     if (index % 2 === 0) {
       acc.push([value]);
     } else {
       acc[acc.length - 1].push(value);
     }
     return acc;
-  }, []);
+  }, [])
+  return resultArr
 }
 </script>
 
 <style scoped lang="scss">
+.alimamafont {
+  font-family: "Alimama FangYuanTi VF Thin", "AlimamaFangYuanTiVF-Thin-2";
+  font-weight: 400;
+}
+
 .visible {
   animation-name: animeVisible;
   animation-duration: 200ms;

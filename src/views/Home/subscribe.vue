@@ -11,7 +11,7 @@
       <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
         <PagerItem>
           <GridLayout rows="*">
-            <videoList row="0" :data="videoListData" @loadMoreItems="videoNextPage"
+            <videoList row="0" :data="videoListData" :loading="videoLoading" @loadMoreItems="videoNextPage"
               :class="{ 'visible': videoOnload && !videoLoadError, 'hidden': !videoOnload || videoLoadError }" />
             <loadingAnimation row="0" v-show="!videoOnload"
               :class="{ 'visible': !videoOnload, 'hidden': videoOnload }" />
@@ -78,8 +78,8 @@ const imageLoadError = ref(false)
 const tab = ref(0)
 let videoPage = 0;
 let imagePage = 0;
-let videoLoading = false;
-let imageLoading = false;
+const videoLoading = ref(false)
+const imageLoading = ref(false)
 getVideoList().then((res) => {
   if (res) {
     videoListData.value = res
@@ -162,8 +162,8 @@ function imageNextPage() {
 }
 function getVideoList(): Promise<VideoItem[] | null> {
   return new Promise((resolve, reject) => {
-    if (!videoLoading) {
-      videoLoading = true
+    if (!videoLoading.value) {
+      videoLoading.value = true
       getSubscribeVideoList(videoPage).then(res => {
         videoPage++
         resolve(res)
@@ -171,7 +171,7 @@ function getVideoList(): Promise<VideoItem[] | null> {
         reject()
         toasty('数据加载失败了喵~', 'Error')
       }).finally(() => {
-        videoLoading = false
+        videoLoading.value = false
       })
     } else {
       resolve(null)
@@ -180,8 +180,8 @@ function getVideoList(): Promise<VideoItem[] | null> {
 }
 function getImageList(): Promise<ImageItem[] | null> {
   return new Promise((resolve, reject) => {
-    if (!imageLoading) {
-      imageLoading = true;
+    if (!imageLoading.value) {
+      imageLoading.value = true;
       getSubscribeImageList(imagePage).then(res => {
         imagePage++
         resolve(res)
@@ -189,7 +189,7 @@ function getImageList(): Promise<ImageItem[] | null> {
         reject()
         toasty('数据加载失败了喵~', 'Error')
       }).finally(() => {
-        imageLoading = false
+        imageLoading.value = false
       })
     } else {
       resolve(null)

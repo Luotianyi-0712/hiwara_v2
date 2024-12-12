@@ -2,6 +2,17 @@
   <GridLayout rows="*">
     <videoList row="0" :data="listData" @loadMoreItems="nextPage"
       :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }" />
+    <!-- <ListView :items="listData" @loadMoreItems="nextPage">
+      <template #default="{ item, index }">
+        <StackLayout>
+          <Label :text="index" />
+          <Label :text="item.id" />
+          <Label :text="item.title" />
+          <Label :text="item.up" />
+          <Label :text="item.loss" />
+        </StackLayout>
+      </template>
+</ListView> -->
     <loadingAnimation row="0" v-show="!onloaded" :class="{ 'visible': !onloaded, 'hidden': onloaded }" />
     <errorImg text="数据加载失败，请点击重试" @tap="retry" v-show="loadError"
       :class="{ 'visible': loadError, 'hidden': !loadError }" />
