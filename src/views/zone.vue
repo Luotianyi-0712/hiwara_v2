@@ -7,7 +7,9 @@
       <GridLayout row="0" rowSpan="2" v-show="!loading && !loadingError"
         :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }" @scroll="onScroll"
         rows="60px,30px,90px,auto,auto,auto,*">
-        <GridLayout row="0" rowSpan="2" style="background-color:#00796B;"></GridLayout>
+        <GridLayout row="0" rowSpan="2" rows="*" col="*" class="bgImg">
+          <Img row="0" col="0" :src="background" />
+        </GridLayout>
         <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 40px;">
           <GridLayout col="0" rows="100px,*">
             <Img row="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
@@ -15,29 +17,30 @@
           <GridLayout col="1" rows="30px,4px,auto,4px,*" style="padding-left: 40px;">
             <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
               <StackLayout col="0">
-                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label :text="postsNum" style="font-size: 16px;color:#262626;" />
                 <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
               <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px">
-                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label :text="followingNum" style="font-size: 16px;color:#262626;" />
                 <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
               <StackLayout col="2">
-                <Label text="123" style="font-size: 16px;color:#262626;" />
+                <Label :text="followersNum" style="font-size: 16px;color:#262626;" />
                 <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
             </GridLayout>
-            <Button col="1" row="4" text="关注" />
+            <Button v-if="isMyself" col="1" row="4" text="编辑资料" />
+            <Button v-else col="1" row="4" :text="following ? '已关注' : '关注'" @tap="followersButtonTap" />
           </GridLayout>
         </GridLayout>
         <ScrollView row="3" style="opacity: 0;height: 0px;">
           <StackLayout>
             <Label ref="signBodyFoldShadow" :text="body" class="signBody" @layoutChanged="getSignBodyFoldHeight" />
-            <GridLayout ref="signBodyUnfoldShadow" rows="auto,auto" class="signBody"
+            <GridLayout ref="signBodyUnfoldShadow" rows="auto" class="signBody"
               @layoutChanged="getSignBodyUnfoldHeight">
               <Label row="0" :text="body" textWrap="true" />
-              <Label row="1" :text="username" textWrap="true" />
             </GridLayout>
+            <Label :text="username" textWrap="true" />
           </StackLayout>
         </ScrollView>
         <StackLayout row="3" orientation="horizontal">
@@ -46,8 +49,10 @@
             <Label v-if="premium" text="高级会员" class="vip" />
           </StackLayout>
         </StackLayout>
-        <GridLayout row="4" rows="auto,auto" columns="*,auto" @tap="toggleExpand" class="signBody" ref="signBodyRef">
-          <Label row="0" col="0" :text="body" :textWrap="allInfo" />
+        <GridLayout row="4" rows="auto,auto" columns="*,auto" @tap="toggleExpand" class="signBody">
+          <ScrollView row="0" col="0" ref="signBodyRef">
+            <Label :text="body" :textWrap="allInfo" />
+          </ScrollView>
           <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3" />
           <StackLayout row="1" orientation="horizontal" v-if="allInfo">
             <Label text="&#xf2bb;  " class="font-awesome-regular" />
@@ -70,10 +75,10 @@
             <videoList :uid="props.uid" />
           </PagerItem>
           <PagerItem>
-            <imageList />
+            <imageList :uid="props.uid" />
           </PagerItem>
           <PagerItem>
-            <publish />
+            <publish :uid="props.uid" />
           </PagerItem>
         </Pager>
       </GridLayout>
@@ -90,10 +95,10 @@ import errorImg from './components/errorImg.vue'
 import videoList from './zone/video.vue'
 import imageList from './zone/image.vue'
 import publish from './zone/publish.vue'
-import { ref, defineProps, onMounted } from 'nativescript-vue'
-import { getZoneUserData } from '../core/api'
+import { ref, defineProps } from 'nativescript-vue'
+import { getZoneUserData, getFollowingList, getFollowersList, getPosts, followers, disFollowers } from '../core/api'
 import { navigateBack, navigateBackHome } from '../core/navigate'
-import { toasty } from '../core/viewFunction'
+import { myselfData, toasty } from '../core/viewFunction'
 import { Animation, AnimationDefinition } from '@nativescript/core'
 const props = defineProps<{
   uid: string
@@ -103,6 +108,7 @@ const loading = ref<boolean>(true)
 const loadingError = ref<boolean>(false)
 const tab = ref(0)
 const allInfo = ref(false)
+const isMyself = ref(true)
 
 let signBodyFoldHeight = 0
 let signBodyUnfoldHeight = 0
@@ -115,9 +121,30 @@ const tabsRef = ref()
 const avatar = ref('')
 const uname = ref('')
 const body = ref('')
+const background = ref('')
 const premium = ref<boolean>(false)
+const postsNum = ref<number | '-'>('-')
+const followingNum = ref<number | '-'>('-')
+const followersNum = ref<number | '-'>('-')
+const following = ref(false)
 
+myselfData().then(data => {
+  if (data.uid == props.uid) {
+    isMyself.value = true
+  } else {
+    isMyself.value = false
+  }
+})
 thisGetZoneUserData()
+getPosts(props.uid, 0, 1).then(res => {
+  postsNum.value = res.count
+})
+getFollowingList(props.uid, 0, 1).then(res => {
+  followingNum.value = res.count
+})
+getFollowersList(props.uid, 0, 1).then(res => {
+  followersNum.value = res.count
+})
 
 function thisGetZoneUserData() {
   loading.value = true
@@ -128,6 +155,8 @@ function thisGetZoneUserData() {
     uname.value = data.name
     body.value = data.body ? data.body : '这家伙很懒，什么都没有写~'
     premium.value = data.premium
+    background.value = data.header ? data.header : data.avatar
+    following.value = data.following
   }).catch(err => {
     console.log(err)
     loadingError.value = true
@@ -158,11 +187,17 @@ function toggleExpand() {
     })
   } else {
     allInfo.value = !allInfo.value
+    let height
+    if (signBodyUnfoldHeight <= 200) {
+      height = signBodyUnfoldHeight
+    } else {
+      height = 200
+    }
     const animationDefinition: AnimationDefinition[] = [
       {
         target: signBodyRef.value.nativeView, // 动画的目标视图
         duration: 200, // 动画持续时间，单位为毫秒
-        height: signBodyUnfoldHeight + 'px', // 动画的目标高度
+        height: height + 'px', // 动画的目标高度
       }
     ]
     new Animation(animationDefinition).play()
@@ -177,6 +212,23 @@ function getSignBodyUnfoldHeight() {
 function onScroll(args: any) {
   console.log(args.scrollY)
 }
+function followersButtonTap() {
+  if (following.value) {
+    // 已关注
+    following.value = false
+    disFollowers(props.uid).catch((err) => {
+      following.value = true
+      toasty('操作失败了喵~', 'Error')
+    })
+  } else {
+    // 未关注
+    following.value = true
+    followers(props.uid).catch((err) => {
+      following.value = false
+      toasty('操作失败了喵~', 'Error')
+    })
+  }
+}
 </script>
 <style scoped lang="scss">
 .back-icon {
@@ -185,7 +237,12 @@ function onScroll(args: any) {
   width: 80px;
   margin: 40px 10px;
   text-align: center;
-  color: #fff
+  color: #fff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+}
+
+.bgImg {
+  background-color: #afafaf;
 }
 
 .avatar {

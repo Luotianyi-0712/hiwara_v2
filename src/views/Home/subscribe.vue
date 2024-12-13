@@ -21,7 +21,7 @@
         </PagerItem>
         <PagerItem>
           <GridLayout rows="*">
-            <imageList row="0" :data="imageListData" @loadMoreItems="imageNextPage"
+            <imageList row="0" :data="imageListData" :loading="imageLoading" @loadMoreItems="imageNextPage"
               :class="{ 'visible': imageOnload && !imageLoadError, 'hidden': !imageOnload || imageLoadError }" />
             <loadingAnimation row="0" :class="{ 'visible': !imageOnload, 'hidden': imageOnload }" />
             <errorImg text="数据加载失败，请点击重试" @tap="imageRetry"
@@ -76,10 +76,12 @@ const imageOnload = ref(false)
 const videoLoadError = ref(false)
 const imageLoadError = ref(false)
 const tab = ref(0)
-let videoPage = 0;
-let imagePage = 0;
 const videoLoading = ref(false)
 const imageLoading = ref(false)
+let videoPage = 0
+let imagePage = 0
+let videoEnd = false
+let imageEnd = false
 getVideoList().then((res) => {
   if (res) {
     videoListData.value = res
@@ -118,6 +120,7 @@ watch(tab, (val) => {
 })
 function videoRetry() {
   videoPage = 0
+  videoEnd = false
   videoListData.value = []
   videoOnload.value = false
   videoLoadError.value = false
@@ -133,6 +136,7 @@ function videoRetry() {
 }
 function imageRetry() {
   imagePage = 0
+  imageEnd = false
   imageListData.value = []
   imageOnload.value = false
   imageLoadError.value = false
@@ -147,18 +151,26 @@ function imageRetry() {
   })
 }
 function videoNextPage() {
-  getVideoList().then((res) => {
-    if (res) {
-      videoListData.value = videoListData.value.concat(res)
-    }
-  })
+  if (!videoEnd) {
+    getVideoList().then((res) => {
+      if (res) {
+        videoListData.value = videoListData.value.concat(res)
+      } else {
+        videoEnd = true
+      }
+    })
+  }
 }
 function imageNextPage() {
-  getImageList().then((res) => {
-    if (res) {
-      imageListData.value = imageListData.value.concat(res)
-    }
-  })
+  if (!imageEnd) {
+    getImageList().then((res) => {
+      if (res) {
+        imageListData.value = imageListData.value.concat(res)
+      } else {
+        imageEnd = true
+      }
+    })
+  }
 }
 function getVideoList(): Promise<VideoItem[] | null> {
   return new Promise((resolve, reject) => {

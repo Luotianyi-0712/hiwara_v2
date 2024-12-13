@@ -1,18 +1,7 @@
 <template>
   <GridLayout rows="*">
-    <videoList row="0" :data="listData" @loadMoreItems="nextPage"
+    <videoList row="0" :data="listData" :loading="isLoading" @loadMoreItems="nextPage"
       :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }" />
-    <!-- <ListView :items="listData" @loadMoreItems="nextPage">
-      <template #default="{ item, index }">
-        <StackLayout>
-          <Label :text="index" />
-          <Label :text="item.id" />
-          <Label :text="item.title" />
-          <Label :text="item.up" />
-          <Label :text="item.loss" />
-        </StackLayout>
-      </template>
-</ListView> -->
     <loadingAnimation row="0" v-show="!onloaded" :class="{ 'visible': !onloaded, 'hidden': onloaded }" />
     <errorImg text="数据加载失败，请点击重试" @tap="retry" v-show="loadError"
       :class="{ 'visible': loadError, 'hidden': !loadError }" />
@@ -27,7 +16,7 @@ import { getUserZoneVideoList } from '../../core/api'
 const props = defineProps<{
   uid: string
 }>();
-interface VideoItem {
+interface Item {
   id: string,
   title: string,
   up: string,
@@ -40,11 +29,12 @@ interface VideoItem {
   img: string,
   loss: boolean
 }
-const listData = ref<VideoItem[]>([])
+const listData = ref<Item[]>([])
 const onloaded = ref(false)
 const loadError = ref(false)
+const isLoading = ref(false)
 let page = 0
-let loading = false
+let isEnd = false
 getListData().then(res => {
   if (res) {
     listData.value = res
@@ -54,10 +44,10 @@ getListData().then(res => {
 }).finally(() => {
   onloaded.value = true
 })
-function getListData(): Promise<VideoItem[] | null> {
+function getListData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
-    if (!loading) {
-      loading = true
+    if (!isLoading.value) {
+      isLoading.value = true
       getUserZoneVideoList(props.uid, page, 'date').then(res => {
         if (res.length > 0) {
           page++
@@ -68,7 +58,7 @@ function getListData(): Promise<VideoItem[] | null> {
       }).catch(err => {
         reject()
       }).finally(() => {
-        loading = false
+        isLoading.value = false
       })
     } else {
       resolve(null)
@@ -76,14 +66,19 @@ function getListData(): Promise<VideoItem[] | null> {
   })
 }
 function nextPage() {
-  getListData().then(res => {
-    if (res) {
-      listData.value = listData.value.concat(res)
-    }
-  })
+  if (!isEnd) {
+    getListData().then(res => {
+      if (res) {
+        listData.value = listData.value.concat(res)
+      } else {
+        isEnd = true
+      }
+    })
+  }
 }
 function retry() {
   page = 0
+  isEnd = false
   listData.value = []
   onloaded.value = false
   loadError.value = false
@@ -98,4 +93,24 @@ function retry() {
   })
 }
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  animation-name: animeVisible;
+  animation-duration: 100ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes animeVisible {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+</style>

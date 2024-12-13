@@ -18,7 +18,7 @@
         <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
           <PagerItem v-for="i in 5">
             <GridLayout rows="*">
-              <imageList row="0" :data="listData[i - 1]" @loadMoreItems="nextPage(i - 1)"
+              <imageList row="0" :data="listData[i - 1]" :loading="isLoading[i - 1]" @loadMoreItems="nextPage(i - 1)"
                 :class="{ 'visible': onLoaded[i - 1] && !onLoadError[i - 1], 'hidden': !onLoaded[i - 1] || onLoadError[i - 1] }" />
               <loadingAnimation row="0" v-show="!onLoaded[i - 1]"
                 :class="{ 'visible': !onLoaded[i - 1], 'hidden': onLoaded[i - 1] }" />
@@ -57,8 +57,9 @@ const listData = ref<ImageItem[][]>([[], [], [], [], []])
 const tab = ref(0)
 const onLoaded = ref([false, false, false, false, false])
 const onLoadError = ref([false, false, false, false, false])
+const isLoading = ref([false, false, false, false, false])
 let page = [0, 0, 0, 0, 0]
-let isLoading = [false, false, false, false, false]
+let isEnd = [false, false, false, false, false]
 getList(0).then((res) => {
   if (res) {
     listData.value[0] = res
@@ -83,6 +84,7 @@ watch(tab, (val) => {
 })
 function retry(tab: number) {
   page[tab] = 0
+  isEnd[tab] = false
   onLoaded.value[tab] = false
   onLoadError.value[tab] = false
   getList(tab).then((res) => {
@@ -96,11 +98,15 @@ function retry(tab: number) {
   })
 }
 function nextPage(tab: number) {
-  getList(tab).then((res) => {
-    if (res) {
-      listData.value[tab] = listData.value[tab].concat(res)
-    }
-  })
+  if (!isEnd[tab]) {
+    getList(tab).then((res) => {
+      if (res) {
+        listData.value[tab] = listData.value[tab].concat(res)
+      } else {
+        isEnd[tab] = true
+      }
+    })
+  }
 }
 function getList(tab: number): Promise<ImageItem[] | null> {
   let sort: string
@@ -113,8 +119,8 @@ function getList(tab: number): Promise<ImageItem[] | null> {
     default: sort = 'date'; break;
   }
   return new Promise((resolve, reject) => {
-    if (!isLoading[tab]) {
-      isLoading[tab] = true
+    if (!isLoading.value[tab]) {
+      isLoading.value[tab] = true
       getImageList(page[tab], sort).then(res => {
         page[tab]++
         resolve(res)
@@ -122,7 +128,7 @@ function getList(tab: number): Promise<ImageItem[] | null> {
         reject()
         toasty('数据加载失败了喵~', 'Error')
       }).finally(() => {
-        isLoading[tab] = false
+        isLoading.value[tab] = false
       })
     } else {
       resolve(null)

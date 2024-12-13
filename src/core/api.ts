@@ -647,6 +647,39 @@ export function getSystemTestimonialsImageList(pid: string): Promise<ImageItem[]
   })
 }
 
+export function getUserZoneImageList(uid: string, page: number, sort: string): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      rating: 'all',
+      limit: 32,
+      sort: sort,
+      page: page,
+      user: uid
+    }
+    get(apiPath + '/images', query).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
 interface ImageData {
   id: string,
   title: string,
@@ -931,80 +964,69 @@ function getUID(): Promise<void> {
     })
   })
 }
-export function getFollowingList(page: number, limit: number): Promise<any> {
+export function getFollowingList(uid: string, page: number, limit: number): Promise<any> {
   // 关注列表
   return new Promise((resolve, reject) => {
     const query = {
       page: page,
       limit: limit
     }
-    if (uid) {
-      send()
-    } else {
-      getUID().then(() => {
-        send()
-      }).catch(err => {
-        reject(err)
-      })
-    }
-    function send() {
-      get(apiPath + '/user/' + uid + '/following', query).then(res => {
-        resolve(res)
-      }).catch(err => {
-        reject(err)
-      })
-    }
+    get(apiPath + '/user/' + uid + '/following', query).then(res => {
+      resolve(res)
+    }).catch(err => {
+      reject(err)
+    })
   })
 }
-export function getFollowersList(page: number, limit: number): Promise<any> {
+export function getFollowersList(uid: string, page: number, limit: number): Promise<any> {
   // 粉丝列表
   return new Promise((resolve, reject) => {
     const query = {
       page: page,
       limit: limit
     }
-    if (uid) {
-      send()
-    } else {
-      getUID().then(() => {
-        send()
-      }).catch(err => {
-        reject(err)
-      })
-    }
-    function send() {
-      get(apiPath + '/user/' + uid + '/followers', query).then(res => {
-        resolve(res)
-      }).catch(err => {
-        reject(err)
-      })
-    }
+    get(apiPath + '/user/' + uid + '/followers', query).then(res => {
+      resolve(res)
+    }).catch(err => {
+      reject(err)
+    })
   })
 }
-export function getMyPosts(page: number, limit: number): Promise<any> {
+interface PostsItem {
+  id: string,
+  title: string,
+  body: string,
+  numViews: string,
+  createdAt: string,
+  updatedAt: string
+}
+export function getPosts(uid: string, page: number, limit: number): Promise<any> {
   // 发布内容
   return new Promise((resolve, reject) => {
-    if (uid) {
-      send()
-    } else {
-      getUID().then(() => {
-        send()
-      }).catch(err => {
-        reject(err)
-      })
+    const query = {
+      user: uid,
+      page: page,
+      limit: limit
     }
-    function send() {
-      const query = {
-        user: uid,
-        page: page,
-        limit: limit
+    get(apiPath + '/posts', query).then(res => {
+      let postsList: PostsItem[] = []
+      for (let item of res.results) {
+        postsList.push({
+          id: item.id,
+          title: item.title,
+          body: item.body,
+          numViews: item.numViews,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt
+        })
       }
-      get(apiPath + '/posts', query).then(res => {
-        resolve(res)
-      }).catch(err => {
-        reject(err)
+      resolve({
+        count: res.count,
+        data: postsList
       })
-    }
+    }).catch(err => {
+      reject(err)
+    })
   })
 }
 
@@ -1018,7 +1040,8 @@ interface UserData {
   body: string,
   premium: boolean,
   status: string,
-  header: string
+  header: string | null,
+  following: boolean
 }
 export function getZoneUserData(username: string): Promise<UserData> {
   return new Promise((resolve, reject) => {
@@ -1034,7 +1057,8 @@ export function getZoneUserData(username: string): Promise<UserData> {
         body: res.body,
         premium: users.premium,
         status: users.status,
-        header: res.header
+        header: res.header ? 'https://i.iwara.tv/image/profileHeader/' + res.header.id + '/' + res.header.name : null,
+        following: users.following
       })
     })
   })

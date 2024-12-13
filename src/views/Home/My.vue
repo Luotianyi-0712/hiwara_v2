@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { ref } from 'nativescript-vue'
 import { myselfData, toasty } from '../../core/viewFunction'
-import { getFollowingList, getFollowersList, getMyPosts } from '../../core/api'
+import { getFollowingList, getFollowersList, getPosts } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
 const premium = ref<boolean>(false)
 const avatar = ref<string>('')
@@ -134,17 +134,19 @@ myselfData().then(data => {
   avatar.value = data.avatar
   name.value = data.name
   premium.value = data.premium == 1
+  if (uid) {
+    getPosts(uid, 0, 1).then(res => {
+      posts.value = res.count
+    })
+    getFollowingList(uid, 0, 1).then(res => {
+      following.value = res.count
+    })
+    getFollowersList(uid, 0, 1).then(res => {
+      followers.value = res.count
+    })
+  }
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
-})
-getMyPosts(0, 1).then(res => {
-  posts.value = res.count
-})
-getFollowingList(0, 1).then(res => {
-  following.value = res.count
-})
-getFollowersList(0, 1).then(res => {
-  followers.value = res.count
 })
 function toMyZone() {
   navigateTo('/zone', {

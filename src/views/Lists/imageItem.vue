@@ -73,7 +73,7 @@ function formatIsoToChineseDate(isoDate: string): string {
 
 <style scoped lang="scss">
 .item {
-  padding: 12px 6px 0px 6px;
+  padding: 4px 6px;
 }
 
 .item-content {
