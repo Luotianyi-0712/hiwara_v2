@@ -61,8 +61,9 @@ function createdTable(): Promise<void> {
     ['numLikes', 'TEXT'],
     ['long', 'TEXT'],
     ['ecchi', 'TINYINT'],
-    ['time', 'DATE'],
-    ['createdAt', 'DATE'],
+    ['time', 'DATETIME'],
+    ['createdAt', 'TEXT'],
+    ['updatedAt', 'TEXT'],
   ]
   const userTableCrate = "CREATE TABLE user ( " + userTable.map(item => item.join(' ')).join(',') + " );"
   const configTableCrate = "CREATE TABLE config ( " + configTable.map(item => item.join(' ')).join(',') + " );"
@@ -208,6 +209,26 @@ export function getUserData(): Promise<any> {
   })
 }
 
+export function addVideoHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string, updatedAt: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("INSERT INTO videoHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt', 'updatedAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "', '" + updatedAt + "');").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
+export function addImageHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string, updatedAt: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("INSERT INTO imageHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt', 'updatedAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "', '" + updatedAt + "');").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
 function generateUUID() {
   let d = new Date().getTime(); // 获取当前时间
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -218,4 +239,15 @@ function generateUUID() {
     d = Math.floor(d / 16);
     return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
+}
+
+function getCurrentTimeFormatted() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  return `${year}-${month}-${day}${hours}:${minutes}:${seconds}`;
 }
