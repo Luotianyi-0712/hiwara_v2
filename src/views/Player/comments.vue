@@ -65,12 +65,12 @@ function nextPage() {
   if (!isLoading && !isEnd) {
     isLoading = true
     getVideoComments(props.id, page).then(res => {
-      if (res.length === 0) {
-        isEnd = true
-      } else {
+      if (res.length > 0) {
         comments.value = comments.value.concat(res)
         isLoading = false
         page++
+      } else {
+        isEnd = true
       }
     })
   }

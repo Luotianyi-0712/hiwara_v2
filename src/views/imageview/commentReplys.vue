@@ -2,7 +2,7 @@
   <Page>
     <ActionBar @tap="addCommentsBlur">
       <GridLayout columns="32px,auto,*">
-        <Label text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
+        <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
         <Label col="1" text="回复详情" />
       </GridLayout>
     </ActionBar>
@@ -57,12 +57,12 @@ function nextPage() {
   if (!isLoading && !isEnd) {
     isLoading = true
     getImageComments(props.id, page, props.detailId).then(res => {
-      if (res.length === 0) {
-        isEnd = true
-      } else {
+      if (res.length > 0) {
         comments.value = comments.value.concat(res)
         isLoading = false
         page++
+      } else {
+        isEnd = true
       }
     })
   }

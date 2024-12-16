@@ -2,10 +2,19 @@
   <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="publish">
       <template #default="{ item, index }">
-        <StackLayout class="item">
-          <Label :text="item.title" class="title" />
-          <Label :text="item.body" class="body" textWrap="true" />
-        </StackLayout>
+        <GridLayout columns="76px,*,100px" rows="8px,32px,28px,8px" class="item"
+          @tap="toUserZone(item.uid, item.username)">
+          <GridLayout col="0" row="0" rowSpan="4" columns="10px,56px,10px" rows="10px,56px,10px">
+            <Img col="1" row="1" :src="item.avatar" class="avatar"
+              placeholderImageUri="~/assets/img/avatar-default.png" />
+          </GridLayout>
+          <Label col="1" row="1" :text="item.name" class="name" />
+          <Label col="1" row="2" :text="'@' + item.username" class="userid" />
+          <GridLayout col="2" row="0" rowSpan="4" columns="10px,80px,10px" rows="*,auto,*">
+            <Button v-if="!myself" col="1" row="1" :text="item.following ? '已关注' : '关注'"
+              @tap="followersButtonTap(item.uid, index)" />
+          </GridLayout>
+        </GridLayout>
       </template>
     </ListView>
     <noContent row="1" v-else />
@@ -14,22 +23,26 @@
   <errorImg text="数据加载失败，请点击重试" @tap="retry" v-show="loadError"
     :class="{ 'visible': loadError, 'hidden': !loadError }" />
 </template>
-<script setup lang="ts">
-import { getPosts } from '../../core/api'
+<script lang="ts" setup>
 import loadingAnimation from '../components/loadingAnimation.vue'
-import noContent from '../components/noContent.vue'
 import errorImg from '../components/errorImg.vue'
+import noContent from '../components/noContent.vue'
 import { ref, defineProps } from 'nativescript-vue'
+import { getFollowingList, followers, disFollowers } from '../../core/api'
+import { toasty } from '../../core/viewFunction'
+import { navigateTo } from "../../core/navigate"
 const props = defineProps<{
   uid: string
+  myself: boolean
 }>()
 interface Item {
-  id: string,
-  title: string,
-  body: string,
-  numViews: string,
-  createdAt: string,
-  updatedAt: string
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  following: boolean,
+  friend: boolean,
+  premium: boolean
 }
 const data = ref<Item[]>([])
 const isLoading = ref(false)
@@ -46,11 +59,11 @@ getData().then(res => {
 }).finally(() => {
   onloaded.value = true
 })
-function getData(): Promise<any> {
+function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      getPosts(props.uid, page, 32).then(res => {
+      getFollowingList(props.uid, page, 32).then(res => {
         page++
         resolve(res.data)
       }).catch(err => {
@@ -93,22 +106,43 @@ function retry() {
     onloaded.value = true
   })
 }
-</script>
-<style lang="scss" scoped>
-.publish {
-  border-color: #c0c0c0;
-  border-top-width: 2px;
+function followersButtonTap(uid: string, index: number) {
+  if (data.value[index].following) {
+    // 已关注
+    data.value[index].following = false
+    disFollowers(uid).catch((err) => {
+      data.value[index].following = true
+      toasty('操作失败了喵~', 'Error')
+    })
+  } else {
+    // 未关注
+    data.value[index].following = true
+    followers(uid).catch((err) => {
+      data.value[index].following = false
+      toasty('操作失败了喵~', 'Error')
+    })
+  }
 }
-
+function toUserZone(uid: string, username: string) {
+  navigateTo('/zone', {
+    uid: uid,
+    username: username
+  })
+}
+</script>
+<style scoped lang="scss">
 .item {
-  .title {
-    font-size: 18px;
-    color: #262626;
-    padding: 20px 20px 0px 20px;
+  .avatar {
+    border-radius: 50%;
   }
 
-  .body {
-    padding: 20px;
+  .name {
+    font-size: 16px;
+    color: #232323;
+  }
+
+  .userid {
+    font-size: 14px;
   }
 }
 

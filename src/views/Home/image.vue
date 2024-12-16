@@ -101,9 +101,11 @@ function nextPage(tab: number) {
   if (!isEnd[tab]) {
     getList(tab).then((res) => {
       if (res) {
-        listData.value[tab] = listData.value[tab].concat(res)
-      } else {
-        isEnd[tab] = true
+        if (res.length > 0) {
+          listData.value[tab] = listData.value[tab].concat(res)
+        } else {
+          isEnd[tab] = true
+        }
       }
     })
   }
@@ -147,14 +149,15 @@ function onTabChange(args: any) {
 
 <style lang="scss" scoped>
 .tab {
-  // background-color: #fff;
-}
+  border-bottom-width: 1px;
+  border-color: #c0c0c0;
 
-.tab-bar {
-  background-color: #00796B;
-  height: 8px;
-  border-radius: 50%;
-  width: 100px;
+  .tab-bar {
+    background-color: #00796B;
+    height: 8px;
+    border-radius: 50%;
+    width: 100px;
+  }
 }
 
 .hidden {

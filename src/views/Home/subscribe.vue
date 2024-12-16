@@ -7,29 +7,26 @@
       <StackLayout row="1" col="0" class="tab-bar" :class="{ 'hidden': tab != 0, 'visible': tab == 0 }"></StackLayout>
       <StackLayout row="1" col="1" class="tab-bar" :class="{ 'hidden': tab != 1, 'visible': tab == 1 }"></StackLayout>
     </GridLayout>
-    <GridLayout row="2" rows="*">
-      <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
-        <PagerItem>
-          <GridLayout rows="*">
-            <videoList row="0" :data="videoListData" :loading="videoLoading" @loadMoreItems="videoNextPage"
-              :class="{ 'visible': videoOnload && !videoLoadError, 'hidden': !videoOnload || videoLoadError }" />
-            <loadingAnimation row="0" v-show="!videoOnload"
-              :class="{ 'visible': !videoOnload, 'hidden': videoOnload }" />
-            <errorImg text="数据加载失败，请点击重试" @tap="videoRetry" v-show="videoLoadError"
-              :class="{ 'visible': videoLoadError, 'hidden': !videoLoadError }" />
-          </GridLayout>
-        </PagerItem>
-        <PagerItem>
-          <GridLayout rows="*">
-            <imageList row="0" :data="imageListData" :loading="imageLoading" @loadMoreItems="imageNextPage"
-              :class="{ 'visible': imageOnload && !imageLoadError, 'hidden': !imageOnload || imageLoadError }" />
-            <loadingAnimation row="0" :class="{ 'visible': !imageOnload, 'hidden': imageOnload }" />
-            <errorImg text="数据加载失败，请点击重试" @tap="imageRetry"
-              :class="{ 'visible': imageLoadError, 'hidden': !imageLoadError }" />
-          </GridLayout>
-        </PagerItem>
-      </Pager>
-    </GridLayout>
+    <Pager row="2" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
+      <PagerItem>
+        <GridLayout rows="*">
+          <videoList row="0" :data="videoListData" :loading="videoLoading" @loadMoreItems="videoNextPage"
+            :class="{ 'visible': videoOnload && !videoLoadError, 'hidden': !videoOnload || videoLoadError }" />
+          <loadingAnimation row="0" v-show="!videoOnload" :class="{ 'visible': !videoOnload, 'hidden': videoOnload }" />
+          <errorImg text="数据加载失败，请点击重试" @tap="videoRetry" v-show="videoLoadError"
+            :class="{ 'visible': videoLoadError, 'hidden': !videoLoadError }" />
+        </GridLayout>
+      </PagerItem>
+      <PagerItem>
+        <GridLayout rows="*">
+          <imageList row="0" :data="imageListData" :loading="imageLoading" @loadMoreItems="imageNextPage"
+            :class="{ 'visible': imageOnload && !imageLoadError, 'hidden': !imageOnload || imageLoadError }" />
+          <loadingAnimation row="0" :class="{ 'visible': !imageOnload, 'hidden': imageOnload }" />
+          <errorImg text="数据加载失败，请点击重试" @tap="imageRetry"
+            :class="{ 'visible': imageLoadError, 'hidden': !imageLoadError }" />
+        </GridLayout>
+      </PagerItem>
+    </Pager>
   </GridLayout>
 </template>
 <script lang="ts" setup>
@@ -154,9 +151,11 @@ function videoNextPage() {
   if (!videoEnd) {
     getVideoList().then((res) => {
       if (res) {
-        videoListData.value = videoListData.value.concat(res)
-      } else {
-        videoEnd = true
+        if (res.length > 0) {
+          videoListData.value = videoListData.value.concat(res)
+        } else {
+          videoEnd = true
+        }
       }
     })
   }
@@ -165,9 +164,11 @@ function imageNextPage() {
   if (!imageEnd) {
     getImageList().then((res) => {
       if (res) {
-        imageListData.value = imageListData.value.concat(res)
-      } else {
-        imageEnd = true
+        if (res.length > 0) {
+          imageListData.value = imageListData.value.concat(res)
+        } else {
+          imageEnd = true
+        }
       }
     })
   }
@@ -219,14 +220,14 @@ function onTabChange(args: any) {
 </script>
 <style lang="scss" scoped>
 .tab {
-  // background-color: #fff;
-}
-
-.tab-bar {
-  background-color: #00796B;
-  height: 8px;
-  border-radius: 50%;
-  width: 100px;
+  .tab-bar {
+    background-color: #00796B;
+    height: 8px;
+    border-radius: 50%;
+    width: 100px;
+  }
+  border-bottom-width: 1px;
+  border-color: #c0c0c0;
 }
 
 .hidden {

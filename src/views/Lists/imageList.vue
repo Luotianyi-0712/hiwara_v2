@@ -20,14 +20,10 @@
       </StackLayout>
     </template>
   </ListView>
-  <GridLayout rows="*,auto,*" v-else class="noContent">
-    <StackLayout row="1">
-      <Img src="~/assets/icon/cactus.png" />
-      <Label text="此处没有任何内容" class="alimamafont" />
-    </StackLayout>
-  </GridLayout>
+  <noContent v-else />
 </template>
 <script lang="ts" setup>
+import noContent from '../components/noContent.vue'
 import { ref, defineProps, watch, PropType } from 'nativescript-vue';
 import { ObservableArray } from '@nativescript/core';
 import imageItem from './imageItem.vue';
@@ -74,20 +70,6 @@ function refactorArray(arr: any[]) {
 .alimamafont {
   font-family: "Alimama FangYuanTi VF Thin", "AlimamaFangYuanTiVF-Thin-2";
   font-weight: 400;
-}
-
-.noContent {
-  text-align: center;
-
-  Img {
-    width: 160px;
-    height: 160px;
-  }
-
-  Label {
-    padding: 20px 0;
-    font-size: 16px;
-  }
 }
 
 .visible {

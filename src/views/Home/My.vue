@@ -29,11 +29,12 @@
           <Label :text="posts" style="font-size: 16px;" />
           <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
-        <StackLayout col="2" style="border-color:#ffffffcc;border-left-width:1px;border-right-width:1px">
+        <StackLayout col="2" style="border-color:#ffffffcc;border-left-width:1px;border-right-width:1px"
+          @tap="toMyFollowing">
           <Label :text="following" style="font-size: 16px;" />
           <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
-        <StackLayout col="3">
+        <StackLayout col="3" @tap="toMyFollowers">
           <Label :text="followers" style="font-size: 16px;" />
           <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
@@ -149,10 +150,28 @@ myselfData().then(data => {
   toasty("用户信息获取失败", "Error")
 })
 function toMyZone() {
-  navigateTo('/zone', {
-    uid: uid,
-    username: username
-  })
+  if (uid) {
+    navigateTo('/zone', {
+      uid: uid,
+      username: username
+    })
+  }
+}
+function toMyFollowing() {
+  if (uid) {
+    navigateTo('/friends', {
+      uid: uid,
+      type: 'following'
+    })
+  }
+}
+function toMyFollowers() {
+  if (uid) {
+    navigateTo('/friends', {
+      uid: uid,
+      type: 'followers'
+    })
+  }
 }
 </script>
 <style lang="scss" scoped>

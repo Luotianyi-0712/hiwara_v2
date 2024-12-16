@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js';
 import { getUserToken, getUserData } from './database'
 import { isTokenValid } from './viewFunction'
+import { count } from 'console';
 
 const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
 const apiPath = "https://api.iwara.tv"
@@ -964,6 +965,15 @@ function getUID(): Promise<void> {
     })
   })
 }
+interface usersItem {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  following: boolean,
+  friend: boolean,
+  premium: boolean
+}
 export function getFollowingList(uid: string, page: number, limit: number): Promise<any> {
   // 关注列表
   return new Promise((resolve, reject) => {
@@ -972,7 +982,22 @@ export function getFollowingList(uid: string, page: number, limit: number): Prom
       limit: limit
     }
     get(apiPath + '/user/' + uid + '/following', query).then(res => {
-      resolve(res)
+      let usersList: usersItem[] = []
+      for (let item of res.results) {
+        usersList.push({
+          uid: item.user.id,
+          name: item.user.name,
+          username: item.user.username,
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : defaultAvatar,
+          following: item.user.following,
+          friend: item.user.friend,
+          premium: item.user.premium
+        })
+      }
+      resolve({
+        count: res.count,
+        data: usersList
+      })
     }).catch(err => {
       reject(err)
     })
@@ -986,7 +1011,22 @@ export function getFollowersList(uid: string, page: number, limit: number): Prom
       limit: limit
     }
     get(apiPath + '/user/' + uid + '/followers', query).then(res => {
-      resolve(res)
+      let usersList: usersItem[] = []
+      for (let item of res.results) {
+        usersList.push({
+          uid: item.follower.id,
+          name: item.follower.name,
+          username: item.follower.username,
+          avatar: item.follower.avatar ? 'https://i.iwara.tv/image/avatar/' + item.follower.avatar.id + '/' + item.follower.avatar.name : defaultAvatar,
+          following: item.follower.following,
+          friend: item.follower.friend,
+          premium: item.follower.premium
+        })
+      }
+      resolve({
+        count: res.count,
+        data: usersList
+      })
     }).catch(err => {
       reject(err)
     })

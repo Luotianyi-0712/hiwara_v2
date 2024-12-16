@@ -110,7 +110,7 @@ ns build android --release  --clean --key-store-path release-key.keystore --key-
 
 
 Note: Before packaging, you need to generate an APK signing file and configure the key and alias properly.  
-注意：你在打包之前需要生成Apk签名文件，并配置好密钥和别名。
+注意：你在打包之前需要生成APK签名文件，并配置好密钥和别名。
 
 ### iOS IPA Package | 打包至iOS IPA
 
@@ -122,17 +122,20 @@ Omit | 略
 
 
 * ✅Login | 登录
-* ✅Subscribe to the list| 订阅列表
-* ✅List of videos| 视频列表
+* ✅List of subscribe | 订阅列表
+* ✅List of videos | 视频列表
 * ✅List of images | 图片列表
 * ✅Video play | 视频播放
 * ✅Image view | 图片查看
+* ✅User home page | 个人主页
+* ✅Space view | 空间查看
 * ⬜Search | 搜索
 * ✅Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
-* ⬜Share and download external links | 分析及外链下载
+* ✅Share and download external links | 分析及外链下载
 * ⬜Playlist | 播放清单
 * ⬜History | 历史记录
-* ⬜Followers | 关注的人
+* ✅Following list | 关注列表
+* ✅Fan list | 粉丝列表
 * ⬜Settings | 设置
 * ⬜Adaptation for Pad side | 平板电脑适配
 * ⬜Offline caching and downloading | 离线缓存及下载

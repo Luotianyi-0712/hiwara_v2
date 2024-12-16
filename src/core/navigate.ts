@@ -1,9 +1,10 @@
 import { $navigateTo, $navigateBack, Component } from "nativescript-vue"
-import home from "../views/home.vue";
-import search from "../views/search.vue";
-import player from "../views/player.vue";
-import imageview from "../views/imgaeview.vue";
-import zone from "../views/zone.vue";
+import home from "../views/home.vue"
+import search from "../views/search.vue"
+import player from "../views/player.vue"
+import imageview from "../views/imgaeview.vue"
+import zone from "../views/zone.vue"
+import friends from "../views/friends.vue"
 
 interface NativeRoute {
   path: string;
@@ -23,6 +24,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/zone",
     component: zone
+  }, {
+    path: "/friends",
+    component: friends
   }
 ]
 

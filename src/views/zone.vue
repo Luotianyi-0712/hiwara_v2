@@ -20,11 +20,12 @@
                 <Label :text="postsNum" style="font-size: 16px;color:#262626;" />
                 <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
-              <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px">
+              <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px"
+                @tap="toMyFollowing">
                 <Label :text="followingNum" style="font-size: 16px;color:#262626;" />
                 <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
-              <StackLayout col="2">
+              <StackLayout col="2" @tap="toMyFollowers">
                 <Label :text="followersNum" style="font-size: 16px;color:#262626;" />
                 <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
@@ -35,12 +36,10 @@
         </GridLayout>
         <ScrollView row="3" style="opacity: 0;height: 0px;">
           <StackLayout>
-            <Label ref="signBodyFoldShadow" :text="body" class="signBody" @layoutChanged="getSignBodyFoldHeight" />
-            <GridLayout ref="signBodyUnfoldShadow" rows="auto" class="signBody"
-              @layoutChanged="getSignBodyUnfoldHeight">
-              <Label row="0" :text="body" textWrap="true" />
-            </GridLayout>
-            <Label :text="username" textWrap="true" />
+            <Label ref="signBodyFoldShadow" :text="body" @layoutChanged="getSignBodyFoldHeight" />
+            <Label row="0" :text="body" textWrap="true" ref="signBodyUnfoldShadow"
+              @layoutChanged="getSignBodyUnfoldHeight" />
+            <Label :text="username" ref="usernameIDShadow" @layoutChanged="getUsernameIDHeight" />
           </StackLayout>
         </ScrollView>
         <StackLayout row="3" orientation="horizontal">
@@ -49,12 +48,13 @@
             <Label v-if="premium" text="高级会员" class="vip" />
           </StackLayout>
         </StackLayout>
-        <GridLayout row="4" rows="auto,auto" columns="*,auto" @tap="toggleExpand" class="signBody">
+        <GridLayout row="4" rows="auto,auto" columns="*,auto" class="signBody">
           <ScrollView row="0" col="0" ref="signBodyRef">
-            <Label :text="body" :textWrap="allInfo" />
+            <Label :text="body" :textWrap="allInfo" @tap="toggleExpand" />
           </ScrollView>
-          <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3" />
-          <StackLayout row="1" orientation="horizontal" v-if="allInfo">
+          <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3"
+            @tap="toggleExpand" />
+          <StackLayout row="1" orientation="horizontal" ref="usernameIDRef" height="0px">
             <Label text="&#xf2bb;  " class="font-awesome-regular" />
             <Label :text="'@' + username" />
           </StackLayout>
@@ -100,6 +100,7 @@ import { getZoneUserData, getFollowingList, getFollowersList, getPosts, follower
 import { navigateBack, navigateBackHome } from '../core/navigate'
 import { myselfData, toasty } from '../core/viewFunction'
 import { Animation, AnimationDefinition } from '@nativescript/core'
+import { navigateTo } from "../core/navigate"
 const props = defineProps<{
   uid: string
   username: string
@@ -112,9 +113,12 @@ const isMyself = ref(true)
 
 let signBodyFoldHeight = 0
 let signBodyUnfoldHeight = 0
+let usernameIDHeight = 0
 const signBodyRef = ref()
 const signBodyFoldShadow = ref()
 const signBodyUnfoldShadow = ref()
+const usernameIDRef = ref()
+const usernameIDShadow = ref()
 
 const tabsRef = ref()
 
@@ -150,7 +154,6 @@ function thisGetZoneUserData() {
   loading.value = true
   loadingError.value = false
   getZoneUserData(props.username).then(data => {
-    // console.log(data)
     avatar.value = data.avatar
     uname.value = data.name
     body.value = data.body ? data.body : '这家伙很懒，什么都没有写~'
@@ -175,17 +178,24 @@ function onTabChange(args: any) {
 }
 function toggleExpand() {
   if (allInfo.value) {
+    // 收起
     const animationDefinition: AnimationDefinition[] = [
       {
         target: signBodyRef.value.nativeView, // 动画的目标视图
         duration: 200, // 动画持续时间，单位为毫秒
         height: signBodyFoldHeight + 'px', // 动画的目标高度
+      },
+      {
+        target: usernameIDRef.value.nativeView, // 动画的目标视图
+        duration: 200, // 动画持续时间，单位为毫秒
+        height: '0px', // 动画的目标高度
       }
     ]
     new Animation(animationDefinition).play().then(() => {
       allInfo.value = !allInfo.value
     })
   } else {
+    // 展开
     allInfo.value = !allInfo.value
     let height
     if (signBodyUnfoldHeight <= 200) {
@@ -193,11 +203,16 @@ function toggleExpand() {
     } else {
       height = 200
     }
+    console.log(height)
     const animationDefinition: AnimationDefinition[] = [
       {
         target: signBodyRef.value.nativeView, // 动画的目标视图
         duration: 200, // 动画持续时间，单位为毫秒
         height: height + 'px', // 动画的目标高度
+      }, {
+        target: usernameIDRef.value.nativeView, // 动画的目标视图
+        duration: 200, // 动画持续时间，单位为毫秒
+        height: usernameIDHeight + 'px', // 动画的目标高度
       }
     ]
     new Animation(animationDefinition).play()
@@ -208,6 +223,9 @@ function getSignBodyFoldHeight() {
 }
 function getSignBodyUnfoldHeight() {
   signBodyUnfoldHeight = signBodyUnfoldShadow.value.nativeView.getMeasuredHeight()
+}
+function getUsernameIDHeight() {
+  usernameIDHeight = usernameIDShadow.value.nativeView.getMeasuredHeight()
 }
 function onScroll(args: any) {
   console.log(args.scrollY)
@@ -226,6 +244,22 @@ function followersButtonTap() {
     followers(props.uid).catch((err) => {
       following.value = false
       toasty('操作失败了喵~', 'Error')
+    })
+  }
+}
+function toMyFollowing() {
+  if (props.uid) {
+    navigateTo('/friends', {
+      uid: props.uid,
+      type: 'following'
+    })
+  }
+}
+function toMyFollowers() {
+  if (props.uid) {
+    navigateTo('/friends', {
+      uid: props.uid,
+      type: 'followers'
     })
   }
 }

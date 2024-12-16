@@ -68,9 +68,11 @@ function nextPage() {
   if (!isEnd) {
     getListData().then(res => {
       if (res) {
-        listData.value = listData.value.concat(res)
-      }else{
-        isEnd = true
+        if (res.length > 0) {
+          listData.value = listData.value.concat(res)
+        } else {
+          isEnd = true
+        }
       }
     })
   }
