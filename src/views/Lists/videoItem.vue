@@ -31,22 +31,26 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from 'nativescript-vue';
-import { navigateTo } from "../../core/navigate";
+import { defineProps } from 'nativescript-vue'
+import { navigateTo } from "../../core/navigate"
+import { addVideoHistory } from '../../core/database'
 const props = defineProps<{
-  id: string;
-  title: string;
-  img: string;
-  up: string;
-  createdAt: string;
-  duration: number;
-  numViews: number;
-  numLikes: number;
-  ecchi: boolean;
+  id: string
+  title: string
+  img: string
+  up: string
+  createdAt: string
+  duration: number
+  numViews: number
+  numLikes: number
+  ecchi: boolean
 }>();
 function onTouch() {
   navigateTo("/player", {
     id: props.id
+  })
+  addVideoHistory(props.id, props.title, props.up, props.img, props.numViews, props.numLikes, props.duration, props.ecchi, props.createdAt).catch((error) => {
+    console.error(error);
   })
 }
 function formatNumber(num: number): string {
@@ -61,6 +65,7 @@ function formatNumber(num: number): string {
   }
 }
 function formatIsoToChineseDate(isoDate: string): string {
+  console.log(isoDate);
   const date = new Date(isoDate);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;

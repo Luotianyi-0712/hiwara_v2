@@ -31,8 +31,9 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from 'nativescript-vue';
-import { navigateTo } from "../../core/navigate";
+import { defineProps } from 'nativescript-vue'
+import { navigateTo } from "../../core/navigate"
+import { addImageHistory } from '../../core/database'
 const props = defineProps<{
   id: string;
   title: string;
@@ -47,6 +48,9 @@ const props = defineProps<{
 function onTouch() {
   navigateTo("/imageview", {
     id: props.id
+  })
+  addImageHistory(props.id, props.title, props.up, props.img, props.numViews, props.numLikes, props.numImages, props.ecchi, props.createdAt).catch((error) => {
+    console.error(error);
   })
 }
 function formatNumber(num: number): string {

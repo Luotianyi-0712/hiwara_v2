@@ -47,7 +47,7 @@
             <Label text="&#xf019;" class="font-awesome-solid icon" />
             <Label text="离线缓存" class="label" />
           </StackLayout>
-          <StackLayout col="1" row="0" class="button">
+          <StackLayout col="1" row="0" class="button" @tap="toHistory">
             <Label text="&#xf1da;" class="font-awesome-solid icon" />
             <Label text="历史记录" class="label" />
           </StackLayout>
@@ -171,6 +171,11 @@ function toMyFollowers() {
       uid: uid,
       type: 'followers'
     })
+  }
+}
+function toHistory() {
+  if (uid) {
+    navigateTo('/history')
   }
 }
 </script>

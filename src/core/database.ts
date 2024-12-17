@@ -61,9 +61,8 @@ function createdTable(): Promise<void> {
     ['numLikes', 'TEXT'],
     ['long', 'TEXT'],
     ['ecchi', 'TINYINT'],
-    ['time', 'DATETIME'],
-    ['createdAt', 'TEXT'],
-    ['updatedAt', 'TEXT'],
+    ['time', 'TEXT'],
+    ['createdAt', 'TEXT']
   ]
   const userTableCrate = "CREATE TABLE user ( " + userTable.map(item => item.join(' ')).join(',') + " );"
   const configTableCrate = "CREATE TABLE config ( " + configTable.map(item => item.join(' ')).join(',') + " );"
@@ -209,20 +208,50 @@ export function getUserData(): Promise<any> {
   })
 }
 
-export function addVideoHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string, updatedAt: string): Promise<void> {
+export function addVideoHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    sqlite.execute("INSERT INTO videoHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt', 'updatedAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "', '" + updatedAt + "');").then(() => {
-      resolve()
+    sqlite.execute("DELETE FROM videoHistory WHERE id = '" + id + "';").then(() => {
+    }).then(() => {
+      sqlite.execute("INSERT INTO videoHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
+        resolve()
+      }).catch((err: any) => {
+        reject(err)
+      })
+    }).catch((err: any) => {
+      reject(err)
+    })
+
+  })
+}
+
+export function getVideoHistory(page: number, limit: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    sqlite.select("SELECT * FROM videoHistory ORDER BY time DESC LIMIT " + limit + " OFFSET " + limit * page + ";").then((res: any) => {
+      resolve(res)
     }).catch((err: any) => {
       reject(err)
     })
   })
 }
 
-export function addImageHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string, updatedAt: string): Promise<void> {
+export function addImageHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    sqlite.execute("INSERT INTO imageHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt', 'updatedAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "', '" + updatedAt + "');").then(() => {
-      resolve()
+    sqlite.execute("DELETE FROM imageHistory WHERE id = '" + id + "';").then(() => {
+      sqlite.execute("INSERT INTO imageHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
+        resolve()
+      }).catch((err: any) => {
+        reject(err)
+      })
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
+export function getImageHistory(page: number, limit: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    sqlite.select("SELECT * FROM imageHistory ORDER BY time DESC LIMIT " + limit + " OFFSET " + limit * page + ";").then((res: any) => {
+      resolve(res)
     }).catch((err: any) => {
       reject(err)
     })
@@ -242,12 +271,16 @@ function generateUUID() {
 }
 
 function getCurrentTimeFormatted() {
+  // 获取当前时间
   const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  return `${year}-${month}-${day}${hours}:${minutes}:${seconds}`;
+  // 将当前时间格式化为ISO 8601格式的字符串，并去除毫秒部分
+  const year = now.getUTCFullYear();
+  const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+  const day = now.getUTCDate().toString().padStart(2, '0');
+  const hours = now.getUTCHours().toString().padStart(2, '0');
+  const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = now.getUTCSeconds().toString().padStart(2, '0');
+  // 构建格式化的时间字符串
+  const formattedISOString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
+  return formattedISOString;
 }

@@ -5,6 +5,7 @@ import player from "../views/player.vue"
 import imageview from "../views/imgaeview.vue"
 import zone from "../views/zone.vue"
 import friends from "../views/friends.vue"
+import history from "../views/history.vue"
 
 interface NativeRoute {
   path: string;
@@ -27,6 +28,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/friends",
     component: friends
+  },{
+    path: "/history",
+    component: history
   }
 ]
 

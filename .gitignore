@@ -27,5 +27,6 @@ typings/
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Other
 release-key.keystore
 run-*

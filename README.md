@@ -132,8 +132,8 @@ Omit | 略
 * ⬜Search | 搜索
 * ✅Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
 * ✅Share and download external links | 分析及外链下载
-* ⬜Playlist | 播放清单
-* ⬜History | 历史记录
+* ⬜Playlist | 播放列表
+* ✅History | 历史记录
 * ✅Following list | 关注列表
 * ✅Fan list | 粉丝列表
 * ⬜Settings | 设置
