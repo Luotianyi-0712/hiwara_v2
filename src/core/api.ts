@@ -1122,7 +1122,6 @@ export function searchData(query: string, type: 'video' | 'image' | 'post' | 'us
       query: query
     }
     get(apiPath + '/search', sendMsg).then(res => {
-      console.log(res)
       switch (type) {
         case 'video':
           video(res)

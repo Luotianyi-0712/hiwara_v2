@@ -6,7 +6,7 @@
         <StackLayout col="1" orientation="horizontal" class="search-bg">
           <Label v-if="iconHint" text="输入搜索内容" />
         </StackLayout>
-        <SearchBar ref="searchInput" @textChange="textChange" @submit="submit()" col="1" class="search-input" />
+        <SearchBar v-model="query" ref="searchInput" @submit="submit()" @clear="clear" col="1" class="search-input" />
         <Label col="2" text="搜索" class="submitBtn" @tap="submit()" />
       </GridLayout>
     </ActionBar>
@@ -66,19 +66,19 @@ const searchInput = ref()
 const videoListRef = ref()
 const imageListRef = ref()
 const userListRef = ref()
-let query: string = ''
+const query = ref('')
 getHistory()
 watch(tab, val => {
-  if (query.length > 0) {
+  if (query.value.length > 0) {
     switch (val) {
       case 0:
-        videoListRef.value.search(query)
+        videoListRef.value.search(query.value)
         break
       case 1:
-        imageListRef.value.search(query)
+        imageListRef.value.search(query.value)
         break
       case 2:
-        userListRef.value.search(query)
+        userListRef.value.search(query.value)
         break
       case 3:
         break
@@ -88,36 +88,35 @@ watch(tab, val => {
         break
     }
     action.value = true
-    addSearchHistory(query).then(() => {
+    addSearchHistory(query.value).then(() => {
       getHistory()
     }).catch(err => {
       console.error(err)
     })
   }
 })
-function textChange(args: any) {
-  query = args.value
-  if (args.value.length > 0) {
+watch(query, val => {
+  if (val.length > 0) {
     iconHint.value = false
   } else {
     iconHint.value = true
   }
-}
+})
 function submit(text?: string) {
   blurAllTextField()
   if (text) {
-    query = text
+    query.value = text
   }
-  if (query.length > 0) {
+  if (query.value.length > 0) {
     switch (tab.value) {
       case 0:
-        videoListRef.value.search(query)
+        videoListRef.value.search(query.value)
         break
       case 1:
-        imageListRef.value.search(query)
+        imageListRef.value.search(query.value)
         break
       case 2:
-        userListRef.value.search(query)
+        userListRef.value.search(query.value)
         break
       case 3:
         break
@@ -127,12 +126,15 @@ function submit(text?: string) {
         break
     }
     action.value = true
-    addSearchHistory(query).then(() => {
+    addSearchHistory(query.value).then(() => {
       getHistory()
     }).catch(err => {
       console.error(err)
     })
   }
+}
+function clear() {
+  action.value = false
 }
 function onTabPress(target: number) {
   if (tab.value != target) {
