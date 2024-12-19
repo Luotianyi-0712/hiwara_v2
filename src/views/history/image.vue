@@ -15,20 +15,20 @@
           </GridLayout>
           <Label row="1" col="1" :text="item.title" class="title" textWrap="true" android:maxLines="2"
             ios:lineBreakMode="tailTruncation" ios:.numberOfLines="2" />
-          <GridLayout columns="*,*" row="2" col="1" class="info">
+          <StackLayout row="2" col="1" orientation="horizontal" class="info">
+            <Label text="&#x1f464; " class="font-awesome-regular" />
+            <Label :text="item.up" />
+          </StackLayout>
+          <GridLayout columns="*,*" row="3" col="1" class="info">
             <StackLayout col="0" orientation="horizontal">
-              <Label text="&#x1f464; " class="font-awesome-regular" />
-              <Label :text="item.up" />
+              <Label text="&#xf3cf;  " class="font-awesome-solid" />
+              <Label :text="formatIsoToDateTime(item.time)" />
             </StackLayout>
             <StackLayout col="1" orientation="horizontal">
               <Label text="&#x1f553; " class="font-awesome-regular" />
-              <Label :text="formatIsoToChineseDate(item.createdAt)" />
+              <Label :text="formatIsoToDateTime(item.createdAt)" />
             </StackLayout>
           </GridLayout>
-          <StackLayout orientation="horizontal" row="3" col="1" class="info">
-            <Label text="&#xf3cf;  " class="font-awesome-solid" />
-            <Label :text="formatIsoToChineseDateTime(item.time)" />
-          </StackLayout>
         </GridLayout>
       </template>
     </ListView>
@@ -45,6 +45,7 @@ import errorImg from '../components/errorImg.vue'
 import { getImageHistory } from '../../core/database'
 import { navigateTo } from "../../core/navigate"
 import { ref } from 'nativescript-vue'
+import { formatIsoToDateTime } from '../../core/viewFunction'
 interface Item {
   id: string,
   title: string,
@@ -118,26 +119,6 @@ function getData(): Promise<Item[] | null> {
       resolve(null)
     }
   })
-}
-function formatIsoToChineseDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const formattedMonth = month < 10 ? `0${month}` : month;
-  const formattedDay = day < 10 ? `${day}` : day;
-  return `${year}-${formattedMonth}-${formattedDay}`;
-}
-function formatIsoToChineseDateTime(isoDate: string): string {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const formattedMonth = month < 10 ? `0${month}` : month;
-  const formattedDay = day < 10 ? `${day}` : day;
-  return `${year}-${formattedMonth}-${formattedDay} ${hours}:${minutes}`;
 }
 function onTouch(id: string) {
   navigateTo("/imageview", {

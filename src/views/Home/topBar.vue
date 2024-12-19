@@ -1,6 +1,6 @@
 <template>
   <GridLayout class="navigation-bar" columns="auto,*,auto">
-    <GridLayout col="0" class="user-button">
+    <GridLayout col="0" class="user-button" @tap="toggleMy">
       <Img :src="avatar" class="img" placeholderImageUri="~/assets/img/avatar-default.png" />
     </GridLayout>
     <GridLayout col="1" @tap="toSearch">
@@ -13,16 +13,16 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref } from "nativescript-vue"
+import { ref, inject } from "nativescript-vue"
 import { navigateTo } from "../../core/navigate"
 import { toasty, myselfData } from '../../core/viewFunction'
 const avatar = ref<string>('')
+const toggleMy = inject<(payload: any) => void>('toggleMy')
 myselfData().then(data => {
   avatar.value = data.avatar
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
 })
-
 function toSearch() {
   navigateTo("/search");
 }

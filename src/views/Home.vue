@@ -42,11 +42,10 @@ import subscribe from "./home/subscribe.vue";
 import videoList from "./home/video.vue";
 import imageList from "./home/image.vue";
 import my from "./home/my.vue";
-import { ref } from "nativescript-vue";
+import { ref, provide } from "nativescript-vue";
 import { getUserToken } from "../core/database"
 import { isTokenValid, myselfData } from '../core/viewFunction'
 const navTab = ref(2)
-
 const onLoaded = ref<boolean>(false)
 const isLogin = ref<boolean>(false)
 getUserToken().then(res => {
@@ -63,6 +62,10 @@ getUserToken().then(res => {
 }).finally(() => {
   onLoaded.value = true
 })
+const toggleMy = () => {
+  onNavTabPress(4)
+}
+provide('toggleMy', toggleMy);
 function loginSuccess() {
   isLogin.value = true
   myselfData()

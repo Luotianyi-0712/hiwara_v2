@@ -10,7 +10,7 @@
               <Label v-show="item.ecchi" text="R-18" />
             </StackLayout>
             <StackLayout orientation="horizontal" row="2" col="1" class="tip">
-              <Label verticalAlignment="bottom" :text="formatDuration(item.long)" />
+              <Label verticalAlignment="bottom" :text="formatDuration(item.duration)" />
             </StackLayout>
           </GridLayout>
           <Label row="1" col="1" :text="item.title" class="title" textWrap="true" android:maxLines="2"
@@ -22,7 +22,7 @@
           <GridLayout columns="*,*" row="3" col="1" class="info">
             <StackLayout col="0" orientation="horizontal">
               <Label text="&#xf3cf;  " class="font-awesome-solid" />
-              <Label :text="formatIsoToDateTime(item.time)" />
+              <Label :text="formatIsoToDateTime(item.updatedAt)" />
             </StackLayout>
             <StackLayout col="1" orientation="horizontal">
               <Label text="&#x1f553; " class="font-awesome-regular" />
@@ -42,21 +42,22 @@
 import loadingAnimation from '../components/loadingAnimation.vue'
 import noContent from '../components/noContent.vue'
 import errorImg from '../components/errorImg.vue'
-import { getVideoHistory } from '../../core/database'
+import { getMyFavoritesVideos } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
-import { ref } from 'nativescript-vue'
+import { ref, defineExpose } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../../core/viewFunction'
 interface Item {
   id: string,
   title: string,
   up: string,
-  img: string,
   numViews: number,
   numLikes: number,
-  long: number,
+  duration: number,
+  createdAt: string,
+  updatedAt: string,
   ecchi: boolean,
-  time: string,
-  createdAt: string
+  img: string,
+  loss: boolean
 }
 const data = ref<Item[]>([])
 const isLoading = ref(false)
@@ -64,14 +65,15 @@ const onloaded = ref(false)
 const loadError = ref(false)
 let page = 0
 let isEnd = false
-getData().then(res => {
-  if (res) {
-    data.value = res
+let action = false
+const init = () => {
+  if (!action) {
+    retry()
+    action = true
   }
-}).catch(err => {
-  loadError.value = true
-}).finally(() => {
-  onloaded.value = true
+}
+defineExpose({
+  init
 })
 function nextPage() {
   if (!isEnd) {
@@ -106,7 +108,7 @@ function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      getVideoHistory(page, 32).then(data => {
+      getMyFavoritesVideos(page).then(data => {
         page++
         resolve(data)
       }).catch(err => {

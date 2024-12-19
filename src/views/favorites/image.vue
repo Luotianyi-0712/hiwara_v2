@@ -3,14 +3,14 @@
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="history">
       <template #default="{ item, index }">
         <GridLayout @tap="onTouch(item.id)" columns="128px,*,8px" rows="8px,40px,18px,18px,8px" class="item">
-          <GridLayout col="0" row="0" columns="8px,*,*,8px" rows="8px,*,*,8px" rowSpan="5">
-            <Img row="1" col="1" colSpan="2" rowSpan="2" :src="item.img" failureImageUri="~/assets/img/not-img.jpg"
+          <GridLayout col="0" row="0" columns="8px,*,8px" rows="8px,*,8px" rowSpan="5">
+            <Img row="1" col="1" :src="item.img" failureImageUri="~/assets/img/not-img.jpg"
               placeholderImageUri="~/assets/img/placeholder.png" stretch="aspectFill" class="img" fadeDuration="300" />
             <StackLayout row="1" col="2" class="r18" horizontalAlignment="right">
               <Label v-show="item.ecchi" text="R-18" />
             </StackLayout>
             <StackLayout orientation="horizontal" row="2" col="1" class="tip">
-              <Label verticalAlignment="bottom" :text="formatDuration(item.long)" />
+              <Label verticalAlignment="bottom" :text="item.numImages" />
             </StackLayout>
           </GridLayout>
           <Label row="1" col="1" :text="item.title" class="title" textWrap="true" android:maxLines="2"
@@ -22,7 +22,7 @@
           <GridLayout columns="*,*" row="3" col="1" class="info">
             <StackLayout col="0" orientation="horizontal">
               <Label text="&#xf3cf;  " class="font-awesome-solid" />
-              <Label :text="formatIsoToDateTime(item.time)" />
+              <Label :text="formatIsoToDateTime(item.updatedAt)" />
             </StackLayout>
             <StackLayout col="1" orientation="horizontal">
               <Label text="&#x1f553; " class="font-awesome-regular" />
@@ -42,21 +42,21 @@
 import loadingAnimation from '../components/loadingAnimation.vue'
 import noContent from '../components/noContent.vue'
 import errorImg from '../components/errorImg.vue'
-import { getVideoHistory } from '../../core/database'
+import { getMyFavoritesImage } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
-import { ref } from 'nativescript-vue'
+import { ref, defineExpose } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../../core/viewFunction'
 interface Item {
   id: string,
   title: string,
   up: string,
-  img: string,
+  numImages: number,
   numViews: number,
   numLikes: number,
-  long: number,
+  createdAt: string,
+  updatedAt: string,
   ecchi: boolean,
-  time: string,
-  createdAt: string
+  img: string
 }
 const data = ref<Item[]>([])
 const isLoading = ref(false)
@@ -64,14 +64,15 @@ const onloaded = ref(false)
 const loadError = ref(false)
 let page = 0
 let isEnd = false
-getData().then(res => {
-  if (res) {
-    data.value = res
+let action = false
+const init = () => {
+  if (!action) {
+    retry()
+    action = true
   }
-}).catch(err => {
-  loadError.value = true
-}).finally(() => {
-  onloaded.value = true
+}
+defineExpose({
+  init
 })
 function nextPage() {
   if (!isEnd) {
@@ -106,7 +107,7 @@ function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      getVideoHistory(page, 32).then(data => {
+      getMyFavoritesImage(page).then(data => {
         page++
         resolve(data)
       }).catch(err => {
@@ -120,22 +121,8 @@ function getData(): Promise<Item[] | null> {
     }
   })
 }
-function formatDuration(seconds: number): string {
-  if (seconds == 0) {
-    return '';
-  }
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-  let formattedTime = '';
-  if (hours > 0) {
-    formattedTime += `${hours}:`;
-  }
-  formattedTime += `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  return formattedTime;
-}
 function onTouch(id: string) {
-  navigateTo("/player", {
+  navigateTo("/imageview", {
     id: id
   })
 }
@@ -172,6 +159,7 @@ function onTouch(id: string) {
       text-shadow: 1px 1px 1px #000000;
     }
   }
+
 
   .title {
     font-size: 14px;

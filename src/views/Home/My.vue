@@ -51,7 +51,7 @@
             <Label text="&#xf1da;" class="font-awesome-solid icon" />
             <Label text="历史记录" class="label" />
           </StackLayout>
-          <StackLayout col="2" row="0" class="button">
+          <StackLayout col="2" row="0" class="button" @tap="toFavorites">
             <Label text="&#xf005;" class="font-awesome-regular icon" />
             <Label text="我的收藏" class="label" />
           </StackLayout>
@@ -177,6 +177,9 @@ function toHistory() {
   if (uid) {
     navigateTo('/history')
   }
+}
+function toFavorites(){
+  navigateTo('/favorites')
 }
 </script>
 <style lang="scss" scoped>

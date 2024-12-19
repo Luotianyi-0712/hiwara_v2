@@ -494,6 +494,39 @@ export function getUserZoneVideoList(uid: string, page: number, sort: string): P
   })
 }
 
+export function getMyFavoritesVideos(page: number): Promise<VideoItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      limit: 32,
+      page: page
+    }
+    get(apiPath + '/favorites/videos', query).then(data => {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.video.id,
+          title: item.video.title,
+          up: item.video.user.name,
+          numViews: item.video.numViews,
+          numLikes: item.video.numLikes,
+          duration: item.video.file ? item.video.file.duration ? item.video.file.duration : 0 : 0,
+          createdAt: item.video.createdAt,
+          updatedAt: item.video.updatedAt,
+          ecchi: item.video.rating == 'ecchi' ? true : false,
+          img: item.video.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.video.file.id + '/thumbnail-' + item.video.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
+          loss: item.video.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
 export function getVideoData(id: string): Promise<VideoData> {
   return new Promise((resolve, reject) => {
     get(apiPath + '/video/' + id, null).then(res => {
@@ -756,7 +789,35 @@ export function getUserZoneImageList(uid: string, page: number, sort: string): P
   })
 }
 
-
+export function getMyFavoritesImage(page: number): Promise<ImageItem[]> {
+  return new Promise((resolve, reject) => {
+    const query = {
+      limit: 32,
+      page: page
+    }
+    get(apiPath + '/favorites/images', query).then(data => {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.image.id,
+          title: item.image.title,
+          up: item.image.user.name,
+          numImages: item.image.numImages,
+          numViews: item.image.numViews,
+          numLikes: item.image.numLikes,
+          createdAt: item.image.createdAt,
+          updatedAt: item.image.updatedAt,
+          ecchi: item.image.rating == 'ecchi' ? true : false,
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.image.thumbnail.id + '/' + item.image.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
 
 export function getImageData(id: string): Promise<ImageData> {
   return new Promise((resolve, reject) => {
