@@ -27,7 +27,6 @@ function initDatabase(): Promise<void> {
 function createdTable(): Promise<void> {
   sqlite = openOrCreate(appDocuments.path + '/databases/app.db')
   const userTable = [
-    ['uuid', 'TEXT'],
     ['uid', 'TEXT'],
     ['name', 'TEXT'],
     ['username', 'TEXT'],
@@ -80,7 +79,7 @@ function createdTable(): Promise<void> {
           sqlite.execute(userTableCrate).catch((err: any) => {
             console.log(err)
           })
-          sqlite.execute("INSERT INTO user ( " + userTable.map(item => item[0]).join(',') + " ) VALUES ( '" + generateUUID() + "'" + ",null".repeat(userTable.length - 1) + " );").catch((err: any) => {
+          sqlite.execute("INSERT INTO user (" + userTable.map(item => item[0]).join(',') + ") VALUES (" + (new Array(userTable.length + 1).join('null,').slice(0, -1)) + ");").catch((err: any) => {
             console.log(err)
           })
         }
@@ -184,13 +183,9 @@ export function getUserToken(): Promise<string | null> {
 
 export function saveUserToken(login: string, passwd: string, token: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    getQuery('SELECT uuid FROM user;').then(res => {
-      sqlite.execute("UPDATE user SET login = '" + login + "', passwd = '" + passwd + "', token = '" + token + "' WHERE uuid = '" + res.uuid + "'").then(() => {
-        resolve()
-      }).catch((err: any) => {
-        reject(err)
-      })
-    }).catch(err => {
+    sqlite.execute("UPDATE user SET login = '" + login + "', passwd = '" + passwd + "', token = '" + token + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
       reject(err)
     })
   })
@@ -198,13 +193,9 @@ export function saveUserToken(login: string, passwd: string, token: string): Pro
 
 export function saveUserData(uid: string, name: string, username: string, avatar: string, createdAt: string, updatedAt: string, email: string, body: string, premium: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
-    getQuery('SELECT uuid FROM user;').then(res => {
-      sqlite.execute("UPDATE user SET uid = '" + uid + "', name = '" + name + "', username = '" + username + "', avatar = '" + avatar + "', createdAt = '" + createdAt + "', updatedAt = '" + updatedAt + "', email = '" + email + "',  body = '" + body + "',  premium = '" + (premium ? 1 : 0) + "' WHERE uuid = '" + res.uuid + "';").then(() => {
-        resolve()
-      }).catch((err: any) => {
-        reject(err)
-      })
-    }).catch(err => {
+    sqlite.execute("UPDATE user SET uid = '" + uid + "', name = '" + name + "', username = '" + username + "', avatar = '" + avatar + "', createdAt = '" + createdAt + "', updatedAt = '" + updatedAt + "', email = '" + email + "',  body = '" + body + "',  premium = '" + (premium ? 1 : 0) + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
       reject(err)
     })
   })
@@ -294,6 +285,60 @@ export function getSearchHistory(): Promise<any> {
   })
 }
 
+export function changeAutoplay(val: boolean): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET autoplay=" + val + ";").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeDefinition(val: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET definition='" + val + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeLanguage(val: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET language='" + val + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeDownload(val: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET download='" + val + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeAria(val: boolean): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET aria=" + val + ";").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeAriaConfig(rpc: string, token: string, download: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET ariaRPC='" + rpc + "',ariaToken='" + token + "',ariaDownload='" + download + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
 function generateUUID() {
   let d = new Date().getTime(); // 获取当前时间
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {

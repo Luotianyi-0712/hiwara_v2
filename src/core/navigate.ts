@@ -7,6 +7,7 @@ import zone from "../views/zone.vue"
 import friends from "../views/friends.vue"
 import history from "../views/history.vue"
 import favorites from "../views/favorites.vue"
+import setup from "../views/setup.vue"
 
 interface NativeRoute {
   path: string;
@@ -35,6 +36,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/favorites",
     component: favorites
+  }, {
+    path: "/setup",
+    component: setup
   }
 ]
 

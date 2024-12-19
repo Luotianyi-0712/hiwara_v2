@@ -82,7 +82,7 @@
           <Label col="1" text="违规记录" class="label" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="28px,*,28px" class="oth-button">
+        <GridLayout columns="28px,*,28px" class="oth-button" @tap="toSetup">
           <Label col="0" text="&#xf1de;" class="font-awesome-solid icon" />
           <Label col="1" text="设置" class="label" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
@@ -178,8 +178,11 @@ function toHistory() {
     navigateTo('/history')
   }
 }
-function toFavorites(){
+function toFavorites() {
   navigateTo('/favorites')
+}
+function toSetup() {
+  navigateTo('/setup')
 }
 </script>
 <style lang="scss" scoped>
