@@ -65,7 +65,6 @@ function formatNumber(num: number): string {
   }
 }
 function formatIsoToChineseDate(isoDate: string): string {
-  console.log(isoDate);
   const date = new Date(isoDate);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;

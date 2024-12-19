@@ -1,7 +1,6 @@
 import CryptoJS from 'crypto-js';
 import { getUserToken, getUserData } from './database'
 import { isTokenValid } from './viewFunction'
-import { count } from 'console';
 
 const secretKey: string = '_5nFp9kmbNnHdAFhaqMvt';
 const apiPath = "https://api.iwara.tv"
@@ -166,6 +165,129 @@ function deletef(path: string): Promise<any> {
   })
 }
 
+interface VideoItem {
+  id: string,
+  title: string,
+  up: string,
+  numViews: number,
+  numLikes: number,
+  duration: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  img: string,
+  loss: boolean
+}
+interface VideoData {
+  id: string,
+  title: string,
+  slug: string,
+  up: string,
+  uid: string,
+  username: string,
+  body: string | null,
+  numViews: number,
+  numLikes: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  liked: boolean,
+  following: boolean,
+  friend: boolean,
+  thumbnail: string,
+  avatar: string,
+  loss: boolean,
+  fileUrl: string,
+  fid: string
+}
+interface ImageItem {
+  id: string,
+  title: string,
+  up: string,
+  numImages: number,
+  numViews: number,
+  numLikes: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  img: string
+}
+interface ImageData {
+  id: string,
+  title: string,
+  slug: string,
+  up: string,
+  uid: string,
+  username: string,
+  body: string | null,
+  numViews: number,
+  numLikes: number,
+  numImages: number,
+  createdAt: string,
+  updatedAt: string,
+  ecchi: boolean,
+  liked: boolean,
+  following: boolean,
+  friend: boolean,
+  thumbnail: string,
+  avatar: string
+  loss: boolean,
+  files: string[]
+}
+interface Comments {
+  id: string,
+  body: string,
+  createdAt: string,
+  updatedAt: string,
+  userName: string,
+  uid: string,
+  avatar: string,
+  numReplies: number
+}
+interface MyselfData {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string,
+  email: string,
+  body: string,
+  premium: boolean
+}
+interface PostsItem {
+  id: string,
+  title: string,
+  body: string,
+  numViews: string,
+  createdAt: string,
+  updatedAt: string,
+  user: string,
+  uid: string
+}
+interface usersItem {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  following: boolean,
+  friend: boolean,
+  premium: boolean
+}
+interface UserData {
+  uid: string,
+  name: string,
+  username: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string,
+  body: string,
+  premium: boolean,
+  status: string,
+  header: string | null,
+  following: boolean
+}
+
 export function login(email: string, password: string): Promise<any> {
   const body = {
     email: email,
@@ -203,19 +325,6 @@ export function login(email: string, password: string): Promise<any> {
   })
 }
 
-interface VideoItem {
-  id: string,
-  title: string,
-  up: string,
-  numViews: number,
-  numLikes: number,
-  duration: number,
-  createdAt: string,
-  updatedAt: string,
-  ecchi: boolean,
-  img: string,
-  loss: boolean
-}
 export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
   return new Promise((resolve, reject) => {
     const query = {
@@ -385,29 +494,6 @@ export function getUserZoneVideoList(uid: string, page: number, sort: string): P
   })
 }
 
-interface VideoData {
-  id: string,
-  title: string,
-  slug: string,
-  up: string,
-  uid: string,
-  username: string,
-  body: string | null,
-  numViews: number,
-  numLikes: number,
-  createdAt: string,
-  updatedAt: string,
-  ecchi: boolean,
-  liked: boolean,
-  following: boolean,
-  friend: boolean,
-  thumbnail: string,
-  avatar: string,
-  loss: boolean,
-  fileUrl: string,
-  fid: string
-}
-
 export function getVideoData(id: string): Promise<VideoData> {
   return new Promise((resolve, reject) => {
     get(apiPath + '/video/' + id, null).then(res => {
@@ -515,18 +601,7 @@ export function disFollowers(uid: string): Promise<any> {
   })
 }
 
-interface ImageItem {
-  id: string,
-  title: string,
-  up: string,
-  numImages: number,
-  numViews: number,
-  numLikes: number,
-  createdAt: string,
-  updatedAt: string,
-  ecchi: boolean,
-  img: string
-}
+
 export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
   return new Promise((resolve, reject) => {
     const query = {
@@ -681,28 +756,7 @@ export function getUserZoneImageList(uid: string, page: number, sort: string): P
   })
 }
 
-interface ImageData {
-  id: string,
-  title: string,
-  slug: string,
-  up: string,
-  uid: string,
-  username: string,
-  body: string | null,
-  numViews: number,
-  numLikes: number,
-  numImages: number,
-  createdAt: string,
-  updatedAt: string,
-  ecchi: boolean,
-  liked: boolean,
-  following: boolean,
-  friend: boolean,
-  thumbnail: string,
-  avatar: string
-  loss: boolean,
-  files: string[]
-}
+
 
 export function getImageData(id: string): Promise<ImageData> {
   return new Promise((resolve, reject) => {
@@ -768,16 +822,7 @@ export function unLikeImage(id: string): Promise<any> {
   })
 }
 
-interface Comments {
-  id: string,
-  body: string,
-  createdAt: string,
-  updatedAt: string,
-  userName: string,
-  uid: string,
-  avatar: string,
-  numReplies: number
-}
+
 
 export function getVideoComments(id: string, page: number, parent?: string): Promise<Comments[]> {
   return new Promise((resolve, reject) => {
@@ -910,17 +955,7 @@ export function addCommentForImage(id: string, body: string, parentId?: string):
   })
 }
 
-interface MyselfData {
-  uid: string,
-  name: string,
-  username: string,
-  avatar: string,
-  createdAt: string,
-  updatedAt: string,
-  email: string,
-  body: string,
-  premium: boolean
-}
+
 export function getMyselfUserData(): Promise<MyselfData> {
   return new Promise((resolve, reject) => {
     get(apiPath + '/user', null).then(res => {
@@ -965,15 +1000,7 @@ function getUID(): Promise<void> {
     })
   })
 }
-interface usersItem {
-  uid: string,
-  name: string,
-  username: string,
-  avatar: string,
-  following: boolean,
-  friend: boolean,
-  premium: boolean
-}
+
 export function getFollowingList(uid: string, page: number, limit: number): Promise<any> {
   // 关注列表
   return new Promise((resolve, reject) => {
@@ -1032,14 +1059,7 @@ export function getFollowersList(uid: string, page: number, limit: number): Prom
     })
   })
 }
-interface PostsItem {
-  id: string,
-  title: string,
-  body: string,
-  numViews: string,
-  createdAt: string,
-  updatedAt: string
-}
+
 export function getPosts(uid: string, page: number, limit: number): Promise<any> {
   // 发布内容
   return new Promise((resolve, reject) => {
@@ -1057,7 +1077,9 @@ export function getPosts(uid: string, page: number, limit: number): Promise<any>
           body: item.body,
           numViews: item.numViews,
           createdAt: item.createdAt,
-          updatedAt: item.updatedAt
+          updatedAt: item.updatedAt,
+          user: item.user.name,
+          uid: item.user.id
         })
       }
       resolve({
@@ -1070,19 +1092,6 @@ export function getPosts(uid: string, page: number, limit: number): Promise<any>
   })
 }
 
-interface UserData {
-  uid: string,
-  name: string,
-  username: string,
-  avatar: string,
-  createdAt: string,
-  updatedAt: string,
-  body: string,
-  premium: boolean,
-  status: string,
-  header: string | null,
-  following: boolean
-}
 export function getZoneUserData(username: string): Promise<UserData> {
   return new Promise((resolve, reject) => {
     get(apiPath + '/profile/' + username, null).then(res => {
@@ -1101,5 +1110,112 @@ export function getZoneUserData(username: string): Promise<UserData> {
         following: users.following
       })
     })
+  })
+}
+
+export function searchData(query: string, type: 'video' | 'image' | 'post' | 'user' | 'forum', page: number, limit: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const sendMsg = {
+      type: type,
+      page: page,
+      limit: limit,
+      query: query
+    }
+    get(apiPath + '/search', sendMsg).then(res => {
+      console.log(res)
+      switch (type) {
+        case 'video':
+          video(res)
+          break;
+        case 'image':
+          image(res)
+          break;
+        case 'post':
+          posts(res)
+          break;
+        case 'user':
+          users(res)
+          break;
+        case 'forum':
+          break;
+        default:
+          break;
+      }
+    }).catch(err => {
+      console.error(err)
+      reject(err)
+    })
+    function video(data: any) {
+      let videoList: VideoItem[] = []
+      for (let item of data.results) {
+        videoList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          duration: item.file ? item.file.duration ? item.file.duration : 0 : 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: item.file ?
+            'https://i.iwara.tv/image/thumbnail/' + item.file.id + '/thumbnail-' + item.thumbnail.toString().padStart(2, '0') + '.jpg' :
+            lossImgSrc,
+          // img: '~/assets/img/not-img.jpg',
+          loss: item.file ? false : true
+        })
+      }
+      resolve(videoList)
+    }
+    function image(data: any) {
+      let imageList: ImageItem[] = []
+      for (let item of data.results) {
+        imageList.push({
+          id: item.id,
+          title: item.title,
+          up: item.user.name,
+          numImages: item.numImages,
+          numViews: item.numViews,
+          numLikes: item.numLikes,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          ecchi: item.rating == 'ecchi' ? true : false,
+          img: 'https://i.iwara.tv/image/thumbnail/' + item.thumbnail.id + '/' + item.thumbnail.name
+          // img: '~/assets/img/not-img.jpg'
+        })
+      }
+      resolve(imageList)
+    }
+    function posts(data: any) {
+      let postsList: PostsItem[] = []
+      for (let item of data.results) {
+        postsList.push({
+          id: item.id,
+          title: item.title,
+          body: item.body,
+          numViews: item.numViews,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          user: item.user.name,
+          uid: item.user.id
+        })
+      }
+      resolve(postsList)
+    }
+    function users(data: any) {
+      let usersList: usersItem[] = []
+      for (let item of data.results) {
+        usersList.push({
+          uid: item.id,
+          name: item.name,
+          username: item.username,
+          avatar: item.avatar ? 'https://i.iwara.tv/image/avatar/' + item.avatar.id + '/' + item.avatar.name : defaultAvatar,
+          following: item.following,
+          friend: item.friend,
+          premium: item.premium
+        })
+      }
+      resolve(usersList)
+    }
   })
 }

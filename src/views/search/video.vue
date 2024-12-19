@@ -8,14 +8,11 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, defineExpose } from 'nativescript-vue'
 import videoList from '../lists/videoList.vue'
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
-import { getUserZoneVideoList } from '../../core/api'
-const props = defineProps<{
-  uid: string
-}>();
+import { searchData } from '../../core/api'
 interface Item {
   id: string,
   title: string,
@@ -35,20 +32,21 @@ const loadError = ref(false)
 const isLoading = ref(false)
 let page = 0
 let isEnd = false
-getListData().then(res => {
-  if (res) {
-    listData.value = res
+let query: string = ''
+const search = (text: string) => {
+  if (query != text) {
+    query = text
+    retry()
   }
-}).catch(err => {
-  loadError.value = true
-}).finally(() => {
-  onloaded.value = true
+}
+defineExpose({
+  search
 })
 function getListData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      getUserZoneVideoList(props.uid, page, 'date').then(res => {
+      searchData(query, 'video', page, 32).then(res => {
         if (res.length > 0) {
           page++
           resolve(res)

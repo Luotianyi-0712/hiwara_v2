@@ -64,10 +64,15 @@ function createdTable(): Promise<void> {
     ['time', 'TEXT'],
     ['createdAt', 'TEXT']
   ]
+  const searchHistoryTable = [
+    ['text', 'TEXT'],
+    ['time', 'TEXT']
+  ]
   const userTableCrate = "CREATE TABLE user ( " + userTable.map(item => item.join(' ')).join(',') + " );"
   const configTableCrate = "CREATE TABLE config ( " + configTable.map(item => item.join(' ')).join(',') + " );"
   const videoHistoryTableCrate = "CREATE TABLE videoHistory ( " + historyTable.map(item => item.join(' ')).join(',') + " );"
   const imageHistoryTableCrate = "CREATE TABLE imageHistory ( " + historyTable.map(item => item.join(' ')).join(',') + " );"
+  const searchHistoryTableCreate = "CREATE TABLE searchHistory ( " + searchHistoryTable.map(item => item.join(' ')).join(',') + " );"
   return new Promise((resolve, reject) => {
     Promise.all([
       tableQuery('user').then(exist => {
@@ -86,7 +91,7 @@ function createdTable(): Promise<void> {
             console.log(err)
           })
           const values = [
-            1, 4, "'Source'", "'auto'", "null", 0, "null", "null", "null"
+            true, 4, "'Source'", "'auto'", "null", false, "null", "null", "null"
           ]
           sqlite.execute("INSERT INTO config ( " + configTable.map(item => item[0]).join(',') + " ) VALUES ( " + values.map(item => item).join(',') + " );").catch((err: any) => {
             console.log(err)
@@ -103,6 +108,13 @@ function createdTable(): Promise<void> {
       tableQuery('imageHistory').then(exist => {
         if (!exist) {
           sqlite.execute(imageHistoryTableCrate).catch((err: any) => {
+            console.log(err)
+          })
+        }
+      }),
+      tableQuery('searchHistory').then(exist => {
+        if (!exist) {
+          sqlite.execute(searchHistoryTableCreate).catch((err: any) => {
             console.log(err)
           })
         }
@@ -252,6 +264,30 @@ export function getImageHistory(page: number, limit: number): Promise<any> {
   return new Promise((resolve, reject) => {
     sqlite.select("SELECT * FROM imageHistory ORDER BY time DESC LIMIT " + limit + " OFFSET " + limit * page + ";").then((res: any) => {
       resolve(res)
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
+export function addSearchHistory(text: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("DELETE FROM searchHistory WHERE text = '" + text + "';").then(() => {
+      sqlite.execute("INSERT INTO searchHistory ('text', 'time') VALUES ('" + text + "', '" + getCurrentTimeFormatted() + "');").then(() => {
+        resolve()
+      }).catch((err: any) => {
+        reject(err)
+      })
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
+export function getSearchHistory(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    sqlite.select("SELECT text FROM searchHistory ORDER BY time DESC LIMIT 20 OFFSET 0;").then((result: any) => {
+      resolve(result)
     }).catch((err: any) => {
       reject(err)
     })

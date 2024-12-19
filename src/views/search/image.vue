@@ -1,6 +1,6 @@
 <template>
   <GridLayout rows="*">
-    <videoList row="0" :data="listData" :loading="isLoading" @loadMoreItems="nextPage"
+    <imageList row="0" :data="listData" :loading="isLoading" @loadMoreItems="nextPage"
       :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }" />
     <loadingAnimation row="0" v-show="!onloaded" :class="{ 'visible': !onloaded, 'hidden': onloaded }" />
     <errorImg text="数据加载失败，请点击重试" @tap="retry" v-show="loadError"
@@ -8,26 +8,22 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps } from 'nativescript-vue'
-import videoList from '../lists/videoList.vue'
+import { ref, defineExpose } from 'nativescript-vue'
+import imageList from '../lists/imageList.vue'
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
-import { getUserZoneVideoList } from '../../core/api'
-const props = defineProps<{
-  uid: string
-}>();
+import { searchData } from '../../core/api'
 interface Item {
   id: string,
   title: string,
   up: string,
+  numImages: number,
   numViews: number,
   numLikes: number,
-  duration: number,
   createdAt: string,
   updatedAt: string,
   ecchi: boolean,
-  img: string,
-  loss: boolean
+  img: string
 }
 const listData = ref<Item[]>([])
 const onloaded = ref(false)
@@ -35,20 +31,21 @@ const loadError = ref(false)
 const isLoading = ref(false)
 let page = 0
 let isEnd = false
-getListData().then(res => {
-  if (res) {
-    listData.value = res
+let query: string = ''
+const search = (text: string) => {
+  if (query != text) {
+    query = text
+    retry()
   }
-}).catch(err => {
-  loadError.value = true
-}).finally(() => {
-  onloaded.value = true
+}
+defineExpose({
+  search
 })
 function getListData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      getUserZoneVideoList(props.uid, page, 'date').then(res => {
+      searchData(query, 'image', page, 32).then(res => {
         if (res.length > 0) {
           page++
           resolve(res)
