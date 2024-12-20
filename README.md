@@ -25,7 +25,7 @@ If you are looking for the v1 version, please refer to the following link.
 
 ## 🛠️ Development environment setup | 环境搭建
 
-### Android环境搭建
+### Android Environment Setup | Android环境搭建
 
 1. Install Node.js, Android Studio,  
    安装Node.js、Android Studio，  
@@ -70,11 +70,11 @@ If you are looking for the v1 version, please refer to the following link.
     npm install -g nativescript
    ```
    
-### iOS环境搭建
+### iOS Environment Setup | iOS环境搭建
 
 Omit | 略
 
-## 📲 Run on the phone | 运行手机
+## 📲 Run on the phone | 运行到手机
 
 ### Android
 
