@@ -335,4 +335,9 @@ function toMyFollowers() {
     opacity: 1;
   }
 }
+
+Button {
+  background-color: #00796B;
+  color: #f0f0f0;
+}
 </style>

@@ -129,15 +129,16 @@ Omit | 略
 * ✅Image view | 图片查看
 * ✅User home page | 个人主页
 * ✅Space view | 空间查看
-* ⬜Search | 搜索
+* ✅Search | 搜索
 * ✅Follow, subscribe, favorite, comment | 关注、订阅、收藏、评论
 * ✅Share and download external links | 分析及外链下载
 * ⬜Playlist | 播放列表
 * ✅History | 历史记录
 * ✅Following list | 关注列表
 * ✅Fan list | 粉丝列表
-* ⬜Settings | 设置
+* ✅Settings | 设置
 * ⬜Adaptation for Pad side | 平板电脑适配
+* ⬜Dark mode | 暗黑模式
 * ⬜Offline caching and downloading | 离线缓存及下载
 * ⬜Forum | 论坛
 * ⬜Multi-language support | 多语言支持

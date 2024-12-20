@@ -52,7 +52,7 @@
   </Page>
 </template>
 <script setup lang="ts">
-import { Screen, Dialogs } from '@nativescript/core';
+import { Screen, Dialogs, isAndroid, isIOS, Application } from '@nativescript/core';
 import { ref, defineProps, watch, onMounted, onBeforeUnmount } from 'nativescript-vue'
 import { getVideoData, getVideoFiles } from '../core/api'
 import videoPlayerFrame from './player/videoPlayer.vue';
@@ -61,7 +61,6 @@ import loadingAnimation from './components/loadingAnimation.vue';
 import errorImg from './components/errorImg.vue';
 import info from './player/info.vue';
 import comments from './player/comments.vue';
-import { isAndroid, isIOS, Application } from '@nativescript/core'
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../core/viewFunction'
 const props = defineProps<{
   id: string;

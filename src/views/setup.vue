@@ -14,27 +14,30 @@
             <Switch :checked="autoplay" @checkedChange="autoplayChange" />
           </GridLayout>
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toDefinition">
+        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toDefinition">
           <Label col="0" text="默认清晰度" class="label" />
-          <Label col="1" text="540P" class="arrow" />
+          <Label col="1" :text="parseDefinitionLabel(definition)" />
+          <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toDownloadPath">
           <Label col="0" text="缓存目录" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
-          <Label col="0" text="Aria设置" class="label" />
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toAria">
+          <Label col="0" text="Aria2推送设置" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
+        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toLanguage">
           <Label col="0" text="语言(Language)" class="label" />
-          <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
+          <Label col="1" :text="parseLanguageLabel(language)" />
+          <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
+        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="appInfoToSystem">
           <Label col="0" text="清除缓存" class="label" />
-          <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
+          <Label col="1" text="前往清除" />
+          <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="logout">
           <Label col="0" text="退出登录" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
@@ -43,18 +46,97 @@
   </Page>
 </template>
 <script lang="ts" setup>
-import { navigateBack } from '../core/navigate'
+import { navigateBack, navigateReload } from '../core/navigate'
 import { ref, $navigateTo } from 'nativescript-vue'
-import definition from './setup/definition.vue'
-const autoplay = ref(true)
+import { getConfig, changeAutoplay, removeLogout } from '../core/database'
+import { parseDefinitionLabel, parseLanguageLabel, toasty } from '../core/viewFunction'
+import { Dialogs, isAndroid, isIOS, Application } from '@nativescript/core'
+import definitionVue from './setup/definition.vue'
+import downloadVue from './setup/download.vue'
+import ariaVue from './setup/aria2.vue'
+import languageVue from './setup/language.vue'
+const autoplay = ref<boolean>(false)
+const definition = ref<string>('-')
+const language = ref<string>('-')
+flush()
+function flush() {
+  getConfig().then(data => {
+    console.log(data)
+    autoplay.value = Boolean(data.autoplay)
+    definition.value = data.definition
+    language.value = data.language
+  })
+}
 function autoplayChange(args: any) {
   autoplay.value = args.value
+  changeAutoplay(autoplay.value)
 }
 function toDefinition() {
-  $navigateTo(definition, {
+  const back = () => {
+    flush()
+  }
+  $navigateTo(definitionVue, {
+    props: {
+      back: back
+    },
     transition: {
       name: "slideLeft",
       curve: "easeIn"
+    }
+  })
+}
+function toDownloadPath() {
+  $navigateTo(downloadVue, {
+    transition: {
+      name: "slideLeft",
+      curve: "easeIn"
+    }
+  })
+}
+function toAria() {
+  $navigateTo(ariaVue, {
+    transition: {
+      name: "slideLeft",
+      curve: "easeIn"
+    }
+  })
+}
+function toLanguage() {
+  const back = () => {
+    flush()
+  }
+  $navigateTo(languageVue, {
+    props: {
+      back: back
+    },
+    transition: {
+      name: "slideLeft",
+      curve: "easeIn"
+    }
+  })
+}
+function appInfoToSystem() {
+  if (isAndroid) {
+    const context = Application.android.foregroundActivity || Application.android.nativeApp;
+    const intent = new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.addCategory(android.content.Intent.CATEGORY_DEFAULT);
+    intent.setData(android.net.Uri.parse("package:" + context.getPackageName()));
+    context.startActivity(intent);
+  }
+}
+function logout() {
+  Dialogs.confirm({
+    title: '退出登录',
+    message: '你确定要退出登录？',
+    okButtonText: '是',
+    cancelButtonText: '否',
+    neutralButtonText: '返回',
+  }).then((result) => {
+    if (result) {
+      toasty('已退出登录')
+      removeLogout().then(() => {
+        navigateReload()
+      })
     }
   })
 }
@@ -78,18 +160,17 @@ function toDefinition() {
 }
 
 .button {
-  // color: #262626;
   border-bottom-width: 1px;
   border-color: #c0c0c0;
 
   .label {
     font-size: 14px;
     padding: 0 40px;
+    color: #424242;
   }
 
   .arrow {
-    width: 140px;
-    text-align: center;
+    padding: 0 40px;
   }
 }
 </style>

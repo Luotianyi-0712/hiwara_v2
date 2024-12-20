@@ -130,4 +130,9 @@ function addCommentsInputBlur() {
   replyParentId = null
 }
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+Button {
+  background-color: #00796B;
+  color: #f0f0f0;
+}
+</style>

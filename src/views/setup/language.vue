@@ -3,38 +3,46 @@
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
-        <Label col="1" text="设置清晰度" />
+        <Label col="1" text="语言选择" />
       </GridLayout>
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('360p')">
-          <Label col="0" text="360P" class="label" />
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('auto')">
+          <Label col="0" text="跟随系统" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('540p')">
-          <Label col="0" text="540P" class="label" />
-          <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
-        </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('Source')">
-          <Label col="0" text="原画" class="label" />
-          <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
+        <GridLayout v-for="(item, index) in list" columns="auto,*,auto" rows="28px,24px" class="button"
+          @tap="toggle(item.value)">
+          <Label row="0" col="0" :text="item.label" class="label" />
+          <Label row="1" col="0" :text="item.tslabel" class="tslabel" />
+          <Label row="0" rowSpan="2" col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
       </StackLayout>
     </ScrollView>
   </Page>
 </template>
 <script lang="ts" setup>
-import { $navigateBack, defineProps } from "nativescript-vue"
-import { changeDefinition } from "../../core/database"
+import { ref, $navigateBack, defineProps } from "nativescript-vue"
+import { changeLanguage } from "../../core/database"
+import { languageList } from "../../core/viewFunction"
 const props = defineProps<{
   back: () => void
 }>()
+interface Item {
+  label: string,
+  tslabel: string,
+  value: string
+}
+const list = ref<Item[]>([])
+list.value = languageList
 function navigateBack() {
   $navigateBack()
+
 }
 function toggle(val: string) {
-  changeDefinition(val).then(() => {
+  console.log(val)
+  changeLanguage(val).then(() => {
     props.back()
     $navigateBack()
   })
@@ -65,7 +73,14 @@ function toggle(val: string) {
   .label {
     font-size: 14px;
     padding: 0 40px;
+    text-align: left;
     color: #424242;
+  }
+
+  .tslabel {
+    font-size: 12px;
+    padding: 0 40px;
+    text-align: left;
   }
 
   .arrow {

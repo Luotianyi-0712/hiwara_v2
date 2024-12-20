@@ -137,4 +137,9 @@ ActionBar {
   color: #fff;
   font-size: 18px;
 }
+
+Button {
+  background-color: #00796B;
+  color: #f0f0f0;
+}
 </style>

@@ -93,4 +93,9 @@ function submit() {
     text-align: center;
   }
 }
+
+Button {
+  background-color: #00796B;
+  color: #f0f0f0;
+}
 </style>

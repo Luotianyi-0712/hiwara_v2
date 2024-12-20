@@ -272,4 +272,9 @@ function toUserZone() {
     margin: 10px 0;
   }
 }
+
+Button {
+  background-color: #00796B;
+  color: #f0f0f0;
+}
 </style>

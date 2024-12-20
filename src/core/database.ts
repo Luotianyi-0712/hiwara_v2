@@ -1,7 +1,7 @@
 import { knownFolders, Folder } from '@nativescript/core'
 import { openOrCreate, deleteDatabase } from "@nativescript-community/sqlite"
 const appDocuments = knownFolders.documents()
-console.log(appDocuments.path)
+const appStorage = knownFolders.externalDocuments()
 let sqlite: any
 function initDatabase(): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -45,7 +45,8 @@ function createdTable(): Promise<void> {
     ['reconnect', 'TINYINT'],
     ['definition', 'TEXT'],
     ['language', 'TEXT'],
-    ['download', 'TEXT'],
+    ['videoDownload', 'TEXT'],
+    ['imageDownload', 'TEXT'],
     ['aria', 'TINYINT'],
     ['ariaRPC', 'TEXT'],
     ['ariaToken', 'TEXT'],
@@ -89,8 +90,41 @@ function createdTable(): Promise<void> {
           sqlite.execute(configTableCrate).catch((err: any) => {
             console.log(err)
           })
+          appStorage.getFolder('video')
+          appStorage.getFolder('image')
+          let videoDownload = "null"
+          let imageDownload = "null"
+          if (!Folder.exists('/storage/emulated/0/Movies/hiwara')) {
+            if (Folder.exists('/storage/emulated/0/Movies')) {
+              Folder.fromPath('/storage/emulated/0/Movies').getFolder('hiwara')
+              videoDownload = "'/storage/emulated/0/Movies/hiwara'"
+            } else {
+              videoDownload = appStorage.path + '/video'
+            }
+          } else {
+            videoDownload = "'/storage/emulated/0/Movies/hiwara'"
+          }
+          if (!Folder.exists('/storage/emulated/0/Pictures/hiwara')) {
+            if (Folder.exists('/storage/emulated/0/Pictures')) {
+              Folder.fromPath('/storage/emulated/0/Pictures').getFolder('hiwara')
+              imageDownload = "'/storage/emulated/0/Pictures/hiwara'"
+            } else {
+              imageDownload = appStorage.path + '/image'
+            }
+          } else {
+            imageDownload = "'/storage/emulated/0/Pictures/hiwara'"
+          }
           const values = [
-            true, 4, "'Source'", "'auto'", "null", false, "null", "null", "null"
+            true,
+            4,
+            "'Source'",
+            "'auto'",
+            videoDownload,
+            imageDownload,
+            false,
+            "null",
+            "null",
+            "null"
           ]
           sqlite.execute("INSERT INTO config ( " + configTable.map(item => item[0]).join(',') + " ) VALUES ( " + values.map(item => item).join(',') + " );").catch((err: any) => {
             console.log(err)
@@ -191,6 +225,42 @@ export function saveUserToken(login: string, passwd: string, token: string): Pro
   })
 }
 
+export function removeUserToken(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE user SET token=null;").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function removeLogout(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const userTable = [
+      ['uid', 'TEXT'],
+      ['name', 'TEXT'],
+      ['username', 'TEXT'],
+      ['avatar', 'TEXT'],
+      ['email', 'TEXT'],
+      ['createdAt', 'TEXT'],
+      ['updatedAt', 'TEXT'],
+      ['body', 'TEXT'],
+      ['premium', 'TEXT'],
+      ['login', 'TEXT'],
+      ['passwd', 'TEXT'],
+      ['token', 'TEXT'],
+    ]
+    sqlite.execute("DELETE FROM user;").then(() => {
+      sqlite.execute("INSERT INTO user (" + userTable.map(item => item[0]).join(',') + ") VALUES (" + (new Array(userTable.length + 1).join('null,').slice(0, -1)) + ");").then(() => {
+        resolve()
+      }).catch((err: any) => {
+        reject(err)
+      })
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
 export function saveUserData(uid: string, name: string, username: string, avatar: string, createdAt: string, updatedAt: string, email: string, body: string, premium: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     sqlite.execute("UPDATE user SET uid = '" + uid + "', name = '" + name + "', username = '" + username + "', avatar = '" + avatar + "', createdAt = '" + createdAt + "', updatedAt = '" + updatedAt + "', email = '" + email + "',  body = '" + body + "',  premium = '" + (premium ? 1 : 0) + "';").then(() => {
@@ -215,7 +285,7 @@ export function addVideoHistory(id: string, title: string, up: string, img: stri
   return new Promise((resolve, reject) => {
     sqlite.execute("DELETE FROM videoHistory WHERE id = '" + id + "';").then(() => {
     }).then(() => {
-      sqlite.execute("INSERT INTO videoHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
+      sqlite.execute("INSERT INTO videoHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', " + ecchi + ", '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
         resolve()
       }).catch((err: any) => {
         reject(err)
@@ -240,7 +310,7 @@ export function getVideoHistory(page: number, limit: number): Promise<any> {
 export function addImageHistory(id: string, title: string, up: string, img: string, numViews: number, numLikes: number, long: number, ecchi: boolean, createdAt: string): Promise<void> {
   return new Promise((resolve, reject) => {
     sqlite.execute("DELETE FROM imageHistory WHERE id = '" + id + "';").then(() => {
-      sqlite.execute("INSERT INTO imageHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', '" + ecchi + "', '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
+      sqlite.execute("INSERT INTO imageHistory ('id', 'title', 'up', 'img', 'numViews', 'numLikes', 'long', 'ecchi', 'time', 'createdAt') VALUES ('" + id + "', '" + title + "', '" + up + "', '" + img + "', '" + numViews + "', '" + numLikes + "', '" + long + "', " + ecchi + ", '" + getCurrentTimeFormatted() + "', '" + createdAt + "');").then(() => {
         resolve()
       }).catch((err: any) => {
         reject(err)
@@ -285,6 +355,16 @@ export function getSearchHistory(): Promise<any> {
   })
 }
 
+export function getConfig(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getQuery("SELECT * FROM config;").then((result: any) => {
+      resolve(result)
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+
 export function changeAutoplay(val: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     sqlite.execute("UPDATE config SET autoplay=" + val + ";").then(() => {
@@ -312,16 +392,16 @@ export function changeLanguage(val: string): Promise<void> {
     })
   })
 }
-export function changeDownload(val: string): Promise<void> {
+export function changeDownload(video: string, image: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    sqlite.execute("UPDATE config SET download='" + val + "';").then(() => {
+    sqlite.execute("UPDATE config SET videoDownload='" + video + "',imageDownload='" + image + "';").then(() => {
       resolve()
     }).catch((err: any) => {
       reject(err)
     })
   })
 }
-export function changeAria(val: boolean): Promise<void> {
+export function changeAriaSwitch(val: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     sqlite.execute("UPDATE config SET aria=" + val + ";").then(() => {
       resolve()

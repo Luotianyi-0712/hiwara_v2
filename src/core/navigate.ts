@@ -71,3 +71,9 @@ export function navigateBackHome() {
     }
   })
 }
+
+export function navigateReload() {
+  $navigateTo(home, {
+    clearHistory: true
+  })
+}

@@ -3,6 +3,92 @@ import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
 import { getMyselfUserData } from "./api"
 import { saveUserData, getUserData } from "./database"
+import { knownFolders, Folder } from '@nativescript/core'
+
+export const languageList = [
+  {
+    label: 'English',
+    tslabel: 'English',
+    value: 'en-US'
+  },
+  {
+    label: '简体中文',
+    tslabel: 'Chinese Simplified',
+    value: 'zh-Hans'
+  }, {
+    label: '繁體中文',
+    tslabel: 'Chinese Traditional',
+    value: 'zh-Hant'
+  }, {
+    label: '日本語',
+    tslabel: 'Japanese',
+    value: 'ja-JP'
+  }, {
+    label: '한국어',
+    tslabel: 'Korean',
+    value: 'ko-KR'
+  }, {
+    label: 'Deutsch',
+    tslabel: 'German',
+    value: 'de-DE'
+  }, {
+    label: 'Français',
+    tslabel: 'French',
+    value: 'fr-FR'
+  }, {
+    label: 'Español',
+    tslabel: 'Spanish',
+    value: 'es-ES'
+  }, {
+    label: 'Português',
+    tslabel: 'Portuguese',
+    value: 'pt-PT'
+  }, {
+    label: 'Italiano',
+    tslabel: 'Italian',
+    value: 'it-IT'
+  }, {
+    label: 'Русский',
+    tslabel: 'Russian',
+    value: 'ru-RU'
+  }, {
+    label: 'Українська',
+    tslabel: 'Ukrainian',
+    value: 'uk-UA'
+  }, {
+    label: 'العربية',
+    tslabel: 'Arabic',
+    value: 'ar-SA'
+  }, {
+    label: 'فارسی',
+    tslabel: 'Persian',
+    value: 'fa-IR'
+  }, {
+    label: 'ئۇيغۇر تىلى',
+    tslabel: 'Uyghur',
+    value: 'ug-CN'
+  }, {
+    label: 'བོད་ཀྱི་སྐད་',
+    tslabel: 'Tibetan',
+    value: 'bo-CN'
+  }, {
+    label: 'Tiếng Việt',
+    tslabel: 'Vietnamese',
+    value: 'vi-VN'
+  }, {
+    label: 'ภาษาไทย',
+    tslabel: 'Thai',
+    value: 'th-TH'
+  }, {
+    label: 'हिन्दी',
+    tslabel: 'Hindi',
+    value: 'hi-IN'
+  }, {
+    label: 'বাংলা',
+    tslabel: 'Bengali',
+    value: 'bn-IN'
+  }
+]
 
 export function toasty(text: string, type?: 'Success' | 'Error') {
   let variant: any
@@ -133,4 +219,12 @@ export function formatIsoToDateTime(isoDate: string): string {
   const formattedHours = hours < 10 ? `0${hours}` : hours;
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
   return `${year}-${formattedMonth}-${formattedDay} ${formattedHours}:${formattedMinutes}`;
+}
+
+export function parseLanguageLabel(val: string) {
+  if (val === 'auto') {
+    return '跟随系统'
+  } else {
+    return languageList.find(item => item.value === val)?.label || val
+  }
 }
