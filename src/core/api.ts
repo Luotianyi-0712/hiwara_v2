@@ -1279,3 +1279,30 @@ export function searchData(query: string, type: 'video' | 'image' | 'post' | 'us
     }
   })
 }
+export function ariaDownloadVideo(rpc: string, token: string, url: string, name: string, path: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const msg = {
+      jsonrpc: '2.0',
+      method: 'aria2.addUri',
+      id: 'hiwara_aria2',
+      params: [
+        "token:" + token,
+        [url], {
+          dir: path,
+          out: name,
+          referer: "*"
+        }]
+    }
+    fetch(rpc, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(msg)
+    }).then(() => {
+      resolve()
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}

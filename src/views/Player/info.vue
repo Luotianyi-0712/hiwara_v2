@@ -58,7 +58,7 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits, onMounted, ref } from 'nativescript-vue'
 import { Animation, AnimationDefinition, Dialogs, Utils } from '@nativescript/core'
-import { likeVideo, unLikeVideo, followers, disFollowers } from '../../core/api'
+import { likeVideo, unLikeVideo, followers, disFollowers, ariaDownloadVideo } from '../../core/api'
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../../core/viewFunction'
 import * as SocialShare from "@nativescript/social-share"
 import { navigateTo } from "../../core/navigate"
@@ -80,7 +80,13 @@ const props = defineProps<{
   thumbnail: string,
   avatar: string,
   files: any[],
-  definitionList: any[]
+  definition: string,
+  definitionList: any[],
+  downloadPath: string,
+  ariaSwitch: boolean,
+  ariaRPC: string,
+  ariaToken: string,
+  ariaDownloadPath: string,
 }>();
 const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)
@@ -118,7 +124,26 @@ function likeButtonTap() {
       }).finally(() => {
         likeing = false
       })
+      aria()
     }
+  }
+}
+function aria() {
+  if (props.ariaSwitch) {
+    let downloadLink
+    const found = props.files.filter(function (item) {
+      return item.name === props.definition
+    })
+    if (found.length > 0) {
+      downloadLink = 'https:' + found[0].src.download
+    } else {
+      downloadLink = 'https:' + props.files[props.files.length - 1].src.download
+    }
+    console.log(downloadLink)
+    const fileName = props.title + '[' + props.id + ']' + props.username + '.mp4'
+    ariaDownloadVideo(props.ariaRPC, props.ariaToken, downloadLink, fileName, props.ariaDownloadPath).catch((err) => {
+      toasty('Aria2推送失败', 'Error')
+    })
   }
 }
 function followersButtonTap() {

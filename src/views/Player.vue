@@ -3,7 +3,7 @@
     <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
       <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :definition="definition"
         :definitionList="definitionList" :isFullscreen="isFullscreen"
-        :height="isFullscreen ? '100%' : widthDIPs * 9 / 16" @onFullscreen="onFullscreen"
+        :height="isFullscreen ? '100%' : widthDIPs * 9 / 16" :autoplay="autoplay" @onFullscreen="onFullscreen"
         @changeDefinition="changeDefinition" />
       <loadingAnimation row="1" col="0" v-show="loading" :class="{ 'visible': loading, 'hidden': !loading }" />
       <errorImg col="0" row="1" text="数据加载失败，请点击尝试" v-show="loadingError"
@@ -38,7 +38,9 @@
                 <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :username="username" :body="body"
                   :numViews="numViews" :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked"
                   :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :files="files"
-                  :definitionList="definitionList" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
+                  :definition="definition" :definitionList="definitionList" :downloadPath="downloadPath"
+                  :ariaSwitch="ariaSwitch" :ariaRPC="ariaRPC" :ariaToken="ariaToken"
+                  :ariaDownloadPath="ariaDownloadPath" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
               </StackLayout>
             </ScrollView>
@@ -62,9 +64,10 @@ import errorImg from './components/errorImg.vue';
 import info from './player/info.vue';
 import comments from './player/comments.vue';
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../core/viewFunction'
+import { getConfig } from '../core/database'
 const props = defineProps<{
   id: string;
-}>();
+}>()
 
 const title = ref<string>('')
 const slug = ref<string>('')
@@ -89,7 +92,6 @@ let fileUrl = ''
 let fid = ''
 const files = ref<any[]>([])
 const playerSrc = ref<string>('')
-// const playerSrc = ref<string>('https://ro.qisato.com:2096/public/VID_20220416_033049_395.mp4')
 const definition = ref<string>('Source')
 const definitionLabel = ref<string>('')
 const definitionList = ref<any[]>([])
@@ -97,8 +99,39 @@ const serviceName = ref<string>('')
 const filesloaded = ref(false)
 const isFullscreen = ref(false)
 const widthDIPs = ref(Screen.mainScreen.widthDIPs)
+const autoplay = ref<boolean>(false)
+const downloadPath = ref<string>('')
+const ariaSwitch = ref<boolean>(false)
+const ariaRPC = ref<string>('')
+const ariaToken = ref<string>('')
+const ariaDownloadPath = ref<string>('')
 let switchServiceIng = false
-getData()
+getConfig().then(res => {
+  autoplay.value = Boolean(res.autoplay)
+  definition.value = res.definition
+  downloadPath.value = res.videoDownload
+  ariaSwitch.value = Boolean(res.aria)
+  ariaRPC.value = String(res.ariaRPC)
+  ariaToken.value = String(res.ariaToken)
+  ariaDownloadPath.value = String(res.ariaDownload)
+  getData()
+  watch(definition, val => {
+    if (files.value) {
+      const found = files.value.filter(function (item) {
+        return item.name === val;
+      })
+      if (found.length > 0) {
+        playerSrc.value = 'https:' + found[0].src.view
+        definitionLabel.value = parseDefinitionLabel(found[0].name)
+        serviceName.value = parseServiceName(found[0].src.view)
+      } else {
+        playerSrc.value = 'https:' + files.value[files.value.length - 1].src.view
+        definitionLabel.value = parseDefinitionLabel(files.value[files.value.length - 1].name)
+        serviceName.value = parseServiceName(files.value[files.value.length - 1].src.view)
+      }
+    }
+  })
+})
 onMounted(() => {
   if (isAndroid) {
     Application.android.on(Application.AndroidApplication.activityBackPressedEvent, (args: any) => {
@@ -125,16 +158,6 @@ onBeforeUnmount(() => {
       }
     }
     Application.android.off(Application.AndroidApplication.activityBackPressedEvent)
-  }
-})
-watch(definition, val => {
-  if (files.value) {
-    const found = files.value.filter(function (item) {
-      return item.name === val;
-    })
-    playerSrc.value = 'https:' + found[0].src.view
-    definitionLabel.value = parseDefinitionLabel(found[0].name)
-    serviceName.value = parseServiceName(found[0].src.view)
   }
 })
 watch(isFullscreen, (val) => {
@@ -188,10 +211,16 @@ function getData() {
       files.value = res
       const found = files.value.filter(function (item) {
         return item.name === definition.value;
-      });
-      playerSrc.value = 'https:' + found[0].src.view
-      definitionLabel.value = parseDefinitionLabel(found[0].name)
-      serviceName.value = parseServiceName(found[0].src.view)
+      })
+      if (found.length > 0) {
+        playerSrc.value = 'https:' + found[0].src.view
+        definitionLabel.value = parseDefinitionLabel(found[0].name)
+        serviceName.value = parseServiceName(found[0].src.view)
+      } else {
+        playerSrc.value = 'https:' + files.value[files.value.length - 1].src.view
+        definitionLabel.value = parseDefinitionLabel(files.value[files.value.length - 1].name)
+        serviceName.value = parseServiceName(files.value[files.value.length - 1].src.view)
+      }
       files.value.forEach(element => {
         if (element.name !== 'preview') {
           definitionList.value.push(element.name)
@@ -199,6 +228,7 @@ function getData() {
       })
       filesloaded.value = true
     }).catch(err => {
+      console.error(err)
       toasty('视频加载失败了喵~', 'Error')
     })
   }).catch(err => {
@@ -208,7 +238,7 @@ function getData() {
 function getFiles(fileUrl: string, id: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     getVideoFiles(fileUrl).then(res => {
-      resolve(res);
+      resolve(res)
     }).catch(err => {
       reject(err)
     })

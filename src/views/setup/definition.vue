@@ -8,11 +8,11 @@
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('360p')">
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('360')">
           <Label col="0" text="360P" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('540p')">
+        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('540')">
           <Label col="0" text="540P" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>

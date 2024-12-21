@@ -35,7 +35,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, $navigateBack } from "nativescript-vue"
-import { getConfig, changeAriaSwitch } from "../../core/database"
+import { getConfig, changeAriaSwitch,changeAriaConfig } from "../../core/database"
+import { toasty } from "../../core/viewFunction"
 const open = ref<boolean>(false)
 const rpc = ref<string>('')
 const token = ref<string>('')
@@ -54,7 +55,9 @@ function changeSwitch(args: any) {
   changeAriaSwitch(open.value)
 }
 function toggle() {
-
+  changeAriaConfig(rpc.value, token.value, download.value).then(() => {
+    toasty('设置已保存')
+  })
 }
 </script>
 <style scoped lang="scss">
@@ -98,5 +101,7 @@ function toggle() {
 
 Button {
   margin: 10px 20px;
+  background-color: #00796B;
+  color: #f0f0f0;
 }
 </style>

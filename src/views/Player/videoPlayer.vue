@@ -88,7 +88,7 @@
   </GridLayout>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted,onBeforeUnmount } from 'nativescript-vue'
+import { ref, defineProps, defineEmits, onMounted, onBeforeUnmount } from 'nativescript-vue'
 import { Connectivity, } from '@nativescript/core'
 import { DeviceInfo } from "nativescript-dna-deviceinfo";
 import { Brightness } from '@nativescript/brightness'
@@ -99,7 +99,8 @@ const props = defineProps<{
   title: string
   definition: string
   definitionList: any[]
-  isFullscreen: boolean
+  isFullscreen: boolean,
+  autoplay: boolean
 }>();
 const emit = defineEmits(['onFullscreen', 'changeDefinition']);
 const videoPlayerFrame = ref()
@@ -130,7 +131,6 @@ let metadataHeight: number = 0
 let frameHeigth: number = 0
 let frameWidth: number = 0
 let hiddenTimer: any
-let autoplay = true
 let timer: any
 let sliderTrigger = false
 let brightnessTrigger = false
@@ -168,14 +168,11 @@ function onPlaybackReady() {
   }
   duration.value = videoPlayerRef.value.nativeView.getDuration()
   hiddenLoading()
-  if (!autoplay) {
+  if (!props.autoplay) {
     videoPlayerRef.value.nativeView.pause()
     pause.value = true
   }
   // console.log('视频加载完成')
-  // console.log('duration: ' + duration.value)
-  // console.log('width: ' + metadataWidth)
-  // console.log('height: ' + metadataHeight)
 }
 function onPlay() {
   // console.log('onPlay')
