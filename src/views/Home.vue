@@ -4,6 +4,7 @@
       <videoList row="0" v-if="navTab == 0" />
       <imageList row="0" v-if="navTab == 1" />
       <subscribe row="0" v-if="navTab == 2" />
+      <forum row="0" v-if="navTab == 3" />
       <my row="0" v-if="navTab == 4" />
       <GridLayout row="1" class="bottom-bar" rows="auto" columns="*,*,*,*,*">
         <StackLayout col="0" class="btn" @tap="onNavTabPress(0)"
@@ -40,6 +41,7 @@
 import loginComponents from "./home/login.vue";
 import subscribe from "./home/subscribe.vue";
 import videoList from "./home/video.vue";
+import forum from "./home/forum.vue";
 import imageList from "./home/image.vue";
 import my from "./home/my.vue";
 import { ref, provide } from "nativescript-vue";
