@@ -3,7 +3,6 @@ import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant
 import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
 import { getMyselfUserData } from "./api"
 import { saveUserData, getUserData } from "./database"
-import { knownFolders, Folder } from '@nativescript/core'
 
 export const languageList = [
   {

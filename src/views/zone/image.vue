@@ -1,8 +1,8 @@
 <template>
   <GridLayout rows="*">
-    <imageList row="0" :data="listData" :loading="isLoading" @loadMoreItems="nextPage"
+    <imageList :data="listData" :loading="isLoading" @loadMoreItems="nextPage"
       :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }" />
-    <loadingAnimation row="0" v-show="!onloaded" :class="{ 'visible': !onloaded, 'hidden': onloaded }" />
+    <loadingAnimation v-show="!onloaded" :class="{ 'visible': !onloaded, 'hidden': onloaded }" />
     <errorImg text="数据加载失败，请点击重试" @tap="retry" v-show="loadError"
       :class="{ 'visible': loadError, 'hidden': !loadError }" />
   </GridLayout>

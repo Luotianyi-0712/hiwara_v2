@@ -289,6 +289,8 @@ interface UserData {
 }
 interface forumHomeItem {
   type: string,
+  posts: number,
+  threads: number,
   lastThread: string,
   user: string,
   createdAt: string
@@ -1292,6 +1294,8 @@ export function getHomeForum(): Promise<forumHomeItem[]> {
       for (let item of res) {
         list.push({
           type: item.id,
+          posts: item.numPosts,
+          threads: item.numThreads,
           lastThread: item.lastThread.title,
           user: item.lastThread.lastPost.user.name,
           createdAt: item.lastThread.lastPost.createdAt

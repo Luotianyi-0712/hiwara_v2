@@ -79,8 +79,6 @@ function onNavTabPress(target: number) {
 <style scoped lang="scss">
 .bottom-bar {
   color: #484848;
-  border-top-width: 1px;
-  border-color: #c0c0c0;
 
   .btn {
     padding: 15px;

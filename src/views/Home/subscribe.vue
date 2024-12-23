@@ -226,8 +226,6 @@ function onTabChange(args: any) {
     border-radius: 50%;
     width: 100px;
   }
-  border-bottom-width: 1px;
-  border-color: #c0c0c0;
 }
 
 .hidden {

@@ -150,9 +150,6 @@ function onTabChange(args: any) {
 
 <style lang="scss" scoped>
 .tab {
-  border-bottom-width: 1px;
-  border-color: #c0c0c0;
-
   .tab-bar {
     background-color: #00796B;
     height: 8px;
