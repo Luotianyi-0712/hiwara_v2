@@ -287,6 +287,12 @@ interface UserData {
   header: string | null,
   following: boolean
 }
+interface forumHomeItem {
+  type: string,
+  lastThread: string,
+  user: string,
+  createdAt: string
+}
 
 export function login(email: string, password: string): Promise<any> {
   const body = {
@@ -1277,6 +1283,24 @@ export function searchData(query: string, type: 'video' | 'image' | 'post' | 'us
       }
       resolve(usersList)
     }
+  })
+}
+export function getHomeForum(): Promise<forumHomeItem[]> {
+  return new Promise((resolve, reject) => {
+    let list: forumHomeItem[] = []
+    get(apiPath + '/forum', null).then(res => {
+      for (let item of res) {
+        list.push({
+          type: item.id,
+          lastThread: item.lastThread.title,
+          user: item.lastThread.lastPost.user.name,
+          createdAt: item.lastThread.lastPost.createdAt
+        })
+      }
+      resolve(list)
+    }).catch(err => {
+      reject(err)
+    })
   })
 }
 export function ariaDownloadVideo(rpc: string, token: string, url: string, name: string, path: string): Promise<void> {

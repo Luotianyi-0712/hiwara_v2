@@ -142,7 +142,7 @@ Omit | 略
 * ⬜Offline caching and downloading | 离线缓存及下载
 * ⬜Forum | 论坛
 * ⬜Multi-language support | 多语言支持
-* ⬜Aria2 support | Aria2支持
+* ✅Aria2 support | Aria2支持
 * ⬜HarmonyOS support | 鸿蒙系统支持
 
 
