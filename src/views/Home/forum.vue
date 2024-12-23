@@ -4,10 +4,11 @@
       <StackLayout>
         <StackLayout v-for="content in formatList">
           <Label :text="content.title" class="topTitle" />
-          <GridLayout v-for="item in content.data" rows="auto,auto" columns="auto,4*,3*" class="item">
+          <GridLayout v-for="item in content.data" rows="auto,auto" columns="auto,4*,3*" class="item"
+            @tap="goTo(item.type)">
             <GridLayout row="0" col="0" class="icon"></GridLayout>
             <StackLayout row="0" col="1" class="title">
-              <Label :text="item.type" class="label" />
+              <Label :text="item.typeLabel" class="label" />
               <Label :text="item.illustrate" class="illustrate" />
             </StackLayout>
             <StackLayout row="0" col="2" class="info" orientation="horizontal">
@@ -39,6 +40,7 @@ import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
 import { getHomeForum } from '../../core/api'
 import { formatIsoToDateTime, toasty } from '../../core/viewFunction'
+import { navigateTo } from '../../core/navigate'
 import { ref } from 'nativescript-vue'
 const onloaded = ref(false)
 const loadError = ref(false)
@@ -47,16 +49,19 @@ const formatList = ref([
     title: '站长',
     data: [
       {
-        type: '公告',
+        type: 'announcements',
+        typeLabel: '公告',
         illustrate: '重要信息',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       },
       {
-        type: '反馈',
+        type: 'feedback',
+        typeLabel: '反馈',
         illustrate: '想法、建议和顾虑',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助',
+        type: 'support',
+        typeLabel: '帮助',
         illustrate: '帮助解决网站相关问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }
@@ -66,23 +71,28 @@ const formatList = ref([
     title: '版主',
     data: [
       {
-        type: '普通',
+        type: 'general',
+        typeLabel: '普通',
         illustrate: '其他一切',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '指南',
+        type: 'guides',
+        typeLabel: '指南',
         illustrate: '有用的信息或者 "如何" 指南',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助/问题',
+        type: 'questions',
+        typeLabel: '帮助/问题',
         illustrate: '与网站无关的问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '请求',
+        type: 'requests',
+        typeLabel: '请求',
         illustrate: '帮助寻找或创造',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '分享',
+        type: 'sharing',
+        typeLabel: '分享',
         illustrate: '分享模型，动作或者其他配件',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       },
@@ -92,19 +102,23 @@ const formatList = ref([
     title: '日本人',
     data: [
       {
-        type: '普通',
+        type: 'general-ja',
+        typeLabel: '普通',
         illustrate: '其他一切',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助/问题',
+        type: 'questions-ja',
+        typeLabel: '帮助/问题',
         illustrate: '与网站无关的问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '请求',
+        type: 'requests-ja',
+        typeLabel: '请求',
         illustrate: '帮助寻找或创造',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助',
+        type: 'support-ja',
+        typeLabel: '帮助',
         illustrate: '帮助解决网站相关问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       },
@@ -114,19 +128,23 @@ const formatList = ref([
     title: '中国人',
     data: [
       {
-        type: '普通',
+        type: 'general-zh',
+        typeLabel: '普通',
         illustrate: '其他一切',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助/问题',
+        type: 'questions-zh',
+        typeLabel: '帮助/问题',
         illustrate: '与网站无关的问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '请求',
+        type: 'requests-zh',
+        typeLabel: '请求',
         illustrate: '帮助寻找或创造',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       }, {
-        type: '帮助',
+        type: 'support-zh',
+        typeLabel: '帮助',
         illustrate: '帮助解决网站相关问题',
         posts: 0, threads: 0, lastThread: '', user: '', createdAt: ''
       },
@@ -201,6 +219,11 @@ function getData() {
     toasty('数据获取失败', 'Error')
   }).finally(() => {
     onloaded.value = true
+  })
+}
+function goTo(type: string) {
+  navigateTo('/forum', {
+    type: type
   })
 }
 </script>

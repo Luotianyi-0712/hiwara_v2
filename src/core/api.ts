@@ -295,6 +295,17 @@ interface forumHomeItem {
   user: string,
   createdAt: string
 }
+interface forumThreadItem {
+  id: string,
+  title: string,
+  posts: number,
+  views: number,
+  user: string,
+  createdAt: string,
+  updatedAt: string,
+  locked: boolean,
+  sticky: boolean,
+}
 
 export function login(email: string, password: string): Promise<any> {
   const body = {
@@ -1299,6 +1310,33 @@ export function getHomeForum(): Promise<forumHomeItem[]> {
           lastThread: item.lastThread.title,
           user: item.lastThread.lastPost.user.name,
           createdAt: item.lastThread.lastPost.createdAt
+        })
+      }
+      resolve(list)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+export function getForumList(type: string, page: number, limit: number): Promise<forumThreadItem[]> {
+  return new Promise((resolve, reject) => {
+    const sendMsg = {
+      page: page,
+      limit: limit
+    }
+    get(apiPath + '/forum/' + type, sendMsg).then(res => {
+      let list: forumThreadItem[] = []
+      for (let item of res.threads) {
+        list.push({
+          id: item.id,
+          title: item.title,
+          posts: item.numPosts,
+          views: item.numViews,
+          user: item.user.name,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          locked: item.locked,
+          sticky: item.sticky,
         })
       }
       resolve(list)

@@ -8,6 +8,7 @@ import friends from "../views/friends.vue"
 import history from "../views/history.vue"
 import favorites from "../views/favorites.vue"
 import setup from "../views/setup.vue"
+import forum from "../views/forum.vue"
 
 interface NativeRoute {
   path: string;
@@ -39,6 +40,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/setup",
     component: setup
+  }, {
+    path: "/forum",
+    component: forum
   }
 ]
 
