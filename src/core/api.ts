@@ -300,11 +300,22 @@ interface forumThreadItem {
   title: string,
   posts: number,
   views: number,
-  user: string,
+  upUser: string,
+  lastUser: string,
   createdAt: string,
   updatedAt: string,
   locked: boolean,
   sticky: boolean,
+}
+interface forumThread {
+  id: string,
+  body: string,
+  user: string,
+  username: string,
+  uid: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string
 }
 
 export function login(email: string, password: string): Promise<any> {
@@ -1332,7 +1343,8 @@ export function getForumList(type: string, page: number, limit: number): Promise
           title: item.title,
           posts: item.numPosts,
           views: item.numViews,
-          user: item.user.name,
+          upUser: item.user.name,
+          lastUser: item.lastPost.user.name,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
           locked: item.locked,
@@ -1340,6 +1352,36 @@ export function getForumList(type: string, page: number, limit: number): Promise
         })
       }
       resolve(list)
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+export function getForumThread(id: string, type: string, page: number, limit: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const sendMsg = {
+      page: page,
+      limit: limit
+    }
+    get(apiPath + '/forum/' + type + '/' + id, sendMsg).then(res => {
+      let list: forumThread[] = []
+      for (let item of res.results) {
+        list.push({
+          id: item.id,
+          body: item.body,
+          user: item.user.name,
+          username: item.user.username,
+          uid: item.user.id,
+          avatar: item.user.avatar ? 'https://i.iwara.tv/image/avatar/' + item.user.avatar.id + '/' + item.user.avatar.name : defaultAvatar,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        })
+      }
+      resolve({
+        id: res.thread.id,
+        title: res.thread.title,
+        list: list
+      })
     }).catch(err => {
       reject(err)
     })

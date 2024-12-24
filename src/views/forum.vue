@@ -12,8 +12,33 @@
       <ListView :items="listData" @loadMoreItems="nextPage"
         :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
         <template #default="{ item, index }">
-          <StackLayout>
-            <Label :text="item.title" />
+          <StackLayout class="item" @tap="toDetail(item.id, item.title)">
+            <Label :text="item.title" class="title" textWrap="true" android:maxLines="2"
+              ios:lineBreakMode="tailTruncation" ios:.numberOfLines="2" />
+            <StackLayout class="info" orientation="horizontal">
+              <Label text="回复" class="label" />
+              <Label :text="item.posts" class="number" style="margin-right: 40px;" />
+              <Label text="浏览" class="label" />
+              <Label :text="item.views" class="number" />
+            </StackLayout>
+            <GridLayout columns="*,*" rows="auto,auto">
+              <StackLayout col="0" row="0" orientation="horizontal">
+                <Label text="发布者：" class="label" />
+                <Label :text="item.upUser" />
+              </StackLayout>
+              <StackLayout col="1" row="0" orientation="horizontal">
+                <Label text="最新回复：" class="label" />
+                <Label :text="item.lastUser" />
+              </StackLayout>
+              <StackLayout col="0" row="1" orientation="horizontal">
+                <Label text="发布于：" class="label" />
+                <Label :text="formatIsoToDateTime(item.createdAt)" class="" />
+              </StackLayout>
+              <StackLayout col="1" row="1" orientation="horizontal">
+                <Label text="回复于：" class="label" />
+                <Label :text="formatIsoToDateTime(item.updatedAt)" class="" />
+              </StackLayout>
+            </GridLayout>
           </StackLayout>
         </template>
       </ListView>
@@ -26,9 +51,11 @@
 <script setup lang="ts">
 import loadingAnimation from './components/loadingAnimation.vue'
 import errorImg from './components/errorImg.vue'
+import detail from './forum/detail.vue'
 import { navigateBack } from '../core/navigate'
 import { getForumList } from '../core/api'
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, defineProps, $navigateTo } from 'nativescript-vue'
+import { formatIsoToDateTime } from '../core/viewFunction'
 const props = defineProps<{
   type: string
 }>()
@@ -37,7 +64,8 @@ interface forumThreadItem {
   title: string,
   posts: number,
   views: number,
-  user: string,
+  upUser: string,
+  lastUser: string,
   createdAt: string,
   updatedAt: string,
   locked: boolean,
@@ -143,6 +171,19 @@ function formatPageTitle(val: string) {
       return val
   }
 }
+function toDetail(id: string, title: string) {
+  $navigateTo(detail, {
+    props: {
+      id: id,
+      type: props.type,
+      title: title
+    },
+    transition: {
+      name: "slideLeft",
+      curve: "easeIn"
+    }
+  })
+}
 </script>
 <style scoped lang="scss">
 .topBar {
@@ -162,6 +203,27 @@ function formatPageTitle(val: string) {
     font-size: 14px;
     padding: 0 64px 0 16px;
     font-weight: bold;
+  }
+}
+
+.item {
+  padding: 20px 40px;
+
+  .title {
+    color: #262626;
+    font-size: 16px;
+  }
+
+  .label {
+    color: #262626;
+  }
+
+  .info {
+    padding: 20px 0;
+
+    .label {
+      padding-right: 10px;
+    }
   }
 }
 

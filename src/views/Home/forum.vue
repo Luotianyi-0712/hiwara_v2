@@ -23,6 +23,7 @@
                 ios:lineBreakMode="tailTruncation" ios:.numberOfLines="2" />
               <StackLayout orientation="horizontal" horizontalAlignment="right">
                 <Label :text="item.user" class="user" />
+                <Label text="回复于" class="huifuyu" />
                 <Label :text="formatIsoToDateTime(item.createdAt)" class="time" />
               </StackLayout>
             </StackLayout>
@@ -283,11 +284,15 @@ function goTo(type: string) {
   }
 
   .content {
-    padding: 14px 0;
+    padding: 20px 0;
   }
 
   .user {
-    margin-right: 20px;
+    font-weight: bold
+  }
+
+  .huifuyu {
+    padding: 0 20px;
     color: #262626;
   }
 }
