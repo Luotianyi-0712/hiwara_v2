@@ -140,7 +140,8 @@ Omit | 略
 * ⬜Adaptation for Pad side | 平板电脑适配
 * ⬜Dark mode | 暗黑模式
 * ⬜Offline caching and downloading | 离线缓存及下载
-* ⬜Forum | 论坛
+* ✅Forum browsing | 论坛浏览
+* ⬜Forum posting | 论坛发布
 * ⬜Multi-language support | 多语言支持
 * ✅Aria2 support | Aria2支持
 * ⬜HarmonyOS support | 鸿蒙系统支持
