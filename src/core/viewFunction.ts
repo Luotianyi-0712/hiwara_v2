@@ -143,23 +143,6 @@ export function parseMonthLabel(value: number) {
     default: return ''
   }
 }
-export function unParseMonthLabel(value: string) {
-  switch (value) {
-    case '1月': return 1
-    case '2月': return 2
-    case '3月': return 3
-    case '4月': return 4
-    case '5月': return 5
-    case '6月': return 6
-    case '7月': return 7
-    case '8月': return 8
-    case '9月': return 9
-    case '10月': return 10
-    case '11月': return 11
-    case '12月': return 12
-    default: return 0
-  }
-}
 export function isTokenValid(token: string | null): boolean {
   if (token) {
     const arr = token.split('.')

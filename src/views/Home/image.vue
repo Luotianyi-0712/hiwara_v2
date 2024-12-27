@@ -48,8 +48,8 @@ import errorImg from '../components/errorImg.vue'
 import imageList from '../lists/imageList.vue'
 import { ref, watch } from 'nativescript-vue'
 import { getImageList } from '~/core/api'
-import { toasty, parseMonthLabel, unParseMonthLabel } from '../../core/viewFunction'
-import { Animation, AnimationDefinition, Dialogs, Utils } from '@nativescript/core'
+import { toasty, parseMonthLabel } from '../../core/viewFunction'
+import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
 interface ImageItem {
   id: string,
   title: string,
@@ -218,11 +218,7 @@ function changeMonth() {
     actions: months,
     cancelable: true,
   }).then((result) => {
-    if (result == '全部月份') {
-      filterMonth.value = 0
-    } else {
-      filterMonth.value = unParseMonthLabel(result)
-    }
+    filterMonth.value = months.indexOf(result)
   })
 }
 function clearFilter() {

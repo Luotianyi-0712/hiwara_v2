@@ -7,7 +7,7 @@
           <Label v-if="iconHint" text="输入搜索内容" />
         </StackLayout>
         <SearchBar v-model="query" ref="searchInput" @submit="submit()" @clear="clear" col="1" class="search-input" />
-        <Label col="2" text="搜索" class="submitBtn" @tap="submit()" />
+        <Label col="2" text="切换" @tap="typeSwitch" class="typeBtn" />
       </GridLayout>
     </ActionBar>
     <GridLayout rows="*">
@@ -26,7 +26,7 @@
         <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
           <PagerItem>
             <GridLayout rows="*">
-              <videoList ref="videoListRef" />
+              <videoList :type="type" ref="videoListRef" />
             </GridLayout>
           </PagerItem>
           <PagerItem>
@@ -58,8 +58,10 @@ import users from './search/users.vue'
 import { ref, watch, defineProps, onMounted } from 'nativescript-vue'
 import { navigateBack } from '../core/navigate'
 import { addSearchHistory, getSearchHistory } from '../core/database'
+import { Dialogs } from '@nativescript/core'
 const iconHint = ref<boolean>(true)
 const tab = ref(0)
+const type = ref(0)
 const action = ref(false)
 const searchHistory = ref<string[]>([])
 const searchInput = ref()
@@ -166,6 +168,19 @@ function getHistory() {
     console.log(list)
   })
 }
+function typeSwitch() {
+  const list = [
+    '关键词搜索', '标签搜索', 'ID搜视频', 'ID搜插画', 'ID搜用户', '网址智能跳转'
+  ]
+  Dialogs.action({
+    title: '切换搜索模式',
+    message: '选择搜索类型',
+    actions: list,
+    cancelable: true,
+  }).then((result) => {
+    type.value = list.indexOf(result)
+  })
+}
 </script>
 <style scoped lang="scss">
 .topBar {
@@ -188,7 +203,7 @@ function getHistory() {
     color: #484848;
   }
 
-  .submitBtn {
+  .typeBtn {
     text-align: center;
     font-size: 16px;
   }

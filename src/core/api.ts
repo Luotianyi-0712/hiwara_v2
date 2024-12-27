@@ -390,7 +390,7 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
     })
   })
 }
-export function getVideoList(page: number, sort: string, year: number, month: number): Promise<VideoItem[]> {
+export function getVideoList(page: number, sort: string, year: number, month: number, tagsArr?: string[]): Promise<VideoItem[]> {
   return new Promise((resolve, reject) => {
     let date: string | null = null
     if (year != 0) {
@@ -399,12 +399,17 @@ export function getVideoList(page: number, sort: string, year: number, month: nu
         date += '-' + month
       }
     }
+    let tags: string | null = null
+    if (tagsArr) {
+      tags = tagsArr.join(',')
+    }
     const query = {
       rating: 'all',
       limit: 32,
       sort: sort,
       page: page,
-      date: date
+      date: date,
+      tags: tags
     }
     get(apiPath + '/videos', query).then(data => {
       let videoList: VideoItem[] = []
