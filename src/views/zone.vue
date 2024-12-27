@@ -18,7 +18,7 @@
             <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
               <StackLayout col="0">
                 <Label :text="postsNum" style="font-size: 16px;color:#262626;" />
-                <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
+                <Label text="发布" style="font-size: 12px;opacity: 0.8;" />
               </StackLayout>
               <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px"
                 @tap="toMyFollowing">
@@ -104,6 +104,7 @@ import { navigateTo } from "../core/navigate"
 const props = defineProps<{
   uid: string
   username: string
+  type?: string
 }>()
 const loading = ref<boolean>(true)
 const loadingError = ref<boolean>(false)
@@ -132,6 +133,19 @@ const followingNum = ref<number | '-'>('-')
 const followersNum = ref<number | '-'>('-')
 const following = ref(false)
 
+if (props.type) {
+  switch(props.type){
+    case 'video':
+      tab.value = 0
+      break
+    case 'image':
+      tab.value = 1
+      break
+    case 'posts':
+      tab.value = 2
+      break
+  }
+} 
 myselfData().then(data => {
   if (data.uid == props.uid) {
     isMyself.value = true

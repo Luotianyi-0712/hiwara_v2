@@ -198,7 +198,8 @@ interface VideoData {
   avatar: string,
   loss: boolean,
   fileUrl: string,
-  fid: string
+  fid: string,
+  tags: string[],
 }
 interface ImageItem {
   id: string,
@@ -389,13 +390,21 @@ export function getSubscribeVideoList(page: number): Promise<VideoItem[]> {
     })
   })
 }
-export function getVideoList(page: number, sort: string): Promise<VideoItem[]> {
+export function getVideoList(page: number, sort: string, year: number, month: number): Promise<VideoItem[]> {
   return new Promise((resolve, reject) => {
+    let date: string | null = null
+    if (year != 0) {
+      date = year.toString()
+      if (month != 0) {
+        date += '-' + month
+      }
+    }
     const query = {
       rating: 'all',
       limit: 32,
       sort: sort,
-      page: page
+      page: page,
+      date: date
     }
     get(apiPath + '/videos', query).then(data => {
       let videoList: VideoItem[] = []
@@ -583,7 +592,8 @@ export function getVideoData(id: string): Promise<VideoData> {
         avatar: data.user.avatar ? 'https://i.iwara.tv/image/avatar/' + data.user.avatar.id + '/' + data.user.avatar.name : defaultAvatar,
         loss: data.file ? false : true,
         fileUrl: data.fileUrl,
-        fid: data.file ? data.file.id : ''
+        fid: data.file ? data.file.id : '',
+        tags: data.tags.map((tag: any) => tag.id)
       }
       resolve(videoData)
     }).catch(err => {
@@ -696,13 +706,21 @@ export function getSubscribeImageList(page: number): Promise<ImageItem[]> {
     })
   })
 }
-export function getImageList(page: number, sort: string): Promise<ImageItem[]> {
+export function getImageList(page: number, sort: string, year: number, month: number): Promise<ImageItem[]> {
   return new Promise((resolve, reject) => {
+    let date: string | null = null
+    if (year != 0) {
+      date = year.toString()
+      if (month != 0) {
+        date += '-' + month
+      }
+    }
     const query = {
       rating: 'all',
       limit: 32,
       sort: sort,
-      page: page
+      page: page,
+      date: date
     }
     get(apiPath + '/images', query).then(data => {
       let imageList: ImageItem[] = []

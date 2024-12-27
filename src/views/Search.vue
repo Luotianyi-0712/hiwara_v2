@@ -42,8 +42,8 @@
         </Pager>
       </GridLayout>
       <StackLayout row="0" v-show="!action" class="previewSearch">
-        <Label text="历史搜索" class="title" />
-        <WrapLayout class="tags">
+        <Label v-show="searchHistory.length > 0" text="历史搜索" class="title" />
+        <WrapLayout v-show="searchHistory.length > 0" class="tags">
           <Label v-for="item in searchHistory" :text="item" @tap="submit(item)" />
         </WrapLayout>
         <Label text="搜索发现" class="title" />
@@ -55,7 +55,7 @@
 import videoList from './search/video.vue'
 import imageList from './search/image.vue'
 import users from './search/users.vue'
-import { ref, watch } from 'nativescript-vue'
+import { ref, watch, defineProps, onMounted } from 'nativescript-vue'
 import { navigateBack } from '../core/navigate'
 import { addSearchHistory, getSearchHistory } from '../core/database'
 const iconHint = ref<boolean>(true)
@@ -67,7 +67,15 @@ const videoListRef = ref()
 const imageListRef = ref()
 const userListRef = ref()
 const query = ref('')
+const props = defineProps<{
+  search?: string;
+}>()
 getHistory()
+onMounted(() => {
+  if (props.search) {
+    submit(props.search)
+  }
+})
 watch(tab, val => {
   if (query.value.length > 0) {
     switch (val) {
@@ -200,7 +208,7 @@ function getHistory() {
 
 .previewSearch {
   padding: 20px;
-  font-weight: bold;
+  // font-weight: bold;
 
   .title {
     color: #262626;

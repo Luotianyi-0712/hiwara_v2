@@ -25,9 +25,9 @@
         </StackLayout>
       </GridLayout>
       <GridLayout row="3" rows="40px" columns="30px,*,*,*,30px" style="text-align: center;">
-        <StackLayout col="1">
+        <StackLayout col="1" @tap="toMyPosts">
           <Label :text="posts" style="font-size: 16px;" />
-          <Label text="动态" style="font-size: 12px;opacity: 0.8;" />
+          <Label text="发布" style="font-size: 12px;opacity: 0.8;" />
         </StackLayout>
         <StackLayout col="2" style="border-color:#ffffffcc;border-left-width:1px;border-right-width:1px"
           @tap="toMyFollowing">
@@ -154,6 +154,15 @@ function toMyZone() {
     navigateTo('/zone', {
       uid: uid,
       username: username
+    })
+  }
+}
+function toMyPosts() {
+  if (uid) {
+    navigateTo('/zone', {
+      uid: uid,
+      username: username,
+      type: 'posts'
     })
   }
 }

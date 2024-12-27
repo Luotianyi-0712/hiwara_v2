@@ -37,8 +37,8 @@
               <StackLayout>
                 <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :username="username" :body="body"
                   :numViews="numViews" :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked"
-                  :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :files="files"
-                  :definition="definition" :definitionList="definitionList" :downloadPath="downloadPath"
+                  :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :tags="tags"
+                  :files="files" :definition="definition" :definitionList="definitionList" :downloadPath="downloadPath"
                   :ariaSwitch="ariaSwitch" :ariaRPC="ariaRPC" :ariaToken="ariaToken"
                   :ariaDownloadPath="ariaDownloadPath" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
                 <recommend ref="recommendRef" :vid="id" :uid="uid" />
@@ -84,6 +84,7 @@ const following = ref<boolean>(false)
 const friend = ref<boolean>(false)
 const thumbnail = ref<string>('')
 const avatar = ref<string>('')
+const tags = ref<string[]>([])
 const tab = ref(0)
 const recommendRef = ref()
 const loading = ref<boolean>(true)
@@ -204,9 +205,9 @@ function getData() {
     friend.value = res.friend
     thumbnail.value = res.thumbnail
     avatar.value = res.avatar
+    tags.value = res.tags
     fileUrl = res.fileUrl
     fid = res.fid
-    loading.value = false
     getFiles(fileUrl, fid).then(res => {
       files.value = res
       const found = files.value.filter(function (item) {
@@ -233,6 +234,9 @@ function getData() {
     })
   }).catch(err => {
     toasty('数据加载失败了喵~', 'Error')
+    loadingError.value = true
+  }).finally(() => {
+    loading.value = false
   })
 }
 function getFiles(fileUrl: string, id: string): Promise<any[]> {

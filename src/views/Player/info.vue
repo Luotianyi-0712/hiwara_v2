@@ -22,6 +22,9 @@
           <Label :text="formatIsoToChineseDate(createdAt)" />
         </StackLayout>
         <Label ref="bodyRef" height="0" :text="body" class="body" textWrap="true" />
+        <WrapLayout ref="tagsRef" height="0" class="tags">
+          <Label v-for="item in tags" :text="item" @tap="search(item)" />
+        </WrapLayout>
       </StackLayout>
       <StackLayout col="0" row="1">
         <Label :text="allView ? '&#xf077;' : '&#xf078;'" class="font-awesome-solid drop" textAlignment="right" />
@@ -33,6 +36,9 @@
         <Label ref="titleUnfoldShadow" @layoutChanged="getTitleUnfoldHeight" :text="title" class="title"
           textWrap="true" />
         <Label ref="bodyShadow" @layoutChanged="getBodyHeight" :text="body" class="body" textWrap="true" />
+        <WrapLayout ref="tagsShadow" @layoutChanged="getTagsHeight" class="tags">
+          <Label v-for="item in tags" :text="item" />
+        </WrapLayout>
       </StackLayout>
     </ScrollView>
     <GridLayout columns="*,*,*,*" rows="auto">
@@ -79,6 +85,7 @@ const props = defineProps<{
   friend: boolean,
   thumbnail: string,
   avatar: string,
+  tags: string[],
   files: any[],
   definition: string,
   definitionList: any[],
@@ -92,12 +99,15 @@ const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)
 const titleRef = ref()
 const bodyRef = ref()
+const tagsRef = ref()
 const titleFoldShadow = ref()
 const titleUnfoldShadow = ref()
 const bodyShadow = ref()
+const tagsShadow = ref()
 const titleFoldHeight = ref(0)
 const titleUnfoldHeight = ref(0)
 const bodyHeight = ref(0)
+const tagsHeight = ref(0)
 let likeing = false
 let followering = false
 onMounted(() => {
@@ -248,6 +258,10 @@ function toggleExpand() {
         target: bodyRef.value.nativeView, // 动画的目标视图
         duration: 200, // 动画持续时间，单位为毫秒
         height: 0, // 动画的目标高度
+      }, {
+        target: tagsRef.value.nativeView, // 动画的目标视图
+        duration: 200, // 动画持续时间，单位为毫秒
+        height: 0, // 动画的目标高度
       }
     ]
     new Animation(animationDefinition).play().then(() => {
@@ -265,6 +279,10 @@ function toggleExpand() {
         target: bodyRef.value.nativeView, // 动画的目标视图
         duration: 200, // 动画持续时间，单位为毫秒
         height: props.body ? bodyHeight.value + 'px' : 0, // 动画的目标高度
+      }, {
+        target: tagsRef.value.nativeView, // 动画的目标视图
+        duration: 200, // 动画持续时间，单位为毫秒
+        height: props.tags ? tagsHeight.value + 'px' : 0, // 动画的目标高度
       }
     ]
     new Animation(animationDefinition).play()
@@ -279,10 +297,18 @@ function getTitleUnfoldHeight() {
 function getBodyHeight() {
   bodyHeight.value = bodyShadow.value.nativeView.getMeasuredHeight()
 }
+function getTagsHeight() {
+  tagsHeight.value = tagsShadow.value.nativeView.getMeasuredHeight()
+}
 function toUserZone() {
   navigateTo('/zone', {
     uid: props.uid,
     username: props.username
+  })
+}
+function search(tag: string) {
+  navigateTo('/search', {
+    search: tag,
   })
 }
 </script>
@@ -336,5 +362,16 @@ function toUserZone() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.tags {
+  padding: 10px 0;
+
+  Label {
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    background-color: #e0e0e0;
+  }
 }
 </style>
