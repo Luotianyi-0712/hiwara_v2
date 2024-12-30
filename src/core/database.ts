@@ -44,6 +44,7 @@ function createdTable(): Promise<void> {
     ['autoplay', 'TINYINT'],
     ['reconnect', 'TINYINT'],
     ['definition', 'TEXT'],
+    ['searchMode', 'TINYINT'],
     ['language', 'TEXT'],
     ['videoDownload', 'TEXT'],
     ['imageDownload', 'TEXT'],
@@ -118,6 +119,7 @@ function createdTable(): Promise<void> {
             true,
             4,
             "'Source'",
+            0,
             "'auto'",
             videoDownload,
             imageDownload,
@@ -377,6 +379,15 @@ export function changeAutoplay(val: boolean): Promise<void> {
 export function changeDefinition(val: string): Promise<void> {
   return new Promise((resolve, reject) => {
     sqlite.execute("UPDATE config SET definition='" + val + "';").then(() => {
+      resolve()
+    }).catch((err: any) => {
+      reject(err)
+    })
+  })
+}
+export function changeSearchMode(val: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sqlite.execute("UPDATE config SET searchMode='" + val + "';").then(() => {
       resolve()
     }).catch((err: any) => {
       reject(err)

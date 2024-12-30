@@ -4,7 +4,7 @@
       <GridLayout rows="*" columns="24px,*,60px" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
         <StackLayout col="1" orientation="horizontal" class="search-bg">
-          <Label v-if="iconHint" text="输入搜索内容" />
+          <Label v-if="iconHint" :text="hintLabel(type)" />
         </StackLayout>
         <SearchBar v-model="query" ref="searchInput" @submit="submit()" @clear="clear" col="1" class="search-input" />
         <Label col="2" text="切换" @tap="typeSwitch" class="typeBtn" />
@@ -57,7 +57,7 @@ import imageList from './search/image.vue'
 import users from './search/users.vue'
 import { ref, watch, defineProps, onMounted } from 'nativescript-vue'
 import { navigateBack } from '../core/navigate'
-import { addSearchHistory, getSearchHistory } from '../core/database'
+import { addSearchHistory, getSearchHistory, getConfig, changeSearchMode } from '../core/database'
 import { Dialogs } from '@nativescript/core'
 const iconHint = ref<boolean>(true)
 const tab = ref(0)
@@ -73,6 +73,9 @@ const props = defineProps<{
   search?: string;
 }>()
 getHistory()
+getConfig().then(res => {
+  type.value = res.searchMode
+})
 onMounted(() => {
   if (props.search) {
     submit(props.search)
@@ -179,7 +182,28 @@ function typeSwitch() {
     cancelable: true,
   }).then((result) => {
     type.value = list.indexOf(result)
+    if (type.value == 0 || type.value == 1) {
+      changeSearchMode(type.value)
+    }
   })
+}
+function hintLabel(val:number){
+  switch (val) {
+    case 0:
+      return '请输入关键词搜索内容'
+    case 1:
+      return '请输入标签搜索内容'
+    case 2:
+      return '请输入ID查找视频'
+    case 3:
+      return '请输入ID查找插画'
+    case 4:
+      return '请输入ID查找用户'
+    case 5:
+      return '输入网址智能跳转'
+    default:
+      return ''
+  }
 }
 </script>
 <style scoped lang="scss">

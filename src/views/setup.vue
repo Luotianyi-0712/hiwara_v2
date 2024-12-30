@@ -19,6 +19,11 @@
           <Label col="1" :text="parseDefinitionLabel(definition)" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
+        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toSearchMode">
+          <Label col="0" text="默认搜索模式" class="label" />
+          <Label col="1" :text="parseSearchModeLabel(searchMode)" />
+          <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
+        </GridLayout>
         <GridLayout columns="*,auto" rows="48px" class="button" @tap="toDownloadPath">
           <Label col="0" text="缓存目录" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
@@ -52,11 +57,13 @@ import { getConfig, changeAutoplay, removeLogout } from '../core/database'
 import { parseDefinitionLabel, parseLanguageLabel, toasty } from '../core/viewFunction'
 import { Dialogs, isAndroid, isIOS, Application } from '@nativescript/core'
 import definitionVue from './setup/definition.vue'
+import searchModeVue from './setup/searchMode.vue'
 import downloadVue from './setup/download.vue'
 import ariaVue from './setup/aria2.vue'
 import languageVue from './setup/language.vue'
 const autoplay = ref<boolean>(false)
 const definition = ref<string>('-')
+const searchMode = ref<number>(0)
 const language = ref<string>('-')
 flush()
 function flush() {
@@ -64,6 +71,7 @@ function flush() {
     console.log(data)
     autoplay.value = Boolean(data.autoplay)
     definition.value = data.definition
+    searchMode.value = data.searchMode
     language.value = data.language
   })
 }
@@ -76,6 +84,20 @@ function toDefinition() {
     flush()
   }
   $navigateTo(definitionVue, {
+    props: {
+      back: back
+    },
+    transition: {
+      name: "slideLeft",
+      curve: "easeIn"
+    }
+  })
+}
+function toSearchMode() {
+  const back = () => {
+    flush()
+  }
+  $navigateTo(searchModeVue, {
     props: {
       back: back
     },
@@ -139,6 +161,13 @@ function logout() {
       })
     }
   })
+}
+function parseSearchModeLabel(val: number) {
+  switch (val) {
+    case 0: return '关键词搜索'
+    case 1: return '标签搜索'
+    default: return '-'
+  }
 }
 </script>
 <style scoped lang="scss">

@@ -8,11 +8,14 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, defineExpose } from 'nativescript-vue'
+import { ref, defineExpose, defineProps, watch } from 'nativescript-vue'
 import imageList from '../lists/imageList.vue'
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
-import { searchData } from '../../core/api'
+import { searchData, getImageList } from '../../core/api'
+const props = defineProps<{
+  type: number
+}>()
 interface Item {
   id: string,
   title: string,
@@ -41,22 +44,41 @@ const search = (text: string) => {
 defineExpose({
   search
 })
+watch(() => props.type, (val) => {
+  retry()
+})
 function getListData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
     if (!isLoading.value) {
       isLoading.value = true
-      searchData(query, 'image', page, 32).then(res => {
-        if (res.length > 0) {
-          page++
-          resolve(res)
-        } else {
-          resolve(null)
-        }
-      }).catch(err => {
-        reject()
-      }).finally(() => {
-        isLoading.value = false
-      })
+      if (props.type == 0) {
+        searchData(query, 'image', page, 32).then(res => {
+          if (res.length > 0) {
+            page++
+            resolve(res)
+          } else {
+            resolve(null)
+          }
+        }).catch(err => {
+          reject()
+        }).finally(() => {
+          isLoading.value = false
+        })
+      } else if (props.type == 1) {
+        const tags = query.split(/\s+/)
+        getImageList(page, 'date', 0, 0, tags).then(res => {
+          if (res.length > 0) {
+            page++
+            resolve(res)
+          } else {
+            resolve(null)
+          }
+        }).catch(err => {
+          reject()
+        }).finally(() => {
+          isLoading.value = false
+        })
+      }
     } else {
       resolve(null)
     }
