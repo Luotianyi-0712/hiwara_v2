@@ -12,6 +12,12 @@ ActionBar {
   padding: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  Page {
+    background-color: #000000;
+  }
+}
+
 .font-awesome-brands {
   font-family: "Font Awesome 6 Brands", "fa-brands-400";
   font-weight: 400;

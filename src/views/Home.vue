@@ -67,7 +67,7 @@ getUserToken().then(res => {
 const toggleMy = () => {
   onNavTabPress(4)
 }
-provide('toggleMy', toggleMy);
+provide('toggleMy', toggleMy)
 function loginSuccess() {
   isLogin.value = true
   myselfData()
@@ -75,6 +75,12 @@ function loginSuccess() {
 function onNavTabPress(target: number) {
   navTab.value = target;
 }
+
+/********* */
+
+
+/********* */
+
 </script>
 <style scoped lang="scss">
 .bottom-bar {

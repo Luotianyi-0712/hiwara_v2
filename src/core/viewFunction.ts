@@ -1,8 +1,9 @@
 import { Toasty } from "@imagene.me/nativescript-toast"
-import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant';
-import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration';
+import { ToastVariant } from '@imagene.me/nativescript-toast/enums/toast-variant'
+import { ToastDuration } from '@imagene.me/nativescript-toast/enums/toast-duration'
 import { getMyselfUserData } from "./api"
 import { saveUserData, getUserData } from "./database"
+import { Application,isAndroid } from '@nativescript/core'
 
 export const languageList = [
   {
@@ -237,3 +238,11 @@ export function parseLanguageLabel(val: string) {
     return languageList.find(item => item.value === val)?.label || val
   }
 }
+
+function isDarkMode(): boolean {
+  if (isAndroid) {
+    const currentNightMode = Application.android.foregroundActivity.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+    return currentNightMode === android.content.res.Configuration.UI_MODE_NIGHT_YES;
+  }
+  return false;
+} 
