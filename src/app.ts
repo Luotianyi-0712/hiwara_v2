@@ -20,13 +20,13 @@ registerElement('PagerItem', () => PagerItem)
 import DrawerPlugin from '@nativescript-community/ui-drawer/vue3'
 app.use(DrawerPlugin)
 
-import { Application } from '@nativescript/core'
+import { Application, isAndroid } from '@nativescript/core'
 import { useMainStore } from './core/store'
 const mainStore = useMainStore()
 function changeDarkModeStatus(val: boolean) {
   mainStore.changeDarkModeStatus(val)
 }
-if (Application.android) {
+if (isAndroid) {
   let componentCallbacks: android.content.ComponentCallbacks2;
   // 创建并注册 ComponentCallbacks2 实例
   const registerNightModeListener = () => {
@@ -63,8 +63,12 @@ if (Application.android) {
       console.error("Application context is undefined");
     }
   };
+  Application.on(Application.android.activityCreatedEvent, (args: any) => {
+    const currentNightMode = args.activity.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+    changeDarkModeStatus(currentNightMode === android.content.res.Configuration.UI_MODE_NIGHT_YES);
+  })
   // 监听应用启动事件
-  Application.on(Application.launchEvent, () => {
+  Application.on(Application.launchEvent, (args: any) => {
     registerNightModeListener();
   });
   // 确保在应用退出时注销回调

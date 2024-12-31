@@ -75,18 +75,6 @@ function loginSuccess() {
 function onNavTabPress(target: number) {
   navTab.value = target;
 }
-
-/********* */
-import { useMainStore } from '../core/store'
-const mainStore = useMainStore()
-const asdValue = ref(mainStore.asd)
-console.log(asdValue.value)
-function updateAsd(newValue: number) {
-  mainStore.setAsd(newValue)
-}
-
-/********* */
-
 </script>
 <style scoped lang="scss">
 .bottom-bar {
