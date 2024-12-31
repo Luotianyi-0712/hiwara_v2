@@ -17,6 +17,7 @@
     "nativescript-dna-deviceinfo": "^3.7.3",
     "nativescript-videoplayer": "^5.0.1",
     "nativescript-vue": "3.0.0-rc.2",
+    "pinia": "^2.3.0",
     "sass": "^1.79.4"
   },
   "devDependencies": {

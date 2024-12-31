@@ -77,7 +77,13 @@ function onNavTabPress(target: number) {
 }
 
 /********* */
-
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const asdValue = ref(mainStore.asd)
+console.log(asdValue.value)
+function updateAsd(newValue: number) {
+  mainStore.setAsd(newValue)
+}
 
 /********* */
 
