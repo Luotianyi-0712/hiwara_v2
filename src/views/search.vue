@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: drakMode }">
     <ActionBar>
       <GridLayout rows="*" columns="24px,*,60px" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -31,7 +31,7 @@
           </PagerItem>
           <PagerItem>
             <GridLayout rows="*">
-              <imageList ref="imageListRef" />
+              <imageList :type="type" ref="imageListRef" />
             </GridLayout>
           </PagerItem>
           <PagerItem>
@@ -59,6 +59,9 @@ import { ref, watch, defineProps, onMounted } from 'nativescript-vue'
 import { navigateBack } from '../core/navigate'
 import { addSearchHistory, getSearchHistory, getConfig, changeSearchMode } from '../core/database'
 import { Dialogs } from '@nativescript/core'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const iconHint = ref<boolean>(true)
 const tab = ref(0)
 const type = ref(0)
@@ -114,6 +117,9 @@ watch(query, val => {
   } else {
     iconHint.value = true
   }
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function submit(text?: string) {
   blurAllTextField()
@@ -187,7 +193,7 @@ function typeSwitch() {
     }
   })
 }
-function hintLabel(val:number){
+function hintLabel(val: number) {
   switch (val) {
     case 0:
       return '请输入关键词搜索内容'
@@ -240,9 +246,6 @@ function hintLabel(val:number){
     border-radius: 50%;
     width: 100px;
   }
-
-  border-bottom-width: 1px;
-  border-color: #c0c0c0;
 }
 
 .previewSearch {
@@ -283,6 +286,41 @@ function hintLabel(val:number){
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+
+  .topBar {
+
+    .search-bg {
+      background-color: #0d0d0d;
+      color: #d0d0d0;
+    }
+
+    .search-input {
+      color: #d0d0d0;
+    }
+  }
+
+  .previewSearch {
+    .title {
+      color: #d0d0d0;
+    }
+
+    .tags {
+      Label {
+        background-color: #303030;
+        color: #d0d0d0;
+      }
+    }
+  }
+
+  .tab {
+    Label {
+      color: #d0d0d0;
+    }
   }
 }
 </style>

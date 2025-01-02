@@ -1,5 +1,5 @@
 <template>
-  <GridLayout row="*">
+  <GridLayout row="*" :class="{ dark: drakMode }">
     <ScrollView :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
       <StackLayout>
         <StackLayout v-for="content in formatList">
@@ -42,7 +42,10 @@ import errorImg from '../components/errorImg.vue'
 import { getHomeForum } from '../../core/api'
 import { formatIsoToDateTime, toasty } from '../../core/viewFunction'
 import { navigateTo } from '../../core/navigate'
-import { ref } from 'nativescript-vue'
+import { ref, watch } from 'nativescript-vue'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const onloaded = ref(false)
 const loadError = ref(false)
 const formatList = ref([
@@ -222,6 +225,9 @@ function getData() {
     onloaded.value = true
   })
 }
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
+})
 function goTo(type: string) {
   navigateTo('/forum', {
     type: type
@@ -334,6 +340,22 @@ function goTo(type: string) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  color: #d0d0d0;
+
+  .title,
+  .info,
+  .last {
+    .label {
+      color: #f2f2f2;
+    }
+
+    .huifuyu {
+      color: #f2f2f2;
+    }
   }
 }
 </style>

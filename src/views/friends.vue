@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: drakMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -32,8 +32,11 @@
 import following from './friends/following.vue'
 import followers from './friends/followers.vue'
 import { navigateBack } from '../core/navigate'
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { myselfData, toasty } from '../core/viewFunction'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   type: 'following' | 'followers'
@@ -53,6 +56,9 @@ myselfData().then(data => {
   }
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function onTabPress(target: number) {
   if (tab.value != target) {
@@ -76,9 +82,6 @@ function onTabChange(args: any) {
     border-radius: 50%;
     width: 100px;
   }
-
-  border-bottom-width: 1px;
-  border-color: #c0c0c0;
 }
 
 .hidden {
@@ -98,6 +101,16 @@ function onTabChange(args: any) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+
+  .tab {
+    Label {
+      color: #d0d0d0;
+    }
   }
 }
 </style>

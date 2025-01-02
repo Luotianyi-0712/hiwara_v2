@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="60px, auto, *">
+  <GridLayout rows="60px, auto, *" :class="{ dark: drakMode }">
     <topBar row="0" />
     <GridLayout row="1" rows="35px,3px" columns="*,*" class="tab">
       <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
@@ -36,11 +36,11 @@ import videoList from '../lists/videoList.vue'
 import imageList from '../lists/imageList.vue'
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
-import {
-  getSubscribeVideoList,
-  getSubscribeImageList
-} from '../../core/api'
+import { getSubscribeVideoList, getSubscribeImageList } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 interface VideoItem {
   id: string,
   title: string,
@@ -114,6 +114,9 @@ watch(tab, (val) => {
       })
     }
   }
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function videoRetry() {
   videoPage = 0
@@ -245,6 +248,14 @@ function onTabChange(args: any) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  .tab {
+    Label {
+      color: #d0d0d0;
+    }
   }
 }
 </style>

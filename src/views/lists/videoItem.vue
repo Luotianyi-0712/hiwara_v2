@@ -1,9 +1,9 @@
 <template>
-  <StackLayout class="item">
+  <StackLayout class="item" :class="{ dark: drakMode }">
     <GridLayout class="item-content" rows="60px,60px,50px,20px" columns="*,*">
       <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="img"
-        failureImageUri="~/assets/img/not-img.jpg" placeholderImageUri="~/assets/img/placeholder.png"
-        stretch="aspectFill" class="img" fadeDuration="300" />
+        failureImageUri="~/assets/img/not-img.jpg" :placeholderImageUri="getPlaceholderImageUri()" stretch="aspectFill"
+        class="img" fadeDuration="300" />
       <StackLayout row="0" col="1" class="r18" horizontalAlignment="right">
         <Label v-show="ecchi" text="R-18" class="label" />
       </StackLayout>
@@ -31,9 +31,12 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { navigateTo } from "../../core/navigate"
 import { addVideoHistory } from '../../core/database'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string
   title: string
@@ -45,6 +48,9 @@ const props = defineProps<{
   numLikes: number
   ecchi: boolean
 }>();
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
+})
 function onTouch() {
   navigateTo("/player", {
     id: props.id
@@ -86,6 +92,13 @@ function formatDuration(seconds: number): string {
   }
   formattedTime += `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   return formattedTime;
+}
+function getPlaceholderImageUri() {
+  if (drakMode.value) {
+    return "~/assets/img/placeholder-dark.png"
+  } else {
+    return "~/assets/img/placeholder.png"
+  }
 }
 </script>
 
@@ -138,5 +151,28 @@ function formatDuration(seconds: number): string {
 .info {
   padding: 0 20px;
   font-size: 11px;
+}
+
+.dark {
+  .item-content {
+    box-shadow: 1px 1px 4px #00000040;
+    background-color: #303030;
+  }
+
+  .tip {
+    color: #fff;
+
+    .text {
+      text-shadow: 1px 1px 1px #000000;
+    }
+  }
+
+  .title {
+    color: #f2f2f2;
+  }
+
+  .info {
+    color: #d0d0d0;
+  }
 }
 </style>

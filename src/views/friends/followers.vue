@@ -1,12 +1,11 @@
 <template>
-  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
+  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: drakMode }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="publish">
       <template #default="{ item, index }">
         <GridLayout columns="76px,*,100px" rows="8px,32px,28px,8px" class="item"
           @tap="toUserZone(item.uid, item.username)">
           <GridLayout col="0" row="0" rowSpan="4" columns="10px,56px,10px" rows="10px,56px,10px">
-            <Img col="1" row="1" :src="item.avatar" class="avatar"
-              placeholderImageUri="~/assets/img/avatar-default.png" />
+            <Img col="1" row="1" :src="item.avatar" class="avatar" :placeholderImageUri="getPlaceholderImageUri()" />
           </GridLayout>
           <Label col="1" row="1" :text="item.name" class="name" />
           <Label col="1" row="2" :text="'@' + item.username" class="userid" />
@@ -27,10 +26,13 @@
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
 import noContent from '../components/noContent.vue'
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { getFollowersList, followers, disFollowers } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import { navigateTo } from "../../core/navigate"
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   myself: boolean
@@ -58,6 +60,9 @@ getData().then(res => {
   loadError.value = true
 }).finally(() => {
   onloaded.value = true
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
@@ -129,6 +134,13 @@ function toUserZone(uid: string, username: string) {
     username: username
   })
 }
+function getPlaceholderImageUri() {
+  if (drakMode.value) {
+    return '~/assets/img/avatar-default-dark.png'
+  } else {
+    return '~/assets/img/avatar-default.png'
+  }
+}
 </script>
 <style scoped lang="scss">
 .item {
@@ -169,5 +181,17 @@ function toUserZone(uid: string, username: string) {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  .item {
+    .name {
+      color: #f0f0f0;
+    }
+
+    .userid {
+      color: #d0d0d0;
+    }
+  }
 }
 </style>

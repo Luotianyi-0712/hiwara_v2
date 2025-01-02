@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="auto,*">
+  <GridLayout rows="auto,*" :class="{ dark: drakMode }">
     <GridLayout rows="auto,75px,20px,auto" class="top">
       <GridLayout row="0" columns="*,32px,32px,32px,32px" class="msg-icon">
         <Label col="1" text="&#xf029;" class="font-awesome-solid" />
@@ -117,10 +117,13 @@
   </GridLayout>
 </template>
 <script setup lang="ts">
-import { ref } from 'nativescript-vue'
+import { ref, watch } from 'nativescript-vue'
 import { myselfData, toasty } from '../../core/viewFunction'
 import { getFollowingList, getFollowersList, getPosts } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const premium = ref<boolean>(false)
 const avatar = ref<string>('')
 const name = ref<string>('')
@@ -148,6 +151,9 @@ myselfData().then(data => {
   }
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function toMyZone() {
   if (uid) {
@@ -272,6 +278,43 @@ function toSetup() {
 
   .arrow {
     text-align: center;
+  }
+}
+
+.dark {
+  .top {
+    background-color: #00796B;
+    color: #fff;
+
+    .tip {
+      Label {
+        color: #ffffffcc;
+        border-color: #ffffffcc;
+      }
+
+      .vip {
+        color: #ffffff;
+        background-color: #ff5ecc;
+      }
+    }
+  }
+
+  .button {
+    .icon {
+      color: #00796B;
+    }
+    .label{
+      color: #d0d0d0;
+    }
+  }
+
+  .oth-button {
+    .icon {
+      color: #00796B;
+    }
+    .label{
+      color: #d0d0d0;
+    }
   }
 }
 </style>

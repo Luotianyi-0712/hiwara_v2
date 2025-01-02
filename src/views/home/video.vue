@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="60px,auto,auto,*">
+  <GridLayout rows="60px,auto,auto,*" :class="{ dark: drakMode }">
     <topBar row="0" />
     <GridLayout row="1" rows="35px,3px" columns="8px,*,*,*,*,*,36px,8px" class="tab">
       <Label text="最新" row="0" col="1" @tap="onTabPress(0)" textAlignment="center" />
@@ -50,6 +50,9 @@ import { ref, watch } from 'nativescript-vue';
 import { getVideoList } from '~/core/api';
 import { toasty, parseMonthLabel } from '../../core/viewFunction'
 import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 interface VideoItem {
   id: string,
   title: string,
@@ -101,6 +104,9 @@ watch(filterYear, () => {
 })
 watch(filterMonth, () => {
   retry(tab.value)
+})
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
 })
 function retry(tab: number) {
   page[tab] = 0
@@ -271,6 +277,20 @@ function clearFilter() {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  .tab {
+    Label {
+      color: #d0d0d0;
+    }
+  }
+
+  .filter {
+    label {
+      color: #d0d0d0
+    }
   }
 }
 </style>

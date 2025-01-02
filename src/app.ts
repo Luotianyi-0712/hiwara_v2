@@ -38,12 +38,12 @@ if (isAndroid) {
             case android.content.res.Configuration.UI_MODE_NIGHT_YES:
               console.log("Night mode is on");
               // 处理夜间模式开启的情况
-              changeDarkModeStatus(false)
+              changeDarkModeStatus(true)
               break;
             case android.content.res.Configuration.UI_MODE_NIGHT_NO:
               console.log("Night mode is off");
               // 处理夜间模式关闭的情况
-              changeDarkModeStatus(true)
+              changeDarkModeStatus(false)
               break;
           }
         }

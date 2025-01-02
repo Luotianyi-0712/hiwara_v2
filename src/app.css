@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-Page {
-  background-color: #f2f2f2;
-}
-
 ActionBar {
   background-color: #00796B;
   margin: 0;

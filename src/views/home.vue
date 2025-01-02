@@ -1,5 +1,5 @@
 <template>
-  <Page actionBarHidden="true">
+  <Page actionBarHidden="true" :class="{ dark: drakMode }">
     <GridLayout v-show="onLoaded" v-if="isLogin" rows="*,auto">
       <videoList row="0" v-if="navTab == 0" />
       <imageList row="0" v-if="navTab == 1" />
@@ -44,9 +44,12 @@ import videoList from "./home/video.vue";
 import forum from "./home/forum.vue";
 import imageList from "./home/image.vue";
 import my from "./home/my.vue";
-import { ref, provide } from "nativescript-vue";
+import { ref, provide, watch } from "nativescript-vue";
 import { getUserToken } from "../core/database"
 import { isTokenValid, myselfData } from '../core/viewFunction'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const drakMode = ref(mainStore.dark)
 const navTab = ref(2)
 const onLoaded = ref<boolean>(false)
 const isLogin = ref<boolean>(false)
@@ -68,6 +71,9 @@ const toggleMy = () => {
   onNavTabPress(4)
 }
 provide('toggleMy', toggleMy)
+watch(() => mainStore.dark, (val) => {
+  drakMode.value = val
+})
 function loginSuccess() {
   isLogin.value = true
   myselfData()
@@ -77,14 +83,16 @@ function onNavTabPress(target: number) {
 }
 </script>
 <style scoped lang="scss">
+Page {
+  background-color: #f2f2f2;
+}
+
 .bottom-bar {
-  color: #484848;
 
   .btn {
     padding: 15px;
     font-size: 12px;
     text-align: center;
-    // background-color: #fff;
 
     .img {
       height: 60px;
@@ -96,7 +104,7 @@ function onNavTabPress(target: number) {
     animation-name: animeSelect;
     animation-duration: 100ms;
     animation-fill-mode: forwards;
-    color: #fff;
+    color: #ffffff;
   }
 
   .unSelect {
@@ -105,7 +113,7 @@ function onNavTabPress(target: number) {
 
   @keyframes animeSelect {
     0% {
-      background-color: #fff;
+      background-color: #f2f2f2;
     }
 
     100% {
@@ -119,7 +127,43 @@ function onNavTabPress(target: number) {
     }
 
     100% {
-      background-color: #fff;
+      background-color: #f2f2f2;
+    }
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+
+  .bottom-bar {
+    .unSelect {
+      color: #d0d0d0;
+    }
+
+    .select {
+      animation-name: animeDarkSelect;
+      animation-duration: 100ms;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes animeDarkSelect {
+      0% {
+        background-color: #0d0d0d;
+      }
+
+      100% {
+        background-color: #00796B;
+      }
+    }
+
+    @keyframes animeUnSelect {
+      0% {
+        background-color: #00796B;
+      }
+
+      100% {
+        background-color: #0d0d0d;
+      }
     }
   }
 }
