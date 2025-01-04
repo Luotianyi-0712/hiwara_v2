@@ -1,5 +1,5 @@
 <template>
-  <StackLayout style="padding:0 10px 10px 10px;">
+  <StackLayout style="padding:0 10px 10px 10px;" :class="{ dark: props.darkMode }">
     <Label style="padding:10px 10px 20px 10px" text="该作者其他作品" v-if="userTestimonialsVideoListLoaded" />
     <GridLayout v-for="item in userTestimonialsVideoList" rows="*" columns="*,*" class="visible">
       <videoItem v-for="i in 2" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
@@ -20,7 +20,8 @@ import { ref, defineProps, watch } from 'nativescript-vue'
 import { getUserTestimonialsVideoList, getSystemTestimonialsVideoList } from '../../core/api'
 const props = defineProps<{
   vid: string,
-  uid: string
+  uid: string,
+  darkMode: boolean
 }>();
 interface Item {
   id: string,
@@ -90,6 +91,12 @@ Label {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  Label {
+    color: #f2f2f2;
   }
 }
 </style>

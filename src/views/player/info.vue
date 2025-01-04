@@ -1,5 +1,5 @@
 <template>
-  <StackLayout style="padding: 20px 20px 0 20px;">
+  <StackLayout style="padding: 20px 20px 0 20px;" :class="{ dark: darkMode }">
     <GridLayout columns="50px,*,100px" rows="50px">
       <StackLayout @tap="toUserZone" col="0" row="0">
         <Img src="https://www.iwara.tv/images/default-avatar.jpg" failureImageUri="~/assets/img/not-img.jpg"
@@ -94,6 +94,7 @@ const props = defineProps<{
   ariaRPC: string,
   ariaToken: string,
   ariaDownloadPath: string,
+  darkMode: boolean,
 }>();
 const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)
@@ -372,6 +373,21 @@ Button {
     margin: 10px;
     border-radius: 10px;
     background-color: #e0e0e0;
+  }
+}
+
+.dark {
+
+  .up,
+  .title,
+  .drop {
+    color: #f2f2f2;
+  }
+
+  .tags {
+    Label {
+      background-color: #303030;
+    }
   }
 }
 </style>

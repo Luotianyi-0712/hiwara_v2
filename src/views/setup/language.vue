@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -23,9 +23,12 @@
   </Page>
 </template>
 <script lang="ts" setup>
-import { ref, $navigateBack, defineProps } from "nativescript-vue"
+import { ref, watch, $navigateBack, defineProps } from "nativescript-vue"
 import { changeLanguage } from "../../core/database"
 import { languageList } from "../../core/viewFunction"
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   back: () => void
 }>()
@@ -36,6 +39,9 @@ interface Item {
 }
 const list = ref<Item[]>([])
 list.value = languageList
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
+})
 function navigateBack() {
   $navigateBack()
 
@@ -85,6 +91,17 @@ function toggle(val: string) {
 
   .arrow {
     padding: 0 40px;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .button {
+    .label {
+      color: #e0e0e0;
+    }
   }
 }
 </style>

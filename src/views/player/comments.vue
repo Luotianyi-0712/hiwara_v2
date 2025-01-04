@@ -1,10 +1,10 @@
 <template>
-  <GridLayout rows="*,50px" @tap="addCommentsBlur">
+  <GridLayout rows="*,50px" @tap="addCommentsBlur" :class="{ dark: darkMode }">
     <ListView row="0" :items="comments" @loadMoreItems="nextPage">
       <template #default="{ item, index }">
         <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body"
-          :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="onOpenDrawer" :reply="true"
-          @tap="addCommentsBlur" @reply="replyComments" />
+          :createdAt="item.createdAt" :numReplies="item.numReplies" :darkMode="darkMode" @detail="onOpenDrawer"
+          :reply="true" @tap="addCommentsBlur" @reply="replyComments" />
       </template>
     </ListView>
     <Label row="0" textAlignment="center" text="还没有评论喵~" v-if="comments.length === 0" />
@@ -21,7 +21,7 @@
       <StackLayout row="0" col="1" orientation="horizontal" horizontalAlignment="right" style="padding: 0 20px;">
         <Label text="&#x1f5d9;" class="font-awesome-solid" />
       </StackLayout>
-      <commentReplys row="1" col="0" colSpan="2" :id="id" :detailId="detailId" />
+      <commentReplys row="1" col="0" colSpan="2" :id="id" :detailId="detailId" :darkMode="darkMode" />
     </GridLayout>
   </Drawer>
 </template>
@@ -33,6 +33,7 @@ import { getVideoComments, addCommentForVideo } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 const props = defineProps<{
   id: string
+  darkMode: boolean
 }>()
 interface Comments {
   id: string,

@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -34,9 +34,12 @@
   </Page>
 </template>
 <script lang="ts" setup>
-import { ref, $navigateBack } from "nativescript-vue"
-import { getConfig, changeAriaSwitch,changeAriaConfig } from "../../core/database"
+import { ref, watch, $navigateBack } from "nativescript-vue"
+import { getConfig, changeAriaSwitch, changeAriaConfig } from "../../core/database"
 import { toasty } from "../../core/viewFunction"
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const open = ref<boolean>(false)
 const rpc = ref<string>('')
 const token = ref<string>('')
@@ -46,6 +49,9 @@ getConfig().then(data => {
   rpc.value = data.ariaRPC
   token.value = data.ariaToken
   download.value = data.ariaDownload
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function navigateBack() {
   $navigateBack()
@@ -103,5 +109,24 @@ Button {
   margin: 10px 20px;
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .button {
+    .label {
+      color: #e0e0e0;
+    }
+  }
+
+  TextField {
+    background-color: #303030;
+
+    ::placeholder {
+      color: #d0d0d0;
+    }
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <Page :class="{ dark: drakMode }">
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout rows="*" columns="24px,*,60px" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -61,7 +61,7 @@ import { addSearchHistory, getSearchHistory, getConfig, changeSearchMode } from 
 import { Dialogs } from '@nativescript/core'
 import { useMainStore } from '../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const iconHint = ref<boolean>(true)
 const tab = ref(0)
 const type = ref(0)
@@ -119,7 +119,7 @@ watch(query, val => {
   }
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function submit(text?: string) {
   blurAllTextField()
@@ -301,6 +301,10 @@ function hintLabel(val: number) {
 
     .search-input {
       color: #d0d0d0;
+
+      ::placeholder {
+        color: #d0d0d0;
+      }
     }
   }
 

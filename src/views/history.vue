@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -32,8 +32,14 @@
 import videoList from './history/video.vue'
 import imageList from './history/image.vue'
 import { navigateBack } from '../core/navigate'
-import { ref } from 'nativescript-vue'
+import { ref, watch } from 'nativescript-vue'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const tab = ref(0)
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
+})
 function onTabPress(target: number) {
   if (tab.value != target) {
     tab.value = target;
@@ -79,5 +85,9 @@ function onTabChange(args: any) {
   100% {
     opacity: 1;
   }
+}
+.dark{
+  background-color: #0d0d0d;
+  color: #d0d0d0;
 }
 </style>

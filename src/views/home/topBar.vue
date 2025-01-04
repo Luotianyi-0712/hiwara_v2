@@ -1,5 +1,5 @@
 <template>
-  <GridLayout class="navigation-bar" columns="auto,*,auto" :class="{ dark: drakMode }">
+  <GridLayout class="navigation-bar" columns="auto,*,auto" :class="{ dark: darkMode }">
     <GridLayout col="0" class="user-button" @tap="toggleMy">
       <Img :src="avatar" class="img" placeholderImageUri="~/assets/img/avatar-default.png" />
     </GridLayout>
@@ -18,7 +18,7 @@ import { navigateTo } from "../../core/navigate"
 import { toasty, myselfData } from '../../core/viewFunction'
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const avatar = ref<string>('')
 const toggleMy = inject<(payload: any) => void>('toggleMy')
 myselfData().then(data => {
@@ -27,7 +27,7 @@ myselfData().then(data => {
   toasty("用户信息获取失败", "Error")
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function toSearch() {
   navigateTo("/search");

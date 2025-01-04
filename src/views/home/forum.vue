@@ -1,5 +1,5 @@
 <template>
-  <GridLayout row="*" :class="{ dark: drakMode }">
+  <GridLayout row="*" :class="{ dark: darkMode }">
     <ScrollView :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
       <StackLayout>
         <StackLayout v-for="content in formatList">
@@ -45,7 +45,7 @@ import { navigateTo } from '../../core/navigate'
 import { ref, watch } from 'nativescript-vue'
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const onloaded = ref(false)
 const loadError = ref(false)
 const formatList = ref([
@@ -226,7 +226,7 @@ function getData() {
   })
 }
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function goTo(type: string) {
   navigateTo('/forum', {

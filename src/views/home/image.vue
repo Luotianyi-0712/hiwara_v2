@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="60px,auto,auto,*" :class="{ dark: drakMode }">
+  <GridLayout rows="60px,auto,auto,*" :class="{ dark: darkMode }">
     <topBar row="0" />
     <GridLayout row="1" rows="35px,3px" columns="8px,*,*,*,*,*,36px,8px" class="tab">
       <Label text="最新" row="0" col="1" @tap="onTabPress(0)" textAlignment="center" />
@@ -52,7 +52,7 @@ import { toasty, parseMonthLabel } from '../../core/viewFunction'
 import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 interface ImageItem {
   id: string,
   title: string,
@@ -105,7 +105,7 @@ watch(filterMonth, () => {
   retry(tab.value)
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function retry(tab: number) {
   page[tab] = 0

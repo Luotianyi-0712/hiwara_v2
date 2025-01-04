@@ -1,5 +1,5 @@
 <template>
-  <Page actionBarHidden="true">
+  <Page actionBarHidden="true" :class="{ dark: darkMode }">
     <GridLayout columns="*" :rows="isFullscreen ? '*,0' : 'auto,*'">
       <videoPlayerFrame col="0" row="0" :playerSrc="playerSrc" :title="title" :definition="definition"
         :definitionList="definitionList" :isFullscreen="isFullscreen"
@@ -10,8 +10,7 @@
         :class="{ 'visible': loadingError, 'hidden': !loadingError }" @tap="getData" />
       <GridLayout columns="*" rows="auto,*" row="1" col="0"
         :class="{ 'visible': !loading && !loadingError, 'hidden': loading || loadingError }">
-        <GridLayout columns="10px,150px,*,175px,10px" row="0"
-          style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;">
+        <GridLayout columns="10px,150px,*,175px,10px" row="0" class="divider">
           <GridLayout col="1" row="0" rows="35px,3px" columns="*,*" class="tab">
             <Label text="简介" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
             <Label text="评论" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
@@ -40,13 +39,14 @@
                   :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :tags="tags"
                   :files="files" :definition="definition" :definitionList="definitionList" :downloadPath="downloadPath"
                   :ariaSwitch="ariaSwitch" :ariaRPC="ariaRPC" :ariaToken="ariaToken"
-                  :ariaDownloadPath="ariaDownloadPath" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
-                <recommend ref="recommendRef" :vid="id" :uid="uid" />
+                  :ariaDownloadPath="ariaDownloadPath" :darkMode="darkMode" @changeLiked="changeLiked"
+                  @changeFollowing="changeFollowing" />
+                <recommend ref="recommendRef" :vid="id" :uid="uid" :darkMode="darkMode" />
               </StackLayout>
             </ScrollView>
           </PagerItem>
           <PagerItem>
-            <comments :id="id" />
+            <comments :id="id" :darkMode="darkMode" />
           </PagerItem>
         </Pager>
       </GridLayout>
@@ -65,6 +65,9 @@ import info from './player/info.vue';
 import comments from './player/comments.vue';
 import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../core/viewFunction'
 import { getConfig } from '../core/database'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string;
 }>()
@@ -184,6 +187,9 @@ watch(isFullscreen, (val) => {
       }
     }
   }
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function getData() {
   loadingError.value = false
@@ -311,6 +317,11 @@ function changeFollowing(val: boolean) {
 }
 </script>
 <style scoped lang="scss">
+.divider {
+  box-shadow: 1px 1px 4px #00000040;
+  background-color: #fff;
+}
+
 .tab-bar {
   background-color: #00796B;
   height: 8px;
@@ -335,6 +346,15 @@ function changeFollowing(val: boolean) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .divider {
+    background-color: #262626;
   }
 }
 </style>

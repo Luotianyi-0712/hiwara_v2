@@ -2,7 +2,7 @@
   <ListView :items="replys" @loadMoreItems="nextPage">
     <template #default="{ item, index }">
       <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body" :createdAt="item.createdAt"
-        :numReplies="item.numReplies" @detail="" :reply="false" />
+        :numReplies="item.numReplies" :darkMode="darkMode" @detail="" :reply="false" />
     </template>
   </ListView>
 </template>
@@ -12,7 +12,8 @@ import { ref, defineProps, watch } from 'nativescript-vue'
 import { getVideoComments } from '../../core/api'
 const props = defineProps<{
   id: string,
-  detailId: string
+  detailId: string,
+  darkMode: boolean
 }>()
 interface Comments {
   id: string,

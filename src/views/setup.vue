@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -52,7 +52,7 @@
 </template>
 <script lang="ts" setup>
 import { navigateBack, navigateReload } from '../core/navigate'
-import { ref, $navigateTo } from 'nativescript-vue'
+import { ref, watch, $navigateTo } from 'nativescript-vue'
 import { getConfig, changeAutoplay, removeLogout } from '../core/database'
 import { parseDefinitionLabel, parseLanguageLabel, toasty } from '../core/viewFunction'
 import { Dialogs, isAndroid, isIOS, Application } from '@nativescript/core'
@@ -65,7 +65,13 @@ const autoplay = ref<boolean>(false)
 const definition = ref<string>('-')
 const searchMode = ref<number>(0)
 const language = ref<string>('-')
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 flush()
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
+})
 function flush() {
   getConfig().then(data => {
     console.log(data)
@@ -183,9 +189,6 @@ function parseSearchModeLabel(val: number) {
     border-radius: 50%;
     width: 100px;
   }
-
-  border-bottom-width: 1px;
-  border-color: #c0c0c0;
 }
 
 .button {
@@ -200,6 +203,17 @@ function parseSearchModeLabel(val: number) {
 
   .arrow {
     padding: 0 40px;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .button {
+    .label {
+      color: #e0e0e0;
+    }
   }
 }
 </style>

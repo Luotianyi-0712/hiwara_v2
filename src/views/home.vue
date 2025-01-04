@@ -1,5 +1,5 @@
 <template>
-  <Page actionBarHidden="true" :class="{ dark: drakMode }">
+  <Page actionBarHidden="true" :class="{ dark: darkMode }">
     <GridLayout v-show="onLoaded" v-if="isLogin" rows="*,auto">
       <videoList row="0" v-if="navTab == 0" />
       <imageList row="0" v-if="navTab == 1" />
@@ -49,7 +49,7 @@ import { getUserToken } from "../core/database"
 import { isTokenValid, myselfData } from '../core/viewFunction'
 import { useMainStore } from '../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const navTab = ref(2)
 const onLoaded = ref<boolean>(false)
 const isLogin = ref<boolean>(false)
@@ -72,7 +72,7 @@ const toggleMy = () => {
 }
 provide('toggleMy', toggleMy)
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function loginSuccess() {
   isLogin.value = true

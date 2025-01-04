@@ -1,11 +1,11 @@
 <template>
-  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
+  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: darkMode }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="history">
       <template #default="{ item, index }">
         <GridLayout @tap="onTouch(item.id)" columns="128px,*,8px" rows="8px,40px,18px,18px,8px" class="item">
           <GridLayout col="0" row="0" columns="8px,*,*,8px" rows="8px,*,*,8px" rowSpan="5">
             <Img row="1" col="1" colSpan="2" rowSpan="2" :src="item.img" failureImageUri="~/assets/img/not-img.jpg"
-              placeholderImageUri="~/assets/img/placeholder.png" stretch="aspectFill" class="img" fadeDuration="300" />
+              :placeholderImageUri="getPlaceholderImageUri()" stretch="aspectFill" class="img" fadeDuration="300" />
             <StackLayout row="1" col="2" class="r18" horizontalAlignment="right">
               <Label v-show="item.ecchi" text="R-18" />
             </StackLayout>
@@ -44,8 +44,11 @@ import noContent from '../components/noContent.vue'
 import errorImg from '../components/errorImg.vue'
 import { getVideoHistory } from '../../core/database'
 import { navigateTo } from "../../core/navigate"
-import { ref } from 'nativescript-vue'
+import { ref, watch } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../../core/viewFunction'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 interface Item {
   id: string,
   title: string,
@@ -72,6 +75,9 @@ getData().then(res => {
   loadError.value = true
 }).finally(() => {
   onloaded.value = true
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function nextPage() {
   if (!isEnd) {
@@ -139,6 +145,13 @@ function onTouch(id: string) {
     id: id
   })
 }
+function getPlaceholderImageUri() {
+  if (darkMode.value) {
+    return "~/assets/img/placeholder-dark.png"
+  } else {
+    return "~/assets/img/placeholder.png"
+  }
+}
 </script>
 <style scoped lang="scss">
 .history {
@@ -200,6 +213,14 @@ function onTouch(id: string) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  .item {
+    .title {
+      color: #f2f2f2;
+    }
   }
 }
 </style>

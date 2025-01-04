@@ -1,5 +1,5 @@
 <template>
-  <StackLayout class="item" :class="{ dark: drakMode }">
+  <StackLayout class="item" :class="{ dark: darkMode }">
     <GridLayout class="item-content" rows="60px,60px,50px,20px" columns="*,*">
       <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="img"
         failureImageUri="~/assets/img/not-img.jpg" :placeholderImageUri="getPlaceholderImageUri()" stretch="aspectFill"
@@ -36,7 +36,7 @@ import { navigateTo } from "../../core/navigate"
 import { addVideoHistory } from '../../core/database'
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string
   title: string
@@ -49,7 +49,7 @@ const props = defineProps<{
   ecchi: boolean
 }>();
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function onTouch() {
   navigateTo("/player", {
@@ -94,7 +94,7 @@ function formatDuration(seconds: number): string {
   return formattedTime;
 }
 function getPlaceholderImageUri() {
-  if (drakMode.value) {
+  if (darkMode.value) {
     return "~/assets/img/placeholder-dark.png"
   } else {
     return "~/assets/img/placeholder.png"

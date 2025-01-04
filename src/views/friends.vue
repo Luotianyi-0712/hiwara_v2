@@ -1,5 +1,5 @@
 <template>
-  <Page :class="{ dark: drakMode }">
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -36,7 +36,7 @@ import { ref, watch, defineProps } from 'nativescript-vue'
 import { myselfData, toasty } from '../core/viewFunction'
 import { useMainStore } from '../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   type: 'following' | 'followers'
@@ -58,7 +58,7 @@ myselfData().then(data => {
   toasty("用户信息获取失败", "Error")
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function onTabPress(target: number) {
   if (tab.value != target) {

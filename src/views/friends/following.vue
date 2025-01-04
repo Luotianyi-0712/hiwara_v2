@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: drakMode }">
+  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: darkMode }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="publish">
       <template #default="{ item, index }">
         <GridLayout columns="76px,*,100px" rows="8px,32px,28px,8px" class="item"
@@ -32,7 +32,7 @@ import { toasty } from '../../core/viewFunction'
 import { navigateTo } from "../../core/navigate"
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   myself: boolean
@@ -62,7 +62,7 @@ getData().then(res => {
   onloaded.value = true
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
@@ -135,7 +135,7 @@ function toUserZone(uid: string, username: string) {
   })
 }
 function getPlaceholderImageUri() {
-  if (drakMode.value) {
+  if (darkMode.value) {
     return '~/assets/img/avatar-default-dark.png'
   } else {
     return '~/assets/img/avatar-default.png'

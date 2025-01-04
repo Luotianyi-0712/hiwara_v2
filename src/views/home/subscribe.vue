@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="60px, auto, *" :class="{ dark: drakMode }">
+  <GridLayout rows="60px, auto, *" :class="{ dark: darkMode }">
     <topBar row="0" />
     <GridLayout row="1" rows="35px,3px" columns="*,*" class="tab">
       <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
@@ -40,7 +40,7 @@ import { getSubscribeVideoList, getSubscribeImageList } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 interface VideoItem {
   id: string,
   title: string,
@@ -116,7 +116,7 @@ watch(tab, (val) => {
   }
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function videoRetry() {
   videoPage = 0

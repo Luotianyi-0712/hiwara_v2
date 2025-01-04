@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,*" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -20,16 +20,22 @@
   </Page>
 </template>
 <script lang="ts" setup>
-import { ref, $navigateBack } from "nativescript-vue"
+import { ref, watch, $navigateBack } from "nativescript-vue"
 import { changeDownload, getConfig } from "../../core/database"
 import { toasty } from "../../core/viewFunction"
 import { Folder } from '@nativescript/core'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const video = ref('')
 const image = ref('')
 const pattern = /^\/storage\/emulated\/0\/(?!\/)([^\/]+(\/[^\/]+)*)$/
 getConfig().then(data => {
   video.value = data.videoDownload
   image.value = data.imageDownload
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function navigateBack() {
   $navigateBack()
@@ -122,5 +128,18 @@ Button {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .title {
+    color: #e0e0e0;
+  }
+
+  TextField {
+    background-color: #303030;
+  }
 }
 </style>

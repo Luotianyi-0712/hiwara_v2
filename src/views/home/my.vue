@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="auto,*" :class="{ dark: drakMode }">
+  <GridLayout rows="auto,*" :class="{ dark: darkMode }">
     <GridLayout rows="auto,75px,20px,auto" class="top">
       <GridLayout row="0" columns="*,32px,32px,32px,32px" class="msg-icon">
         <Label col="1" text="&#xf029;" class="font-awesome-solid" />
@@ -123,7 +123,7 @@ import { getFollowingList, getFollowersList, getPosts } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
 import { useMainStore } from '../../core/store'
 const mainStore = useMainStore()
-const drakMode = ref(mainStore.dark)
+const darkMode = ref(mainStore.dark)
 const premium = ref<boolean>(false)
 const avatar = ref<string>('')
 const name = ref<string>('')
@@ -153,7 +153,7 @@ myselfData().then(data => {
   toasty("用户信息获取失败", "Error")
 })
 watch(() => mainStore.dark, (val) => {
-  drakMode.value = val
+  darkMode.value = val
 })
 function toMyZone() {
   if (uid) {
