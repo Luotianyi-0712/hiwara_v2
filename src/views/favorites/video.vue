@@ -44,11 +44,11 @@ import noContent from '../components/noContent.vue'
 import errorImg from '../components/errorImg.vue'
 import { getMyFavoritesVideos } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
-import { ref, watch, defineExpose } from 'nativescript-vue'
+import { ref, defineProps, defineExpose } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../../core/viewFunction'
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 interface Item {
   id: string,
   title: string,
@@ -77,9 +77,6 @@ const init = () => {
 }
 defineExpose({
   init
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function nextPage() {
   if (!isEnd) {
@@ -148,7 +145,7 @@ function onTouch(id: string) {
   })
 }
 function getPlaceholderImageUri() {
-  if (darkMode.value) {
+  if (props.darkMode) {
     return "~/assets/img/placeholder-dark.png"
   } else {
     return "~/assets/img/placeholder.png"

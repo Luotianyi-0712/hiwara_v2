@@ -117,13 +117,13 @@
   </GridLayout>
 </template>
 <script setup lang="ts">
-import { ref, watch } from 'nativescript-vue'
+import { ref, defineProps } from 'nativescript-vue'
 import { myselfData, toasty } from '../../core/viewFunction'
 import { getFollowingList, getFollowersList, getPosts } from '../../core/api'
 import { navigateTo } from "../../core/navigate"
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 const premium = ref<boolean>(false)
 const avatar = ref<string>('')
 const name = ref<string>('')
@@ -151,9 +151,6 @@ myselfData().then(data => {
   }
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function toMyZone() {
   if (uid) {
@@ -303,7 +300,8 @@ function toSetup() {
     .icon {
       color: #00796B;
     }
-    .label{
+
+    .label {
       color: #d0d0d0;
     }
   }
@@ -312,7 +310,8 @@ function toSetup() {
     .icon {
       color: #00796B;
     }
-    .label{
+
+    .label {
       color: #d0d0d0;
     }
   }

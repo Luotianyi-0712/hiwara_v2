@@ -4,15 +4,15 @@
       <PagerItem v-for="(item, i) in files" :key="item">
         <GridLayout columns="*" rows="*">
           <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="item"
-            failureImageUri="~/assets/img/not-img.jpg" placeholderImageUri="~/assets/img/placeholder-vertical.png"
+            failureImageUri="~/assets/img/not-img.jpg" :placeholderImageUri="getPlaceholderImageUri()"
             stretch="aspectFit" class="img" fadeDuration="300" />
         </GridLayout>
       </PagerItem>
     </Pager>
     <GridLayout v-else col="0" row="0" columns="*" rows="*">
       <Img @tap="onTouch()" row="0" col="0" rowSpan="2" colSpan="2" :src="files[0]"
-        failureImageUri="~/assets/img/not-img.jpg" placeholderImageUri="~/assets/img/placeholder-vertical.png"
-        stretch="aspectFit" class="img" fadeDuration="300" />
+        failureImageUri="~/assets/img/not-img.jpg" :placeholderImageUri="getPlaceholderImageUri()" stretch="aspectFit"
+        class="img" fadeDuration="300" />
     </GridLayout>
   </GridLayout>
 </template>
@@ -20,12 +20,19 @@
 import { ref, defineProps } from 'nativescript-vue'
 const tab = ref(0)
 const props = defineProps<{
-  files: string[];
+  files: string[]
+  darkMode: boolean
 }>();
 function onTabChange(args: any) {
   tab.value = args.value
 }
 function onTouch() {
-
+}
+function getPlaceholderImageUri() {
+  if (props.darkMode) {
+    return "~/assets/img/placeholder-vertical-dark.png"
+  } else {
+    return "~/assets/img/placeholder-vertical.png"
+  }
 }
 </script>

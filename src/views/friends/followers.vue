@@ -30,12 +30,10 @@ import { ref, watch, defineProps } from 'nativescript-vue'
 import { getFollowersList, followers, disFollowers } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import { navigateTo } from "../../core/navigate"
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   myself: boolean
+  darkMode: boolean
 }>()
 interface Item {
   uid: string,
@@ -60,9 +58,6 @@ getData().then(res => {
   loadError.value = true
 }).finally(() => {
   onloaded.value = true
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function getData(): Promise<Item[] | null> {
   return new Promise((resolve, reject) => {
@@ -135,7 +130,7 @@ function toUserZone(uid: string, username: string) {
   })
 }
 function getPlaceholderImageUri() {
-  if (darkMode.value) {
+  if (props.darkMode) {
     return '~/assets/img/avatar-default-dark.png'
   } else {
     return '~/assets/img/avatar-default.png'

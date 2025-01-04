@@ -11,8 +11,8 @@ import commentItem from './commentItem.vue';
 import { ref, defineProps, watch } from 'nativescript-vue'
 import { getVideoComments } from '../../core/api'
 const props = defineProps<{
-  id: string,
-  detailId: string,
+  id: string
+  detailId: string
   darkMode: boolean
 }>()
 interface Comments {

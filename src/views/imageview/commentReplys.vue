@@ -10,7 +10,7 @@
       <ListView row="0" :items="comments" @loadMoreItems="nextPage">
         <template #default="{ item, index }">
           <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body"
-            :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="" :reply="false"
+            :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="" :reply="false" :dark-mode="darkMode"
             @tap="addCommentsBlur" />
         </template>
       </ListView>
@@ -25,10 +25,13 @@
 </template>
 <script setup lang="ts">
 import commentItem from './commentItem.vue';
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { getImageComments, addCommentForImage } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import { navigateBack } from '../../core/navigate'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string,
   detailId: string
@@ -52,6 +55,9 @@ let isEnd = false
 getImageComments(props.id, page, props.detailId).then(res => {
   comments.value = res
   page++
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function nextPage() {
   if (!isLoading && !isEnd) {
@@ -104,5 +110,10 @@ ActionBar {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
 }
 </style>

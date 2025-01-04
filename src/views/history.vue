@@ -16,12 +16,12 @@
       <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
         <PagerItem>
           <GridLayout rows="*">
-            <videoList />
+            <videoList :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
         <PagerItem>
           <GridLayout rows="*">
-            <imageList />
+            <imageList :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
       </Pager>
@@ -86,7 +86,8 @@ function onTabChange(args: any) {
     opacity: 1;
   }
 }
-.dark{
+
+.dark {
   background-color: #0d0d0d;
   color: #d0d0d0;
 }

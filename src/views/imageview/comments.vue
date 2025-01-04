@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar @tap="addCommentsBlur">
       <GridLayout columns="32px,auto,*">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -11,12 +11,11 @@
         <template #default="{ item, index }">
           <commentItem :id="item.id" :index="index" :userName="item.userName" :body="item.body"
             :createdAt="item.createdAt" :numReplies="item.numReplies" @detail="toDetail" :reply="true"
-            @tap="addCommentsBlur" @reply="replyComments" />
+            :darkMode="darkMode" @tap="addCommentsBlur" @reply="replyComments" />
         </template>
       </ListView>
       <Label row="0" textAlignment="center" text="还没有评论喵~" v-if="comments.length === 0" />
-      <GridLayout row="1" columns="*,80px"
-        style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;padding: 0 20px;">
+      <GridLayout row="1" columns="*,80px" class="send">
         <TextField col="0" hint="添加评论" style="font-size: 16px;" v-model="myComments" ref="addCommentsRef"
           @blur="addCommentsInputBlur" />
         <Button col="1" text="发送" height="110px" @tap="addComment" />
@@ -27,10 +26,13 @@
 <script setup lang="ts">
 import commentItem from './commentItem.vue';
 import commentReplys from './commentReplys.vue';
-import { ref, defineProps, onBeforeUnmount, $navigateTo } from 'nativescript-vue'
+import { ref, watch, defineProps, onBeforeUnmount, $navigateTo } from 'nativescript-vue'
 import { getImageComments, addCommentForImage } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
 import { navigateBack } from '../../core/navigate'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string
 }>()
@@ -58,6 +60,9 @@ getImageComments(props.id, page).then(res => {
 })
 onBeforeUnmount(() => {
   clearTimeout(timer)
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function nextPage() {
   if (!isLoading && !isEnd) {
@@ -141,5 +146,26 @@ ActionBar {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.send {
+  box-shadow: 1px 1px 4px #00000040;
+  background-color: #f2f2f2;
+  padding: 0 20px;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .send {
+    background-color: #262626;
+
+    TextField{
+      color: #f2f2f2;
+      ::placeholder {
+      color: #757575;
+    }}
+  }
 }
 </style>

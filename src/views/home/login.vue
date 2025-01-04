@@ -1,5 +1,5 @@
 <template>
-  <GridLayout columns="10px,*,10px" rows="*,auto,2*,auto" @tap="blurAllTextField">
+  <GridLayout columns="10px,*,10px" rows="*,auto,2*,auto" @tap="blurAllTextField" :class="{ dark: darkMode }">
     <StackLayout col="1" row="1" class="loginInput">
       <Label text="登录到你的iwara账号" class="title" />
       <TextField ref="userInput" v-model="userValue" hint="请输入账号" keyboardType="email" class="input"
@@ -15,7 +15,7 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, defineEmits } from 'nativescript-vue'
+import { ref, defineEmits, defineProps } from 'nativescript-vue'
 import { toasty } from '../../core/viewFunction'
 import { login } from '../../core/api'
 import { getUserPasswd, saveUserToken } from '../../core/database'
@@ -25,6 +25,9 @@ const passwdInput = ref()
 const userValue = ref('')
 const passwdValue = ref('')
 const loginIng = ref(false)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 getUserPasswd().then(res => {
   if (res.login) {
     userValue.value = res.login
@@ -72,12 +75,16 @@ function submit() {
 .loginInput {
   .title {
     font-size: 22px;
-    color: #000;
+    color: #262626;
     padding: 32px 10px;
   }
 
   .input {
     margin: 32px 5px;
+    font-size: 16px;
+    padding: 20px;
+    border-bottom-color: #00796B;
+    border-bottom-width: 6px;
   }
 
   .button {
@@ -97,5 +104,24 @@ function submit() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .loginInput {
+    .title {
+      color: #f2f2f2;
+    }
+
+    .input {
+      background-color: #202020;
+      color: #f2f2f2;
+      ::placeholder {
+        color: #757575;
+      }
+    }
+  }
 }
 </style>

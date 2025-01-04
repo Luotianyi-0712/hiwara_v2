@@ -16,12 +16,12 @@
       <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
         <PagerItem>
           <GridLayout rows="*">
-            <videoList ref="videoListRef" />
+            <videoList ref="videoListRef" :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
         <PagerItem>
           <GridLayout rows="*">
-            <imageList ref="imageListRef" />
+            <imageList ref="imageListRef" :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
       </Pager>

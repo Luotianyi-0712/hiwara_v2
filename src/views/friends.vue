@@ -16,12 +16,12 @@
       <Pager row="1" col="0" colSpan="2" :selectedIndex="tab" @selectedIndexChange="onTabChange">
         <PagerItem>
           <GridLayout rows="*">
-            <following :uid="uid" :myself="myself" />
+            <following :uid="uid" :myself="myself" :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
         <PagerItem>
           <GridLayout rows="*">
-            <followers :uid="uid" :myself="myself" />
+            <followers :uid="uid" :myself="myself" :dark-mode="darkMode" />
           </GridLayout>
         </PagerItem>
       </Pager>

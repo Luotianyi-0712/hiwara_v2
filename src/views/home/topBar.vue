@@ -13,21 +13,18 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, watch, inject } from "nativescript-vue"
+import { ref, defineProps, inject } from "nativescript-vue"
 import { navigateTo } from "../../core/navigate"
 import { toasty, myselfData } from '../../core/viewFunction'
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 const avatar = ref<string>('')
 const toggleMy = inject<(payload: any) => void>('toggleMy')
 myselfData().then(data => {
   avatar.value = data.avatar
 }).catch(err => {
   toasty("用户信息获取失败", "Error")
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function toSearch() {
   navigateTo("/search");
@@ -70,7 +67,7 @@ function toSearch() {
   .navigation-bar {
     .search-input {
       background-color: #0d0d0d;
-      color: #d0d0d0;
+      color: #757575;
     }
   }
 }

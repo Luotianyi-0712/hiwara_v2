@@ -1,5 +1,5 @@
 <template>
-  <GridLayout columns="auto,*,auto" :rows="reply ? '50px,auto,30px' : '50px,auto'">
+  <GridLayout columns="auto,*,auto" :rows="reply ? '50px,auto,30px' : '50px,auto'" :class="{ dark: darkMode }">
     <GridLayout row="0" col="0" colSpan="3" rows="30px,20px" columns="50px,*">
       <StackLayout col="0" row="0" rowSpan="2">
         <Img src="https://www.iwara.tv/images/default-avatar.jpg" failureImageUri="~/assets/img/not-img.jpg"
@@ -32,6 +32,7 @@ const props = defineProps<{
   body: string
   numReplies: number
   reply: boolean
+  darkMode: boolean
 }>()
 function formatIsoToChineseDate(isoDate: string): string {
   const date = new Date(isoDate);
@@ -69,5 +70,13 @@ function formatIsoToChineseDate(isoDate: string): string {
 .options {
   padding: 0 40px;
   font-size: 12px;
+}
+
+.dark {
+
+  .userName,
+  .body {
+    color: #f2f2f2;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <StackLayout style="padding:0 10px 10px 10px;">
+  <StackLayout style="padding:0 10px 10px 10px;" :class="{ dark: darkMode }">
     <Label style="padding:10px 10px 20px 10px" text="该作者其他作品" v-if="userTestimonialsImageListLoaded" />
     <GridLayout v-for="item in userTestimonialsImageList" rows="*" columns="*,*" class="visible">
       <<imageItem v-for="i in 2" row="0" :col="i - 1" :id="item[i - 1].id" :title="item[i - 1].title"
@@ -21,8 +21,9 @@ import imageItem from '../lists/imageItem.vue';
 import { ref, defineProps, watch } from 'nativescript-vue'
 import { getUserTestimonialsImageList, getSystemTestimonialsImageList } from '../../core/api'
 const props = defineProps<{
-  pid: string,
+  pid: string
   uid: string
+  darkMode: boolean
 }>();
 interface Item {
   id: string,
@@ -34,7 +35,7 @@ interface Item {
   createdAt: string,
   updatedAt: string,
   ecchi: boolean,
-  img: string
+  img: string,
 }
 const userTestimonialsImageList = ref<Item[][]>()
 const systemTestimonialsImageList = ref<Item[][]>()
@@ -75,7 +76,7 @@ function refactorArray(arr: any[]) {
 <style scoped lang="scss">
 Label {
   padding: 20px 10px;
-  color: #363636;
+  color: #262626;
 }
 
 .visible {
@@ -91,6 +92,12 @@ Label {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  Label {
+    color: #d0d0d0;
   }
 }
 </style>

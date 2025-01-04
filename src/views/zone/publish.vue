@@ -1,5 +1,5 @@
 <template>
-  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError }">
+  <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: darkMode }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="publish">
       <template #default="{ item, index }">
         <StackLayout class="item">
@@ -22,6 +22,7 @@ import errorImg from '../components/errorImg.vue'
 import { ref, defineProps } from 'nativescript-vue'
 const props = defineProps<{
   uid: string
+  darkMode: boolean
 }>()
 interface Item {
   id: string,
@@ -131,6 +132,14 @@ function retry() {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  .item {
+    .title {
+      color: #f2f2f2;
+    }
   }
 }
 </style>

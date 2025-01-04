@@ -1,8 +1,8 @@
 <template>
-  <Page actionBarHidden="true">
+  <Page actionBarHidden="true" :class="{ dark: darkMode }">
     <GridLayout columns="*" rows="auto,*">
       <GridLayout col="0" row="0" rowSpan="2" columns="*" rows="auto,*">
-        <preview col="0" row="0" :files="files" :height="widthDIPs" />
+        <preview col="0" row="0" :files="files" :height="widthDIPs" :dark-mode="darkMode" />
         <loadingAnimation col="0" row="1" v-show="!loading" :class="{ 'visible': loading, 'hidden': !loading }" />
         <errorImg col="0" row="1" text="数据加载失败，请点击尝试" v-show="loadingError"
           :class="{ 'visible': loadingError, 'hidden': !loadingError }" @tap="getData" />
@@ -11,9 +11,9 @@
           <StackLayout>
             <info :title="title" :slug="slug" :id="id" :up="up" :uid="uid" :username="username" :body="body"
               :numViews="numViews" :numLikes="numLikes" :createdAt="createdAt" :ecchi="ecchi" :liked="liked"
-              :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar"
+              :following="following" :friend="friend" :thumbnail="thumbnail" :avatar="avatar" :dark-mode="darkMode"
               @navigateToComments="navigateToComments" @changeLiked="changeLiked" @changeFollowing="changeFollowing" />
-            <recommend ref="recommendRef" :pid="id" :uid="uid" />
+            <recommend ref="recommendRef" :pid="id" :uid="uid" :dark-mode="darkMode" />
           </StackLayout>
         </ScrollView>
       </GridLayout>
@@ -25,7 +25,7 @@
   </Page>
 </template>
 <script setup lang="ts">
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { navigateBack, navigateBackHome } from '../core/navigate'
 import { Screen } from '@nativescript/core';
 import { getImageData } from '../core/api'
@@ -37,6 +37,9 @@ import recommend from './imageview/recommend.vue'
 import comments from './imageview/comments.vue'
 import loadingAnimation from './components/loadingAnimation.vue'
 import errorImg from './components/errorImg.vue'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string;
 }>();
@@ -87,6 +90,9 @@ function getData() {
     loading.value = false
   })
 }
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
+})
 function navigateToComments() {
   $navigateTo(comments, {
     props: {
@@ -133,5 +139,10 @@ function changeFollowing(val: boolean) {
   100% {
     opacity: 1;
   }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
 }
 </style>

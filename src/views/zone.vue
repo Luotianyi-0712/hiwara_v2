@@ -1,5 +1,5 @@
 <template>
-  <Page actionBarHidden="true">
+  <Page actionBarHidden="true" :class="{ dark: darkMode }">
     <GridLayout rows="auto, *">
       <loadingAnimation row="0" rowSpan="2" v-show="loading" :class="{ 'visible': loading, 'hidden': !loading }" />
       <errorImg row="0" rowSpan="2" text="数据加载失败，请点击尝试" v-show="loadingError"
@@ -12,22 +12,22 @@
         </GridLayout>
         <GridLayout row="1" rowSpan="2" columns="100px,*" style="padding: 0 40px;">
           <GridLayout col="0" rows="100px,*">
-            <Img row="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
+            <Img row="0" :src="avatar" class="avatar" :placeholderImageUri="getPlaceholderImageUri()" />
           </GridLayout>
-          <GridLayout col="1" rows="30px,4px,auto,4px,*" style="padding-left: 40px;">
+          <GridLayout col="1" rows="30px,4px,auto,4px,*" class="userInfo">
             <GridLayout col="1" row="2" columns="*,*,*" style="text-align: center;">
               <StackLayout col="0">
-                <Label :text="postsNum" style="font-size: 16px;color:#262626;" />
-                <Label text="发布" style="font-size: 12px;opacity: 0.8;" />
+                <Label :text="postsNum" class="value" />
+                <Label text="发布" class="label" />
               </StackLayout>
               <StackLayout col="1" style="border-color:#000000cc;border-left-width:1px;border-right-width:1px"
                 @tap="toMyFollowing">
-                <Label :text="followingNum" style="font-size: 16px;color:#262626;" />
-                <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
+                <Label :text="followingNum" class="value" />
+                <Label text="关注" class="label" />
               </StackLayout>
               <StackLayout col="2" @tap="toMyFollowers">
-                <Label :text="followersNum" style="font-size: 16px;color:#262626;" />
-                <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
+                <Label :text="followersNum" class="value" />
+                <Label text="粉丝" class="label" />
               </StackLayout>
             </GridLayout>
             <Button v-if="isMyself" col="1" row="4" text="编辑资料" />
@@ -78,7 +78,7 @@
             <imageList :uid="props.uid" />
           </PagerItem>
           <PagerItem>
-            <publish :uid="props.uid" />
+            <publish :uid="props.uid" :dark-mode="darkMode" />
           </PagerItem>
         </Pager>
       </GridLayout>
@@ -95,12 +95,15 @@ import errorImg from './components/errorImg.vue'
 import videoList from './zone/video.vue'
 import imageList from './zone/image.vue'
 import publish from './zone/publish.vue'
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { getZoneUserData, getFollowingList, getFollowersList, getPosts, followers, disFollowers } from '../core/api'
 import { navigateBack, navigateBackHome } from '../core/navigate'
 import { myselfData, toasty } from '../core/viewFunction'
-import { Animation, AnimationDefinition } from '@nativescript/core'
+import { Animation, AnimationDefinition, WrapLayout } from '@nativescript/core'
 import { navigateTo } from "../core/navigate"
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   uid: string
   username: string
@@ -111,7 +114,6 @@ const loadingError = ref<boolean>(false)
 const tab = ref(0)
 const allInfo = ref(false)
 const isMyself = ref(true)
-
 let signBodyFoldHeight = 0
 let signBodyUnfoldHeight = 0
 let usernameIDHeight = 0
@@ -120,9 +122,7 @@ const signBodyFoldShadow = ref()
 const signBodyUnfoldShadow = ref()
 const usernameIDRef = ref()
 const usernameIDShadow = ref()
-
 const tabsRef = ref()
-
 const avatar = ref('')
 const uname = ref('')
 const body = ref('')
@@ -132,9 +132,8 @@ const postsNum = ref<number | '-'>('-')
 const followingNum = ref<number | '-'>('-')
 const followersNum = ref<number | '-'>('-')
 const following = ref(false)
-
 if (props.type) {
-  switch(props.type){
+  switch (props.type) {
     case 'video':
       tab.value = 0
       break
@@ -145,7 +144,7 @@ if (props.type) {
       tab.value = 2
       break
   }
-} 
+}
 myselfData().then(data => {
   if (data.uid == props.uid) {
     isMyself.value = true
@@ -163,7 +162,9 @@ getFollowingList(props.uid, 0, 1).then(res => {
 getFollowersList(props.uid, 0, 1).then(res => {
   followersNum.value = res.count
 })
-
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
+})
 function thisGetZoneUserData() {
   loading.value = true
   loadingError.value = false
@@ -277,6 +278,13 @@ function toMyFollowers() {
     })
   }
 }
+function getPlaceholderImageUri() {
+  if (darkMode.value) {
+    return "~/assets/img/avatar-default-dark.png"
+  } else {
+    return "~/assets/img/avatar-default.png"
+  }
+}
 </script>
 <style scoped lang="scss">
 .back-icon {
@@ -303,6 +311,20 @@ function toMyFollowers() {
   font-size: 22px;
   color: #262626;
   padding: 0 40px;
+}
+
+.userInfo {
+  padding-left: 40px;
+
+  .value {
+    font-size: 16px;
+    color: #262626;
+  }
+
+  .label {
+    font-size: 12px;
+    opacity: 0.8;
+  }
 }
 
 .vip {
@@ -353,5 +375,28 @@ function toMyFollowers() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .bgImg {
+    background-color: #424242;
+  }
+
+  .avatar {
+    border-color: #757575;
+  }
+
+  .userName {
+    color: #f2f2f2;
+  }
+
+  .userInfo {
+    .value {
+      color: #f2f2f2;
+    }
+  }
 }
 </style>

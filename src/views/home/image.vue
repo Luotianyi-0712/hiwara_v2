@@ -1,6 +1,6 @@
 <template>
   <GridLayout rows="60px,auto,auto,*" :class="{ dark: darkMode }">
-    <topBar row="0" />
+    <topBar row="0" :dark-mode="darkMode" />
     <GridLayout row="1" rows="35px,3px" columns="8px,*,*,*,*,*,36px,8px" class="tab">
       <Label text="最新" row="0" col="1" @tap="onTabPress(0)" textAlignment="center" />
       <Label text="流行" row="0" col="2" @tap="onTabPress(1)" textAlignment="center" />
@@ -46,13 +46,13 @@ import topBar from './topBar.vue'
 import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
 import imageList from '../lists/imageList.vue'
-import { ref, watch } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { getImageList } from '~/core/api'
 import { toasty, parseMonthLabel } from '../../core/viewFunction'
 import { Animation, AnimationDefinition, Dialogs } from '@nativescript/core'
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 interface ImageItem {
   id: string,
   title: string,
@@ -103,9 +103,6 @@ watch(filterYear, () => {
 })
 watch(filterMonth, () => {
   retry(tab.value)
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function retry(tab: number) {
   page[tab] = 0

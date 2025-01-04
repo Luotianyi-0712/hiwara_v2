@@ -8,15 +8,14 @@
       </template>
     </ListView>
     <Label row="0" textAlignment="center" text="还没有评论喵~" v-if="comments.length === 0" />
-    <GridLayout row="1" columns="*,80px"
-      style="box-shadow: 1px 1px 4px #00000040;background-color: #fff;padding: 0 20px;">
+    <GridLayout row="1" columns="*,80px" class="send">
       <TextField col="0" hint="添加评论" style="font-size: 16px;" v-model="myComments" ref="addCommentsRef"
         @blur="addCommentsInputBlur" />
       <Button col="1" text="发送" height="110px" @tap="addComment" />
     </GridLayout>
   </GridLayout>
   <Drawer ref="drawer" :gestureEnabled="false" @close="closeDrawer">
-    <GridLayout columns="*,*" rows="40px,*" ~bottomDrawer height="100%" width="100%" style="background-color: #f2f2f2;">
+    <GridLayout columns="*,*" rows="40px,*" ~bottomDrawer height="100%" width="100%" class="replys">
       <Label row="0" col="0" text="回复详情" style="padding: 0 20px;" />
       <StackLayout row="0" col="1" orientation="horizontal" horizontalAlignment="right" style="padding: 0 20px;">
         <Label text="&#x1f5d9;" class="font-awesome-solid" />
@@ -135,5 +134,32 @@ function addCommentsInputBlur() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.replys {
+  background-color: #f2f2f2;
+}
+
+.send {
+  box-shadow: 1px 1px 4px #00000040;
+  background-color: #f2f2f2;
+  padding: 0 20px;
+}
+
+.dark {
+  .replys {
+  background-color: #0d0d0d;
+}
+  .send {
+    background-color: #262626;
+
+    TextField {
+      color: #f2f2f2;
+
+      ::placeholder {
+        color: #757575;
+      }
+    }
+  }
 }
 </style>

@@ -9,10 +9,10 @@
     <ScrollView>
       <StackLayout style="padding-top: 80px;">
         <Label text="视频缓存目录" class="title" />
-        <TextField v-model="video" hint="请输入视频缓存目录" />
+        <TextField v-model="video" hint="请输入视频缓存目录" class="input" />
         <Label :class="{ 'visible': !tipShow(video), 'hidden': tipShow(video) }" text="请输入正确的路径" class="tip" />
         <Label text="图片缓存目录" class="title" />
-        <TextField v-model="image" hint="请输入图片缓存目录" />
+        <TextField v-model="image" hint="请输入图片缓存目录" class="input" />
         <Label :class="{ 'visible': !tipShow(image), 'hidden': tipShow(image) }" text="请输入正确的路径" class="tip" />
         <Button text="保存设置" @tap="toggle" />
       </StackLayout>
@@ -90,7 +90,7 @@ function tipShow(val: string) {
   color: #424242;
 }
 
-TextField {
+.input {
   font-size: 14px;
   margin: 0 20px;
 }
@@ -138,8 +138,13 @@ Button {
     color: #e0e0e0;
   }
 
-  TextField {
-    background-color: #303030;
+  .input {
+    background-color: #202020;
+    color: #f2f2f2;
+
+    ::placeholder {
+      color: #757575;
+    }
   }
 }
 </style>

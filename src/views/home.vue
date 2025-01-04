@@ -1,11 +1,11 @@
 <template>
   <Page actionBarHidden="true" :class="{ dark: darkMode }">
     <GridLayout v-show="onLoaded" v-if="isLogin" rows="*,auto">
-      <videoList row="0" v-if="navTab == 0" />
-      <imageList row="0" v-if="navTab == 1" />
-      <subscribe row="0" v-if="navTab == 2" />
-      <forum row="0" v-if="navTab == 3" />
-      <my row="0" v-if="navTab == 4" />
+      <videoList row="0" v-if="navTab == 0" :dark-mode="darkMode" />
+      <imageList row="0" v-if="navTab == 1" :dark-mode="darkMode" />
+      <subscribe row="0" v-if="navTab == 2" :dark-mode="darkMode" />
+      <forum row="0" v-if="navTab == 3" :dark-mode="darkMode" />
+      <my row="0" v-if="navTab == 4" :dark-mode="darkMode" />
       <GridLayout row="1" class="bottom-bar" rows="auto" columns="*,*,*,*,*">
         <StackLayout col="0" class="btn" @tap="onNavTabPress(0)"
           :class="{ select: navTab == 0, unSelect: navTab != 0 }">
@@ -34,7 +34,7 @@
         </StackLayout>
       </GridLayout>
     </GridLayout>
-    <loginComponents v-show="onLoaded" v-else @loginSuccess="loginSuccess" />
+    <loginComponents v-show="onLoaded" v-else @loginSuccess="loginSuccess" :dark-mode="darkMode" />
   </Page>
 </template>
 <script lang="ts" setup>
@@ -134,6 +134,7 @@ Page {
 
 .dark {
   background-color: #0d0d0d;
+  color: #d0d0d0;
 
   .bottom-bar {
     .unSelect {

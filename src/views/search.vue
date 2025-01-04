@@ -296,14 +296,14 @@ function hintLabel(val: number) {
 
     .search-bg {
       background-color: #0d0d0d;
-      color: #d0d0d0;
+      color: #757575;
     }
 
     .search-input {
-      color: #d0d0d0;
+      color: #f2f2f2;
 
       ::placeholder {
-        color: #d0d0d0;
+        color: #757575;
       }
     }
   }

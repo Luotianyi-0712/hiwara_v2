@@ -1,5 +1,5 @@
 <template>
-  <StackLayout style="padding: 20px 20px 0 20px;">
+  <StackLayout style="padding: 20px 20px 0 20px;" :class="{ dark: darkMode }">
     <GridLayout columns="50px,*,100px" rows="50px">
       <StackLayout @tap="toUserZone" col="0" row="0">
         <Img src="https://www.iwara.tv/images/default-avatar.jpg" failureImageUri="~/assets/img/not-img.jpg"
@@ -63,22 +63,23 @@ import { toasty } from '../../core/viewFunction'
 import * as SocialShare from "@nativescript/social-share"
 import { navigateTo } from "../../core/navigate"
 const props = defineProps<{
-  title: string,
-  slug: string | null,
-  id: string,
-  up: string,
-  uid: string,
-  username: string,
-  body: string | null,
-  numViews: number,
-  numLikes: number,
-  createdAt: string,
-  ecchi: boolean,
-  liked: boolean,
-  following: boolean,
-  friend: boolean,
-  thumbnail: string,
+  title: string
+  slug: string | null
+  id: string
+  up: string
+  uid: string
+  username: string
+  body: string | null
+  numViews: number
+  numLikes: number
+  createdAt: string
+  ecchi: boolean
+  liked: boolean
+  following: boolean
+  friend: boolean
+  thumbnail: string
   avatar: string
+  darkMode: boolean
 }>();
 const emit = defineEmits(['navigateToComments', 'changeLiked', 'changeFollowing']);
 const allView = ref(false)
@@ -92,9 +93,6 @@ const titleUnfoldHeight = ref(0)
 const bodyHeight = ref(0)
 let likeing = false
 let followering = false
-onMounted(() => {
-  // console.log('已加载info')
-})
 function likeButtonTap() {
   if (!likeing) {
     likeing = true
@@ -276,5 +274,13 @@ function toUserZone() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+}
+
+.dark {
+
+  .up,
+  .title {
+    color: #f2f2f2;
+  }
 }
 </style>

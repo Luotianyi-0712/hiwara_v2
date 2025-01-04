@@ -71,4 +71,12 @@ function formatIsoToChineseDate(isoDate: string): string {
   padding: 0 40px;
   font-size: 12px;
 }
+
+.dark {
+
+  .userName,
+  .body {
+    color: #f2f2f2;
+  }
+}
 </style>

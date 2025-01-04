@@ -16,16 +16,16 @@
         </GridLayout>
         <GridLayout columns="*" rows="auto,auto,auto" class="button">
           <Label row="0" text="Aria2 RPC" class="label" />
-          <TextField row="1" v-model="rpc" hint="请输入RPC地址" :isEnabled="open" />
+          <TextField row="1" v-model="rpc" hint="请输入RPC地址" :isEnabled="open" class="input" />
           <Label row="2" text="请填写Aria2服务器的RPC地址，示例：https://127.0.0.1:6800/jsonrpc" class="tip" />
         </GridLayout>
         <GridLayout columns="*" rows="36px,auto,auto" class="button">
           <Label row="0" text="Token" class="label" />
-          <TextField row="1" v-model="token" hint="请输入Token" :isEnabled="open" />
+          <TextField row="1" v-model="token" hint="请输入Token" :isEnabled="open" class="input" />
         </GridLayout>
         <GridLayout columns="*" rows="auto,auto,auto" class="button">
           <Label row="0" text="下载路径" class="label" />
-          <TextField row="1" v-model="download" hint="请输入下载路径" :isEnabled="open" />
+          <TextField row="1" v-model="download" hint="请输入下载路径" :isEnabled="open" class="input" />
           <Label row="2" text="注意：此处下载路径是Aria2服务器的下载路径，不是手机的下载路径" class="tip" />
         </GridLayout>
         <Button text="保存设置" @tap="toggle" :isEnabled="open" />
@@ -34,7 +34,7 @@
   </Page>
 </template>
 <script lang="ts" setup>
-import { ref, watch, $navigateBack } from "nativescript-vue"
+import { ref, defineProps, $navigateBack } from "nativescript-vue"
 import { getConfig, changeAriaSwitch, changeAriaConfig } from "../../core/database"
 import { toasty } from "../../core/viewFunction"
 import { useMainStore } from '../../core/store'
@@ -49,9 +49,6 @@ getConfig().then(data => {
   rpc.value = data.ariaRPC
   token.value = data.ariaToken
   download.value = data.ariaDownload
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function navigateBack() {
   $navigateBack()
@@ -94,7 +91,7 @@ function toggle() {
     color: #424242;
   }
 
-  TextField {
+  .input {
     font-size: 14px;
     margin: 0 28px;
   }
@@ -121,11 +118,12 @@ Button {
     }
   }
 
-  TextField {
-    background-color: #303030;
+  .input {
+    background-color: #202020;
+    color: #f2f2f2;
 
     ::placeholder {
-      color: #d0d0d0;
+      color: #757575;
     }
   }
 }

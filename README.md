@@ -138,7 +138,7 @@ Omit | 略
 * ✅Fan list | 粉丝列表
 * ✅Settings | 设置
 * ⬜Adaptation for Pad side | 平板电脑适配
-* ⬜Dark mode | 暗黑模式
+* ✅Dark mode | 暗黑模式
 * ⬜Offline caching and downloading | 离线缓存及下载
 * ✅Forum browsing | 论坛浏览
 * ⬜Forum posting | 论坛发布

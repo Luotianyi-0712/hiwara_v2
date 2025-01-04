@@ -1,6 +1,6 @@
 <template>
   <GridLayout rows="60px, auto, *" :class="{ dark: darkMode }">
-    <topBar row="0" />
+    <topBar row="0" :dark-mode="darkMode" />
     <GridLayout row="1" rows="35px,3px" columns="*,*" class="tab">
       <Label text="视频" row="0" col="0" @tap="onTabPress(0)" textAlignment="center" />
       <Label text="图片" row="0" col="1" @tap="onTabPress(1)" textAlignment="center" />
@@ -30,7 +30,7 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { ref, watch, onBeforeUnmount } from 'nativescript-vue'
+import { ref, watch, defineProps, onBeforeUnmount } from 'nativescript-vue'
 import topBar from './topBar.vue'
 import videoList from '../lists/videoList.vue'
 import imageList from '../lists/imageList.vue'
@@ -38,9 +38,9 @@ import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
 import { getSubscribeVideoList, getSubscribeImageList } from '../../core/api'
 import { toasty } from '../../core/viewFunction'
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+const props = defineProps<{
+  darkMode: boolean
+}>()
 interface VideoItem {
   id: string,
   title: string,
@@ -114,9 +114,6 @@ watch(tab, (val) => {
       })
     }
   }
-})
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
 })
 function videoRetry() {
   videoPage = 0

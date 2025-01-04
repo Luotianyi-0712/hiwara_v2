@@ -69,32 +69,32 @@ import { parseDefinitionLabel, unParseDefinitionLabel, toasty } from '../../core
 import * as SocialShare from "@nativescript/social-share"
 import { navigateTo } from "../../core/navigate"
 const props = defineProps<{
-  title: string,
-  slug: string,
-  id: string,
-  up: string,
-  uid: string,
-  username: string,
-  body: string | null,
-  numViews: number,
-  numLikes: number,
-  createdAt: string,
-  ecchi: boolean,
-  liked: boolean,
-  following: boolean,
-  friend: boolean,
-  thumbnail: string,
-  avatar: string,
-  tags: string[],
-  files: any[],
-  definition: string,
-  definitionList: any[],
-  downloadPath: string,
-  ariaSwitch: boolean,
-  ariaRPC: string,
-  ariaToken: string,
-  ariaDownloadPath: string,
-  darkMode: boolean,
+  title: string
+  slug: string
+  id: string
+  up: string
+  uid: string
+  username: string
+  body: string | null
+  numViews: number
+  numLikes: number
+  createdAt: string
+  ecchi: boolean
+  liked: boolean
+  following: boolean
+  friend: boolean
+  thumbnail: string
+  avatar: string
+  tags: string[]
+  files: any[]
+  definition: string
+  definitionList: any[]
+  downloadPath: string
+  ariaSwitch: boolean
+  ariaRPC: string
+  ariaToken: string
+  ariaDownloadPath: string
+  darkMode: boolean
 }>();
 const emit = defineEmits(['changeLiked', 'changeFollowing']);
 const allView = ref(false)

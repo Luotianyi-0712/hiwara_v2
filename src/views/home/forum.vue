@@ -42,10 +42,10 @@ import errorImg from '../components/errorImg.vue'
 import { getHomeForum } from '../../core/api'
 import { formatIsoToDateTime, toasty } from '../../core/viewFunction'
 import { navigateTo } from '../../core/navigate'
-import { ref, watch } from 'nativescript-vue'
-import { useMainStore } from '../../core/store'
-const mainStore = useMainStore()
-const darkMode = ref(mainStore.dark)
+import { ref, defineProps } from 'nativescript-vue'
+const props = defineProps<{
+  darkMode: boolean
+}>()
 const onloaded = ref(false)
 const loadError = ref(false)
 const formatList = ref([
@@ -225,9 +225,6 @@ function getData() {
     onloaded.value = true
   })
 }
-watch(() => mainStore.dark, (val) => {
-  darkMode.value = val
-})
 function goTo(type: string) {
   navigateTo('/forum', {
     type: type

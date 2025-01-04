@@ -44,9 +44,9 @@
         </StackLayout>
       </GridLayout>
       <GridLayout col="0" row="1" columns="*,2*,*" @tap="hiddenPlayer" @doubleTap="onPause">
-        <GridLayout col="0" row="0" @pan="changeBrightness"></GridLayout>
-        <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress"></GridLayout>
-        <GridLayout col="2" row="0" @pan="changeVolume"></GridLayout>
+        <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout>
+        <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress" v-show="onLoaded"></GridLayout>
+        <GridLayout col="2" row="0" @pan="changeVolume" v-show="onLoaded"></GridLayout>
       </GridLayout>
       <GridLayout col="0" row="2" columns="10px,auto,auto,*,auto,auto,10px" rows="auto,auto" v-if="isFullscreen">
         <Slider col="0" row="0" colSpan="7" v-model="sliderValue" minValue="0" :maxValue="duration"
@@ -61,7 +61,7 @@
         <Label col="5" row="1" text="&#xf066;" class="font-awesome-solid controls-icon-fullscreen"
           @tap="$emit('onFullscreen')" />
       </GridLayout>
-      <GridLayout col="0" row="3" :columns="'10px,auto,*,auto,auto,10px'" rows="auto" v-else>
+      <GridLayout col="0" row="3" :columns="'10px,auto,*,auto,auto,10px'" rows="auto" v-else v-show="onLoaded">
         <Label col="1" :text="pause ? '&#xf04b;' : '&#xf04c;'" class="font-awesome-solid controls-icon"
           @tap="onPause" />
         <Slider col="2" v-model="sliderValue" minValue="0" :maxValue="duration" @touch="onSliderTouch" />
@@ -71,9 +71,9 @@
       </GridLayout>
     </GridLayout>
     <GridLayout v-else col="0" row="0" columns="*,2*,*" rows="*" @tap="showPlayer" @doubleTap="onPause">
-      <GridLayout col="0" row="0" @pan="changeBrightness"></GridLayout>
-      <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress"></GridLayout>
-      <GridLayout col="2" row="0" @pan="changeVolume"></GridLayout>
+      <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout>
+      <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress" v-show="onLoaded"></GridLayout>
+      <GridLayout col="2" row="0" @pan="changeVolume" v-show="onLoaded"></GridLayout>
     </GridLayout>
     <GridLayout v-if="finished" col="0" row="0" columns="*" rows="*">
       <Label text="&#xf2f9;" class="font-awesome-solid replay-icon" @tap="onPause" />
@@ -126,6 +126,7 @@ const volumeChangeIng = ref(false)
 const volumerCatch = ref(0)
 const nowTime = ref('')
 const drawer = ref()
+const onLoaded = ref(false)
 let metadataWidth: number = 0
 let metadataHeight: number = 0
 let frameHeigth: number = 0
@@ -172,7 +173,7 @@ function onPlaybackReady() {
     videoPlayerRef.value.nativeView.pause()
     pause.value = true
   }
-  // console.log('视频加载完成')
+  onLoaded.value = true
 }
 function onPlay() {
   // console.log('onPlay')
