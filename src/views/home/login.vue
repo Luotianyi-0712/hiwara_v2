@@ -10,7 +10,7 @@
     </StackLayout>
     <StackLayout col="1" row="3" class="bottom">
       <Label text="内容源自iwara.tv，本程序禁止用于商业用途" />
-      <Label text="©2019-2024 Maoerxiachuan" />
+      <Label text="©2019-2025 Maoerxiachuan" />
     </StackLayout>
   </GridLayout>
 </template>

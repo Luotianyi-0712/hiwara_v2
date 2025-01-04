@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,*,20px" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -13,7 +13,7 @@
           <StackLayout class="item">
             <GridLayout columns="40px,*,auto" rows="40px">
               <Img @tap="toUserZone(item.uid, item.username)" col="0" row="0" :src="item.avatar" class="avatar"
-                placeholderImageUri="~/assets/img/avatar-default.png" />
+                :placeholderImageUri="getPlaceholderImageUri()" />
               <Label @tap="toUserZone(item.uid, item.username)" col="1" :text="item.user" class="user" />
               <Label col="2" :text="index > 0 ? ('第' + (index + 1) + '楼') : '楼主'" verticalAlignment="top"
                 style="font-size: 12px;" />
@@ -30,7 +30,6 @@
                 <Label :text="formatIsoToDateTime(item.updatedAt)" class="" />
               </StackLayout>
             </GridLayout>
-
           </StackLayout>
         </template>
       </ListView>
@@ -45,8 +44,11 @@ import loadingAnimation from '../components/loadingAnimation.vue'
 import errorImg from '../components/errorImg.vue'
 import { navigateTo, navigateBack } from '../../core/navigate'
 import { getForumThread } from '../../core/api'
-import { ref, defineProps } from 'nativescript-vue'
+import { ref, watch, defineProps } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../../core/viewFunction'
+import { useMainStore } from '../../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   id: string,
   type: string,
@@ -76,6 +78,9 @@ getListData().then(res => {
   loadError.value = true
 }).finally(() => {
   onloaded.value = true
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function getListData(): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -129,6 +134,13 @@ function toUserZone(uid: string, username: string) {
     uid: uid,
     username: username
   })
+}
+function getPlaceholderImageUri() {
+  if (darkMode.value) {
+    return "~/assets/img/avatar-default-dark.png"
+  } else {
+    return "~/assets/img/avatar-default.png"
+  }
 }
 </script>
 <style scoped lang="scss">
@@ -190,6 +202,21 @@ function toUserZone(uid: string, username: string) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .item {
+
+    .user,
+    .title,
+    .body,
+    .label {
+      color: #f2f2f2;
+    }
   }
 }
 </style>

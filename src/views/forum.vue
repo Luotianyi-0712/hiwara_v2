@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page :class="{ dark: darkMode }">
     <ActionBar>
       <GridLayout columns="32px,auto,auto,*,auto" class="topBar">
         <Label col="0" text="&#xf104;" class="font-awesome-solid" @tap="navigateBack" />
@@ -54,8 +54,11 @@ import errorImg from './components/errorImg.vue'
 import detail from './forum/detail.vue'
 import { navigateBack } from '../core/navigate'
 import { getForumList } from '../core/api'
-import { ref, defineProps, $navigateTo } from 'nativescript-vue'
+import { ref, watch, defineProps, $navigateTo } from 'nativescript-vue'
 import { formatIsoToDateTime } from '../core/viewFunction'
+import { useMainStore } from '../core/store'
+const mainStore = useMainStore()
+const darkMode = ref(mainStore.dark)
 const props = defineProps<{
   type: string
 }>()
@@ -85,6 +88,9 @@ getListData().then(res => {
   loadError.value = true
 }).finally(() => {
   onloaded.value = true
+})
+watch(() => mainStore.dark, (val) => {
+  darkMode.value = val
 })
 function getListData(): Promise<forumThreadItem[] | null> {
   return new Promise((resolve, reject) => {
@@ -244,6 +250,19 @@ function toDetail(id: string, title: string) {
 
   100% {
     opacity: 1;
+  }
+}
+
+.dark {
+  background-color: #0d0d0d;
+  color: #d0d0d0;
+
+  .item {
+
+    .title,
+    .label {
+      color: #f2f2f2;
+    }
   }
 }
 </style>
