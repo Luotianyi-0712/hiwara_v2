@@ -76,19 +76,19 @@ function submit() {
   .title {
     font-size: 22px;
     color: #262626;
-    padding: 32px 10px;
+    padding: 64px 20px;
   }
 
   .input {
-    margin: 32px 5px;
+    margin: 32px 16px;
     font-size: 16px;
     padding: 20px;
     border-bottom-color: #00796B;
-    border-bottom-width: 6px;
+    border-bottom-width: 5px;
   }
 
   .button {
-    margin: 32px 0;
+    margin: 64px 0;
   }
 }
 
@@ -104,6 +104,8 @@ function submit() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+  font-size: 18px;
+  height: 160px;
 }
 
 .dark {
@@ -118,6 +120,7 @@ Button {
     .input {
       background-color: #202020;
       color: #f2f2f2;
+
       ::placeholder {
         color: #757575;
       }

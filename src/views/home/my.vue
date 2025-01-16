@@ -1,6 +1,6 @@
 <template>
   <GridLayout rows="auto,*" :class="{ dark: darkMode }">
-    <GridLayout rows="auto,75px,20px,auto" class="top">
+    <GridLayout rows="auto,28px,75px,32px,auto" class="top">
       <GridLayout row="0" columns="*,32px,32px,32px,32px" class="msg-icon">
         <Label col="1" text="&#xf029;" class="font-awesome-solid" />
         <Label col="2" text="&#xf53f;" class="font-awesome-solid" />
@@ -8,7 +8,7 @@
         <Label col="4" v-if="true" text="&#xf186;" class="font-awesome-solid" />
         <Label col="4" v-else text="&#xf185;" class="font-awesome-solid" />
       </GridLayout>
-      <GridLayout row="1" columns="75px,*,auto" @tap="toMyZone">
+      <GridLayout row="2" columns="75px,*,auto" @tap="toMyZone">
         <Img col="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
         <GridLayout col="1" rows="*,*">
           <Label row="0" :text="name" class="userName" />
@@ -24,25 +24,25 @@
           <Label text=" &#xf054;" class="font-awesome-solid" />
         </StackLayout>
       </GridLayout>
-      <GridLayout row="3" rows="40px" columns="30px,*,*,*,30px" style="text-align: center;">
+      <GridLayout row="4" rows="40px" columns="18px,*,*,*,18px" class="userNum">
         <StackLayout col="1" @tap="toMyPosts">
-          <Label :text="posts" style="font-size: 16px;" />
-          <Label text="发布" style="font-size: 12px;opacity: 0.8;" />
+          <Label :text="posts" class="num" />
+          <Label text="发布" class="label" />
         </StackLayout>
         <StackLayout col="2" style="border-color:#ffffffcc;border-left-width:1px;border-right-width:1px"
           @tap="toMyFollowing">
-          <Label :text="following" style="font-size: 16px;" />
-          <Label text="关注" style="font-size: 12px;opacity: 0.8;" />
+          <Label :text="following" class="num" />
+          <Label text="关注" class="label" />
         </StackLayout>
         <StackLayout col="3" @tap="toMyFollowers">
-          <Label :text="followers" style="font-size: 16px;" />
-          <Label text="粉丝" style="font-size: 12px;opacity: 0.8;" />
+          <Label :text="followers" class="num" />
+          <Label text="粉丝" class="label" />
         </StackLayout>
       </GridLayout>
     </GridLayout>
     <ScrollView row="1">
       <StackLayout>
-        <GridLayout style="margin: 40px 0;" columns="*,*,*,*" rows="auto,auto">
+        <GridLayout style="margin: 28px;" columns="*,*,*,*" rows="auto,auto">
           <StackLayout col="0" row="0" class="button">
             <Label text="&#xf019;" class="font-awesome-solid icon" />
             <Label text="离线缓存" class="label" />
@@ -215,7 +215,7 @@ function toSetup() {
   }
 
   .userName {
-    font-size: 20px;
+    font-size: 24px;
     padding: 0 32px;
   }
 
@@ -241,26 +241,37 @@ function toSetup() {
     }
   }
 
+  .userNum {
+    text-align: center;
 
+    .num {
+      font-size: 18px;
+    }
+
+    .label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  }
 }
 
 .button {
   text-align: center;
-  padding: 26px 0;
+  padding: 48px 0;
 
   .icon {
-    font-size: 20px;
+    font-size: 24px;
     color: #00796B;
   }
 
   .label {
     font-size: 14px;
-    padding: 10px 0;
+    padding: 20px 0;
   }
 }
 
 .oth-button {
-  padding: 20px 60px;
+  padding: 36px 60px;
 
   .icon {
     font-size: 18px;
@@ -269,7 +280,7 @@ function toSetup() {
   }
 
   .label {
-    font-size: 14px;
+    font-size: 16px;
     padding: 0 20px;
   }
 
