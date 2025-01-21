@@ -17,6 +17,9 @@ import { Pager, PagerItem } from '@nativescript-community/ui-pager'
 registerElement('Pager', () => Pager)
 registerElement('PagerItem', () => PagerItem)
 
+import { Markdown } from '@dev4ndy/markdown'
+registerElement('Markdown', () => Markdown)
+
 import DrawerPlugin from '@nativescript-community/ui-drawer/vue3'
 app.use(DrawerPlugin)
 

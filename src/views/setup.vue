@@ -8,41 +8,41 @@
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
+        <GridLayout columns="*,auto" rows="56px" class="button">
           <Label col="0" text="自动播放" class="label" />
           <GridLayout col="1" style="padding: 0 16px;">
             <Switch :checked="autoplay" @checkedChange="autoplayChange" />
           </GridLayout>
         </GridLayout>
-        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toDefinition">
+        <GridLayout columns="*,auto,auto" rows="56px" class="button" @tap="toDefinition">
           <Label col="0" text="默认清晰度" class="label" />
           <Label col="1" :text="parseDefinitionLabel(definition)" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toSearchMode">
+        <GridLayout columns="*,auto,auto" rows="56px" class="button" @tap="toSearchMode">
           <Label col="0" text="默认搜索模式" class="label" />
           <Label col="1" :text="parseSearchModeLabel(searchMode)" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toDownloadPath">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="toDownloadPath">
           <Label col="0" text="缓存目录" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toAria">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="toAria">
           <Label col="0" text="Aria2推送设置" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="toLanguage">
+        <GridLayout columns="*,auto,auto" rows="56px" class="button" @tap="toLanguage">
           <Label col="0" text="语言(Language)" class="label" />
           <Label col="1" :text="parseLanguageLabel(language)" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto,auto" rows="48px" class="button" @tap="appInfoToSystem">
+        <GridLayout columns="*,auto,auto" rows="56px" class="button" @tap="appInfoToSystem">
           <Label col="0" text="清除缓存" class="label" />
           <Label col="1" text="前往清除" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="logout">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="logout">
           <Label col="0" text="退出登录" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
@@ -194,9 +194,9 @@ function parseSearchModeLabel(val: number) {
 .button {
   border-bottom-width: 1px;
   border-color: #c0c0c0;
+  font-size: 16px;
 
   .label {
-    font-size: 14px;
     padding: 0 40px;
     color: #424242;
   }

@@ -2,9 +2,8 @@
   <GridLayout rows="*" :class="{ 'visible': onloaded && !loadError, 'hidden': !onloaded || loadError, dark: darkMode }">
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="publish">
       <template #default="{ item, index }">
-        <GridLayout columns="76px,*,100px" rows="8px,32px,28px,8px" class="item"
-          @tap="toUserZone(item.uid, item.username)">
-          <GridLayout col="0" row="0" rowSpan="4" columns="10px,56px,10px" rows="10px,56px,10px">
+        <GridLayout columns="60px,*,100px" rows="8px,*,*,8px" class="item" @tap="toUserZone(item.uid, item.username)">
+          <GridLayout col="0" row="0" rowSpan="4" columns="10px,40px,10px" rows="10px,40px,10px">
             <Img col="1" row="1" :src="item.avatar" class="avatar" :placeholderImageUri="getPlaceholderImageUri()" />
           </GridLayout>
           <Label col="1" row="1" :text="item.name" class="name" />

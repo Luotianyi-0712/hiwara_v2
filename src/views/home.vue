@@ -90,7 +90,7 @@ Page {
 .bottom-bar {
 
   .btn {
-    padding: 15px;
+    padding: 22px;
     font-size: 12px;
     text-align: center;
 

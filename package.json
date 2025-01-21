@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@dev4ndy/markdown": "^1.0.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@imagene.me/nativescript-toast": "^2.0.3",
     "@nativescript-community/sqlite": "^3.5.1",

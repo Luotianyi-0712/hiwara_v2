@@ -76,7 +76,7 @@ function get(path: string, query: any): Promise<any> {
         }
       }).then(res => {
         if (!res.ok) {
-          throw new Error('Failed to fetch:' + res.statusText)
+          reject('Failed to fetch:' + res.statusText)
         }
         return res.json()
       }).then(data => {
@@ -121,7 +121,7 @@ function post(path: string, query: any, body: any): Promise<any> {
         body: body ? JSON.stringify(body) : null
       }).then(res => {
         if (!res.ok) {
-          throw new Error('Failed to fetch:' + res.statusText)
+          reject('Failed to fetch:' + res.statusText)
         }
         return res.json()
       }).then(data => {
@@ -345,11 +345,13 @@ export function login(email: string, password: string): Promise<any> {
             data: res.statusText
           }
         default:
-          throw new Error('Failed to fetch:' + res.statusText)
+          reject('Failed to fetch:' + res.statusText)
       }
     }).then(data => {
-      userToken = data.data.token
-      resolve(data)
+      if (data) {
+        userToken = data.data.token
+        resolve(data)
+      }
     }).catch(err => {
       reject(err)
     })
@@ -626,7 +628,7 @@ export function getVideoFiles(fileUrl: string): Promise<any[]> {
       }
     }).then(res => {
       if (!res.ok) {
-        throw new Error('Failed to fetch:' + res.statusText)
+        reject('Failed to fetch:' + res.statusText)
       }
       return res.json()
     }).then(data => {
@@ -1449,6 +1451,23 @@ export function ariaDownloadVideo(rpc: string, token: string, url: string, name:
       body: JSON.stringify(msg)
     }).then(() => {
       resolve()
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
+export function getRules(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    fetch(apiPath + '/rules', {
+      method: 'GET'
+    }).then(res => {
+      if (!res.ok) {
+        reject('Failed to fetch:' + res.statusText)
+      }
+      return res.json()
+    }).then(data => {
+      resolve(data)
     }).catch(err => {
       reject(err)
     })

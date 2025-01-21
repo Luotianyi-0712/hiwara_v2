@@ -2,11 +2,11 @@
   <GridLayout rows="auto,*" :class="{ dark: darkMode }">
     <GridLayout rows="auto,28px,75px,32px,auto" class="top">
       <GridLayout row="0" columns="*,32px,32px,32px,32px" class="msg-icon">
-        <Label col="1" text="&#xf029;" class="font-awesome-solid" />
+        <!-- <Label col="1" text="&#xf029;" class="font-awesome-solid" />
         <Label col="2" text="&#xf53f;" class="font-awesome-solid" />
         <Label col="3" text="&#xf0f3;" class="font-awesome-solid" />
         <Label col="4" v-if="true" text="&#xf186;" class="font-awesome-solid" />
-        <Label col="4" v-else text="&#xf185;" class="font-awesome-solid" />
+        <Label col="4" v-else text="&#xf185;" class="font-awesome-solid" /> -->
       </GridLayout>
       <GridLayout row="2" columns="75px,*,auto" @tap="toMyZone">
         <Img col="0" :src="avatar" class="avatar" placeholderImageUri="~/assets/img/avatar-default.png" />
@@ -87,7 +87,7 @@
           <Label col="1" text="设置" class="label" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="28px,*,28px" class="oth-button">
+        <GridLayout columns="28px,*,28px" class="oth-button" @tap="toRules">
           <Label col="0" text="&#xf24e;" class="font-awesome-solid icon" />
           <Label col="1" text="社区规则" class="label" />
           <Label col="2" text="&#xf054;" class="font-awesome-solid arrow" />
@@ -195,6 +195,9 @@ function toFavorites() {
 }
 function toSetup() {
   navigateTo('/setup')
+}
+function toRules() {
+  navigateTo('/rules')
 }
 </script>
 <style lang="scss" scoped>

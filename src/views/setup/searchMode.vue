@@ -8,11 +8,11 @@
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle(0)">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="toggle(0)">
           <Label col="0" text="关键词搜索" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle(1)">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="toggle(1)">
           <Label col="0" text="标签搜索" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
@@ -63,9 +63,9 @@ function toggle(val: number) {
 .button {
   border-bottom-width: 1px;
   border-color: #c0c0c0;
+  font-size: 16px;
 
   .label {
-    font-size: 14px;
     padding: 0 40px;
     color: #424242;
   }

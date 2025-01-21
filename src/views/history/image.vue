@@ -3,8 +3,8 @@
     <ListView row="1" v-if="data.length > 0" :items="data" @loadMoreItems="nextPage" class="history">
       <template #default="{ item, index }">
         <GridLayout @tap="onTouch(item.id)" columns="128px,*,8px" rows="8px,40px,18px,18px,8px" class="item">
-          <GridLayout col="0" row="0" columns="8px,*,8px" rows="8px,*,8px" rowSpan="5">
-            <Img row="1" col="1" :src="item.img" failureImageUri="~/assets/img/not-img.jpg"
+          <GridLayout col="0" row="0" columns="8px,*,*,8px" rows="8px,*,*,8px" rowSpan="5">
+            <Img row="1" col="1" colSpan="2" rowSpan="2" :src="item.img" failureImageUri="~/assets/img/not-img.jpg"
               :placeholderImageUri="getPlaceholderImageUri()" stretch="aspectFill" class="img" fadeDuration="300" />
             <StackLayout row="1" col="2" class="r18" horizontalAlignment="right">
               <Label v-show="item.ecchi" text="R-18" />
@@ -171,12 +171,12 @@ function getPlaceholderImageUri() {
 
 
   .title {
-    font-size: 14px;
+    font-size: 16px;
     color: #262626;
   }
 
   .info {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 

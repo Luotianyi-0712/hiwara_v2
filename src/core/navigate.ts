@@ -9,6 +9,7 @@ import history from "../views/history.vue"
 import favorites from "../views/favorites.vue"
 import setup from "../views/setup.vue"
 import forum from "../views/forum.vue"
+import rules from "../views/rules.vue"
 
 interface NativeRoute {
   path: string;
@@ -43,6 +44,9 @@ const natives: NativeRoute[] = [
   }, {
     path: "/forum",
     component: forum
+  }, {
+    path: "/rules",
+    component: rules
   }
 ]
 

@@ -8,8 +8,8 @@
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button">
-          <Label col="0" text="启用Aria2" class="label" style="padding:0 40px" />
+        <GridLayout columns="*,auto" rows="56px" class="button">
+          <Label col="0" text="启用Aria2" style="color: #424242; padding: 0 40px;" />
           <GridLayout col="1" style="padding: 0 16px;">
             <Switch :checked="open" @checkedChange="changeSwitch" />
           </GridLayout>
@@ -19,7 +19,7 @@
           <TextField row="1" v-model="rpc" hint="请输入RPC地址" :isEnabled="open" class="input" />
           <Label row="2" text="请填写Aria2服务器的RPC地址，示例：https://127.0.0.1:6800/jsonrpc" class="tip" />
         </GridLayout>
-        <GridLayout columns="*" rows="36px,auto,auto" class="button">
+        <GridLayout columns="*" rows="auto,auto,auto" class="button">
           <Label row="0" text="Token" class="label" />
           <TextField row="1" v-model="token" hint="请输入Token" :isEnabled="open" class="input" />
         </GridLayout>
@@ -84,21 +84,21 @@ function toggle() {
 .button {
   border-bottom-width: 1px;
   border-color: #c0c0c0;
+  font-size: 16px;
 
   .label {
-    font-size: 14px;
-    padding: 20px 40px 0 40px;
     color: #424242;
+    padding: 22px 40px 0 40px;
   }
 
   .input {
     font-size: 14px;
-    margin: 0 28px;
+    margin: 10px 28px;
   }
 
   .tip {
     font-size: 11px;
-    padding: 0 40px 20px 40px;
+    padding: 0 40px 22px 40px;
   }
 }
 
@@ -106,6 +106,8 @@ Button {
   margin: 10px 20px;
   background-color: #00796B;
   color: #f0f0f0;
+  font-size: 18px;
+  height: 160px;
 }
 
 .dark {

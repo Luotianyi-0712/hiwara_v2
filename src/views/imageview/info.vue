@@ -13,7 +13,7 @@
     <GridLayout columns="*" rows="auto">
       <StackLayout col="0" row="1">
         <Label ref="titleRef" :text="title" class="title" :textWrap="allView" @tap="toggleExpand" />
-        <StackLayout orientation="horizontal" class="tips">
+        <StackLayout orientation="horizontal" class="tips" @tap="toggleExpand">
           <Label text="&#xf144; " class="text font-awesome-regular" />
           <Label :text="formatNumber(numViews)" />
           <Label text="   &#x1f9e1; " class="text font-awesome-regular" />
@@ -21,7 +21,7 @@
           <Label text="   &#x1f553; " class="font-awesome-regular" />
           <Label :text="formatIsoToChineseDate(createdAt)" />
         </StackLayout>
-        <Label ref="bodyRef" height="0" :text="body" class="body" textWrap="true" />
+        <Label ref="bodyRef" height="0" :text="body" class="body" textWrap="true" @tap="toggleExpand" />
       </StackLayout>
       <StackLayout col="0" row="1">
         <Label :text="allView ? '&#xf077;' : '&#xf078;'" class="font-awesome-solid drop" textAlignment="right" />
@@ -274,6 +274,7 @@ function toUserZone() {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+  margin: 14px 24px;
 }
 
 .dark {

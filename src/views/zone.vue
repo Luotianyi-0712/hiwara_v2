@@ -39,7 +39,8 @@
             <Label ref="signBodyFoldShadow" :text="body" @layoutChanged="getSignBodyFoldHeight" />
             <Label row="0" :text="body" textWrap="true" ref="signBodyUnfoldShadow"
               @layoutChanged="getSignBodyUnfoldHeight" />
-            <Label :text="username" ref="usernameIDShadow" @layoutChanged="getUsernameIDHeight" />
+            <Label :text="username" ref="usernameIDShadow" @layoutChanged="getUsernameIDHeight"
+              style="padding: 10px 0;" />
           </StackLayout>
         </ScrollView>
         <StackLayout row="3" orientation="horizontal">
@@ -54,8 +55,8 @@
           </ScrollView>
           <Label row="0" col="1" :text="allInfo ? '收起' : '更多'" verticalAlignment="top" color="#2196F3"
             @tap="toggleExpand" />
-          <StackLayout row="1" orientation="horizontal" ref="usernameIDRef" height="0px">
-            <Label text="&#xf2bb;  " class="font-awesome-regular" />
+          <StackLayout row="1" orientation="horizontal" ref="usernameIDRef" height="0px" style="padding: 10px 0;">
+            <Label text="&#xf2bb;" class="font-awesome-regular" />
             <Label :text="'@' + username" />
           </StackLayout>
         </GridLayout>

@@ -154,7 +154,7 @@ function getPlaceholderImageUri() {
 }
 
 .item {
-  padding: 20px;
+  padding: 30px 20px;
 
   .avatar {
     border-radius: 50%;
@@ -171,7 +171,7 @@ function getPlaceholderImageUri() {
     font-size: 16px;
     padding: 30px 20px 20px 20px;
     font-weight: bold;
-    border-bottom-width: 1px;
+    border-bottom-width: 2px;
     border-color: #c0c0c0;
   }
 

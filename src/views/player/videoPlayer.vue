@@ -44,7 +44,7 @@
         </StackLayout>
       </GridLayout>
       <GridLayout col="0" row="1" columns="*,2*,*" @tap="hiddenPlayer" @doubleTap="onPause">
-        <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout>
+        <!-- <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout> -->
         <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress" v-show="onLoaded"></GridLayout>
         <GridLayout col="2" row="0" @pan="changeVolume" v-show="onLoaded"></GridLayout>
       </GridLayout>
@@ -71,7 +71,7 @@
       </GridLayout>
     </GridLayout>
     <GridLayout v-else col="0" row="0" columns="*,2*,*" rows="*" @tap="showPlayer" @doubleTap="onPause">
-      <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout>
+      <!-- <GridLayout col="0" row="0" @pan="changeBrightness" v-show="onLoaded"></GridLayout> -->
       <GridLayout col="1" row="0" @pan="swipeToChangeTheProgress" v-show="onLoaded"></GridLayout>
       <GridLayout col="2" row="0" @pan="changeVolume" v-show="onLoaded"></GridLayout>
     </GridLayout>
@@ -161,6 +161,7 @@ function playing() {
   }
 }
 function onPlaybackReady() {
+  console.log('onPlaybackReady')
   metadataWidth = videoPlayerRef.value.nativeView.getVideoSize().width
   metadataHeight = videoPlayerRef.value.nativeView.getVideoSize().height
   if (metadataWidth != 0 && metadataHeight != 0) {
@@ -176,7 +177,7 @@ function onPlaybackReady() {
   onLoaded.value = true
 }
 function onPlay() {
-  // console.log('onPlay')
+  console.log('onPlay')
 }
 function onFinished() {
   finished.value = true
@@ -313,6 +314,9 @@ function onSeekToTimeComplete(args: any) {
 function hiddenLoading() {
   loading.value = false
 }
+function test() {
+  console.log('test')
+}
 function networkTypeText(x: number) {
   switch (x) {
     case 0: return '无网络'
@@ -403,7 +407,7 @@ function linearToGamma(linearValue: number, gamma: number = 3.3): number {
 function gammaToLinear(gammaValue: number, gamma: number = 3.3): number {
   // 确保输入值在 0-100 范围内
   if (gammaValue < 0 || gammaValue > 100) {
-    throw new Error('Input value must be in the range 0-100.');
+    return 0
   }
   // 将伽马值标准化到 0-1 范围
   const normalizedGammaValue = gammaValue / 100;

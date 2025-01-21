@@ -91,7 +91,7 @@ function tipShow(val: string) {
 }
 
 .input {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0 20px;
 }
 
@@ -128,6 +128,8 @@ Button {
 Button {
   background-color: #00796B;
   color: #f0f0f0;
+  font-size: 18px;
+  height: 160px;
 }
 
 .dark {

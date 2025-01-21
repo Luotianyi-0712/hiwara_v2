@@ -202,7 +202,7 @@ function toDetail(id: string, title: string) {
 
   .illustrate {
     font-size: 14px;
-    padding: 14px 28px 0 28px;
+    padding: 0 28px;
   }
 
   .module {
@@ -213,7 +213,7 @@ function toDetail(id: string, title: string) {
 }
 
 .item {
-  padding: 20px 40px;
+  padding: 40px;
 
   .title {
     color: #262626;

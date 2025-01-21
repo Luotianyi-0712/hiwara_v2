@@ -8,11 +8,11 @@
     </ActionBar>
     <ScrollView>
       <StackLayout>
-        <GridLayout columns="*,auto" rows="48px" class="button" @tap="toggle('auto')">
+        <GridLayout columns="*,auto" rows="56px" class="button" @tap="toggle('auto')">
           <Label col="0" text="跟随系统" class="label" />
           <Label col="1" text="&#xf054;" class="font-awesome-solid arrow" />
         </GridLayout>
-        <GridLayout v-for="(item, index) in list" columns="auto,*,auto" rows="28px,24px" class="button"
+        <GridLayout v-for="(item, index) in list" columns="auto,*,auto" rows="auto,auto" class="button"
           @tap="toggle(item.value)">
           <Label row="0" col="0" :text="item.label" class="label" />
           <Label row="1" col="0" :text="item.tslabel" class="tslabel" />
@@ -75,17 +75,17 @@ function toggle(val: string) {
 .button {
   border-bottom-width: 1px;
   border-color: #c0c0c0;
+  font-size: 16px;
 
   .label {
-    font-size: 14px;
-    padding: 0 40px;
+    padding: 22px 40px 22px 40px;
     text-align: left;
     color: #424242;
   }
 
   .tslabel {
-    font-size: 12px;
-    padding: 0 40px;
+    font-size: 14px;
+    padding: 0 40px 22px 40px;
     text-align: left;
   }
 

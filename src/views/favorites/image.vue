@@ -172,12 +172,12 @@ function getPlaceholderImageUri() {
 
 
   .title {
-    font-size: 14px;
+    font-size: 16px;
     color: #262626;
   }
 
   .info {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
