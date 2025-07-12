@@ -29,7 +29,7 @@ jobs:
         java-version: '17'
         
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v0
+      uses: android-actions/setup-android@v2
       
     - name: Install NativeScript CLI
       run: npm install -g nativescript
