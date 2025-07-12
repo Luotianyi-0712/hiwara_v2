@@ -1,0 +1,177 @@
+name: Build and Package Hiwara App
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v0
+      
+    - name: Install NativeScript CLI
+      run: npm install -g nativescript
+      
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Clean project
+      run: ns clean
+      
+    - name: Build Android APK (Debug)
+      run: ns build android --clean
+      env:
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        JAVA_HOME: ${{ env.JAVA_HOME }}
+        
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hiwara-android-debug
+        path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        
+  build-android-release:
+    name: Build Android APK (Release)
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v0
+      
+    - name: Install NativeScript CLI
+      run: npm install -g nativescript
+      
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Clean project
+      run: ns clean
+      
+    - name: Generate keystore for signing
+      run: |
+        keytool -genkey -v -keystore release-key.keystore -alias hiwara -keyalg RSA -keysize 2048 -validity 10000 -storepass ${{ secrets.KEY_STORE_PASSWORD }} -keypass ${{ secrets.KEY_STORE_ALIAS_PASSWORD }} -dname "CN=Hiwara, OU=Development, O=Hiwara, L=City, S=State, C=CN"
+        
+    - name: Build Android APK (Release)
+      run: |
+        ns build android --release --clean \
+        --key-store-path release-key.keystore \
+        --key-store-password ${{ secrets.KEY_STORE_PASSWORD }} \
+        --key-store-alias hiwara \
+        --key-store-alias-password ${{ secrets.KEY_STORE_ALIAS_PASSWORD }}
+      env:
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        JAVA_HOME: ${{ env.JAVA_HOME }}
+        
+    - name: Upload Release APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hiwara-android-release
+        path: platforms/android/app/build/outputs/apk/release/app-release.apk
+        
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install NativeScript CLI
+      run: npm install -g nativescript
+      
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Clean project
+      run: ns clean
+      
+    - name: Build iOS IPA
+      run: ns build ios --release --clean
+      
+    - name: Upload iOS IPA artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hiwara-ios-release
+        path: platforms/ios/build/Release-iphoneos/*.ipa
+        
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-android-release, build-ios]
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download Android APK
+      uses: actions/download-artifact@v4
+      with:
+        name: hiwara-android-release
+        path: ./artifacts/android
+        
+    - name: Download iOS IPA
+      uses: actions/download-artifact@v4
+      with:
+        name: hiwara-ios-release
+        path: ./artifacts/ios
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./artifacts/android/*.apk
+          ./artifacts/ios/*.ipa
+        body: |
+          ## Hiwara v${{ github.ref_name }}
+          
+          ### 更新内容
+          -略
+          
+          ### 下载
+          - Android APK: 适用于Android设备
+          - iOS IPA: 适用于iOS设备（需要开发者账号）
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
