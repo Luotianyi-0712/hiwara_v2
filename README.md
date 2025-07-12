@@ -20,7 +20,7 @@ This application is compatible with the latest version of the Iwara website, sup
 
 ## 🛠️ 环境搭建及项目打包
 请参考原项目文档，此处省略
-[🗿https://github.com/shanmaomaoymmm/hiwara_v2/blob/main/README.md)
+[🗿](https://github.com/shanmaomaoymmm/hiwara_v2/blob/main/README.md)
 
 ## 🗓️ Development progress | 开发进度
 
